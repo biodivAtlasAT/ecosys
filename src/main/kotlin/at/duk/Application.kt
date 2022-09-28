@@ -21,6 +21,8 @@ fun Application.module() {
         DataCache.loadNavigation(environment.config)
         val dataCacheDirectory = environment.config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
         val filePath = File(dataCacheDirectory).resolve("AlaNavigation").resolve("navigation.html")
+
+        // Wait until the file is saved - to prevent responses before the navigation is cached!
         if (!File("$filePath").exists())
             this.coroutineContext.job.join()
     }
