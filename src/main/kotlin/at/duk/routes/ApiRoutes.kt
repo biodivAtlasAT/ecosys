@@ -29,7 +29,7 @@ fun Route.apiRouting() {
             val lng = call.request.queryParameters["lng"]
             val lat = call.request.queryParameters["lat"]
             if (packageID != null && lng != null && lat != null && services != null) {
-                str = "{'error': {'no': 0,'msg': ''},'data': [{'id': 1,'val': 3.234,'quantil': 2,'svg': './svg/sport.svg','dim': km'}, {'id': 4,'val': 12.43, 'quantil': 5, 'svg': './svg/wasser.svg', 'dim': 'm3'}, { 'id': 5, 'val': 0.43, 'quantil': 0, 'svg': './svg/nahrung.svg', 'dim': '' }]}"
+                str = "{'error': {'no': 0,'msg': ''},'data': [{'id': 1,'val': 3.234,'quantil': 2,'svg': './static/svg/sport.svg','dim': km'}, {'id': 4,'val': 12.43, 'quantil': 5, 'svg': './static/svg/wasser.svg', 'dim': 'm3'}, { 'id': 5, 'val': 0.43, 'quantil': 0, 'svg': './static/svg/nahrung.svg', 'dim': '' }]}"
             }
             call.respondText(str, ContentType.parse("application/json"), HttpStatusCode.OK)
         }
