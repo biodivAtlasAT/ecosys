@@ -39,6 +39,8 @@ class DataCache {
             sb.append("</div>")
             sb.append(content.substring(endPos))
             val doc = Jsoup.parse(sb.toString())
+            // add jquery - in live system it is included elsewhere?
+            doc.head().prepend("<script type=\"text/javascript\" src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js\"></script>")
 
             val elements = emptyList<Element>().toMutableList()
             doc.head().children().forEach {
@@ -47,12 +49,12 @@ class DataCache {
                         elements.add(it)
                         it.remove()
                     }
-                    if (it.attr("href").startsWith("https://core.biodivdev.at/brand-2022/css/autocomplete-extra.min.css"))
+                    if (it.attr("href").startsWith("https://core.biodiversityatlas.at/brand-2022/css/autocomplete-extra.min.css"))
                         it.remove()
 
                 }
                 if (it.attr("type") == "text/javascript") {
-                    if (it.attr("src").startsWith("/asset")) {
+                    if (it.attr("src").startsWith("/asset") && it.attr("src").indexOf("jquery") == -1) {
                         elements.add(it)
                         it.remove()
                     }
