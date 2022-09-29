@@ -21,7 +21,7 @@ fun Application.configureRouting() {
         get("/") {
             // get Biodiversity-Atlas navigation from data cache
             val co = File(cachePath.path).resolve("navigation.html").readText()
-            // get ecosys.html.body.inc from resources folder
+            // get ecosys.html.body.inc and ecosysHtmlHeaderInc from resources folder
             val ecosysHtmlBodyInc = this.javaClass.classLoader.getResource("static/ecosys.html.body.inc")?.readText()
             val ecosysHtmlHeaderInc = this.javaClass.classLoader.getResource("static/ecosys.html.header.inc")?.readText()
             // fetch the tag where the html should be placed
