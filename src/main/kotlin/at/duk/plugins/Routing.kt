@@ -1,6 +1,8 @@
 package at.duk.plugins
 
+import at.duk.routes.adminRouting
 import at.duk.routes.apiRouting
+import at.duk.routes.layerRouting
 import at.duk.routes.rasterRouting
 import io.ktor.server.routing.*
 import io.ktor.http.*
@@ -19,7 +21,9 @@ fun Application.configureRouting() {
 
     routing {
         apiRouting()
+        adminRouting(config)
         rasterRouting(config)
+        layerRouting(config)
 
         val dataCacheDirectory = environment?.config?.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
         val cachePath = File(dataCacheDirectory).resolve("AlaNavigation")
@@ -39,7 +43,6 @@ fun Application.configureRouting() {
             // respond to request
             call.respondText(doc.toString(), ContentType.Text.Html)
         }
-
         // Static plugin. Try to access `/static/index.html`
         static("/static") {
             resources("static")

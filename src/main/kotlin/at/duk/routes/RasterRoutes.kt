@@ -14,6 +14,10 @@ import java.nio.file.Paths
 fun Route.rasterRouting(config: ApplicationConfig) {
     route("/admin/raster") {
 
+        get("/packages") {
+            call.respond(FreeMarkerContent("04_Packages.ftl", null))
+        }
+
         get("/upload") {
             call.respond(FreeMarkerContent("05_RasterUpload.ftl", null))
         }
@@ -44,6 +48,19 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             }
             call.respondRedirect("/test")
         }
+
+        get("/tasks") {
+            call.respond(FreeMarkerContent("06_RasterTasks.ftl", null))
+        }
+
+        get("/list") {
+            call.respond(FreeMarkerContent("07_RasterList.ftl", null))
+        }
+
+        get("/data") {
+            call.respond(FreeMarkerContent("08_RasterData.ftl", null))
+        }
+
 
     }
 }
