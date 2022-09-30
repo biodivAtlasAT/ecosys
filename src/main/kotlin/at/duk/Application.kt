@@ -1,8 +1,10 @@
 package at.duk
 
 import at.duk.plugins.*
+import freemarker.cache.ClassTemplateLoader
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.freemarker.*
 import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
@@ -14,6 +16,10 @@ fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
+    install(FreeMarker){
+        templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
+    }
+
     configureRouting()
     configureTemplating()
     configureSerialization()

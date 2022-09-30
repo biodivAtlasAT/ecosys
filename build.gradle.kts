@@ -38,6 +38,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("org.jsoup:jsoup:$jsoup_version")
     implementation("io.ktor:ktor-client-cio:$ktor_version")
+    implementation("io.ktor:ktor-server-freemarker:$ktor_version")
 
 
 }

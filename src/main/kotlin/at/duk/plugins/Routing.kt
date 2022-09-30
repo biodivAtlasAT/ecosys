@@ -1,20 +1,26 @@
 package at.duk.plugins
 
 import at.duk.routes.apiRouting
+import at.duk.routes.rasterRouting
 import io.ktor.server.routing.*
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.http.content.*
 import io.ktor.server.application.*
+import io.ktor.server.freemarker.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import org.jsoup.Jsoup
 import java.io.File
 import java.nio.file.Paths
 
 fun Application.configureRouting() {
-
+    val config = environment.config
 
     routing {
         apiRouting()
+        rasterRouting(config)
+
         val dataCacheDirectory = environment?.config?.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
         val cachePath = File(dataCacheDirectory).resolve("AlaNavigation")
 
@@ -38,5 +44,6 @@ fun Application.configureRouting() {
         static("/static") {
             resources("static")
         }
+
     }
 }
