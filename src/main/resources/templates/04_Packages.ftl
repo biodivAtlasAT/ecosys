@@ -9,7 +9,7 @@
         <#include "common/navigation.ftl">
     </div>
     <div class="col-md-8 m-4">
-        <h1 class="text-primary">Packages</h1>
+        <h1 class="text-primary">Packages!!</h1>
     </div>
 </div>
 

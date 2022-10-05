@@ -2,12 +2,17 @@ val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val jsoup_version: String by project
+val hikaricp_version: String by project
+val postgresql_version: String by project
+val flyway_version: String by project
+val exposed_version: String by project
 
 plugins {
     application
     kotlin("jvm") version "1.7.10"
     id("io.ktor.plugin") version "2.1.1"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
+    id("org.flywaydb.flyway") version "9.4.0"
 }
 
 group = "at.duk"
@@ -22,6 +27,20 @@ application {
 repositories {
     mavenCentral()
     maven { url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-js-wrappers") }
+}
+
+// only for using as gradle tasks!!!
+flyway {
+    url = "jdbc:postgresql://localhost:5432/ecosys"
+    user = "postgres"
+    password = "postgres"
+    schemas = arrayOf("public")
+    cleanDisabled = false
+//    schemas = ['schema1', 'schema2', 'schema3']
+ //   placeholders = [
+ //       'keyABC': 'valueXYZ',
+ //   'otherplaceholder': 'value123'
+ //   ]
 }
 
 dependencies {
@@ -39,6 +58,17 @@ dependencies {
     implementation("org.jsoup:jsoup:$jsoup_version")
     implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-server-freemarker:$ktor_version")
+    implementation ("com.zaxxer:HikariCP:$hikaricp_version") // JDBC Connection Pool
+    implementation ("org.postgresql:postgresql:$postgresql_version") // JDBC Connector for PostgreSQL
+    implementation("org.flywaydb:flyway-core:$flyway_version")
+    implementation ("org.jetbrains.exposed:exposed-core:$exposed_version")
+    implementation ("org.jetbrains.exposed:exposed-dao:$exposed_version")
+    implementation ("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation ("org.jetbrains.exposed:exposed-java-time:$exposed_version")
+    implementation ("javax.persistence:javax.persistence-api:2.2")
+
+
+
 
 
 }

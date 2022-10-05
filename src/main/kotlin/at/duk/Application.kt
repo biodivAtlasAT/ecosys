@@ -16,6 +16,9 @@ fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
+    val database = AppDataBase(environment.config)
+    database.init()
+
     install(FreeMarker){
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
     }
