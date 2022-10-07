@@ -47,7 +47,12 @@
                                 </#if>
                             </td>
                             <td>
-                                <Button>Löschen</Button>
+                                <#if prop.imported>
+
+                                <#else>
+                                    <Button>Löschen</Button>
+                                </#if>
+
                             </td>
                         </tr>
                     </#list>

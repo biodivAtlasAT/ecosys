@@ -106,6 +106,7 @@ class RasterUpload {
 
                 val res = complexJoin.select{ TableRasterTasks.id eq rasterTasksId }.first()
                 val tmpTableName = res[TableUploadedRasterData.tmpTable]
+                val uploadedRasterDataId = res[TableUploadedRasterData.id].value
                 rasterDataId = TableRasterData.insertAndGetId {
                     it[TableRasterData.filename] = res[TableUploadedRasterData.filename]
                     it[TableRasterData.name] = res[TableUploadedRasterData.name]
@@ -124,6 +125,11 @@ class RasterUpload {
 
                 TableRasterTasks.update ({ TableRasterTasks.id eq rasterTasksId }) { table ->
                     table[imported] = true
+                }
+
+                TableRasterData.update ({ TableRasterData.id eq rasterDataId }) {
+                    it[TableRasterData.uploadedRasterDataId] = uploadedRasterDataId
+                    it[TableRasterData.rasterTaskId] = rasterTasksId
                 }
             }
             return rasterDataId

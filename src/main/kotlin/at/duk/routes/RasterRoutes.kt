@@ -2,9 +2,7 @@ package at.duk.routes
 
 import at.duk.models.RasterTask
 import at.duk.services.RasterUpload
-import at.duk.tables.TableRasterData
-import at.duk.tables.TableRasterTasks
-import at.duk.tables.TableUploadedRasterData
+import at.duk.tables.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
@@ -16,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -126,17 +125,55 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
         get("/{id}") {
             println(call.parameters["id"])
-            val model = emptyMap<String, String>().toMutableMap()
+            val model = emptyMap<String, Any>().toMutableMap()
+            val packageList = emptyList<Map<String, String>>().toMutableList()
+            val serviceList = emptyList<Map<String, String>>().toMutableList()
             call.parameters["id"]?.toIntOrNull()?.let {
                 transaction {
                     val res = TableRasterData.select { TableRasterData.id eq it }.first()
                     model["id"] = res[TableRasterData.id].toString()
                     model["fileName"] = res[TableRasterData.filename]
+                    model["name_"] = res[TableRasterData.name]
+                    model["dimension"] = res[TableRasterData.dimension]
+                    model["serviceId"] = res[TableRasterData.serviceId]?: -1
+                    model["packageId"] = res[TableRasterData.packageId]?: -1
+
+                    TablePackages.select { TablePackages.deleted eq null }.orderBy(TablePackages.name, SortOrder.ASC).forEach {
+                        packageList.add(mapOf("id" to it[TablePackages.id].toString(), "name" to it[TablePackages.name]))
+                    }
+                    model["packageList"] = packageList
+
+                    TableServices.select { TableServices.deleted eq null }.orderBy(TableServices.name, SortOrder.ASC).forEach {
+                        serviceList.add(mapOf("id" to it[TableServices.id].toString(), "name" to it[TableServices.name]))
+                    }
+                    model["serviceList"] = serviceList
                 }
             }
 
             call.respond(FreeMarkerContent("08_RasterData.ftl", model))
         }
+
+        get("/dataAction") {
+            val id = call.request.queryParameters["id"]?.toIntOrNull()?:-1
+            val name = call.request.queryParameters["name_"].toString()
+            val packageId = call.request.queryParameters["packageId"]?.toIntOrNull()?:-1
+            val serviceId = call.request.queryParameters["serviceId"]?.toIntOrNull()?:-1
+            val dimension = call.request.queryParameters["dimension"]?:""
+
+            if (id > -1 && packageId > -1 && serviceId > -1)
+                transaction {
+                    TableRasterData.update ({ TableRasterData.id eq id }) {
+                        it[TableRasterData.name] = name
+                        it[TableRasterData.packageId] = packageId
+                        it[TableRasterData.serviceId] = serviceId
+                        it[TableRasterData.dimension] = dimension
+                        it[TableRasterData.dataComplete] = true
+                    }
+                }
+
+            call.respondRedirect("./list")
+        }
+
 
 
     }
