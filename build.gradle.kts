@@ -65,7 +65,7 @@ dependencies {
     implementation ("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation ("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation ("org.jetbrains.exposed:exposed-java-time:$exposed_version")
-    implementation ("javax.persistence:javax.persistence-api:2.2")
+    implementation("com.bkahlert:koodies:1.6.2")
 
 
 

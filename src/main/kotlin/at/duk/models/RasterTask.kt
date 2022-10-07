@@ -5,8 +5,8 @@ import java.time.LocalDateTime
 data class RasterTask(
     val id: Int,
     val pid: Int,
-    val start: LocalDateTime,
-    val end: LocalDateTime?,
+    val start: String,
+    val end: String?,
     val uploadedRasterDataId: Int,
     val name: String?,
     val rc: Int?,

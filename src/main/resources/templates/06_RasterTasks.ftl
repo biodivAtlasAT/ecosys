@@ -34,7 +34,7 @@
                                 <#if prop.end?has_content>
                                     ${prop.end}
                                 <#else>
-                                    ""
+
                                 </#if>
                             <td>${prop.name}</td>
                             <td>${prop.rc}</td>
