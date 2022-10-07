@@ -10,7 +10,7 @@
                 <ul><a href="/admin/raster/upload" class="<#if naviSel == "5">naviSelected</#if>">Upload</a></ul>
                 <ul><a href="/admin/raster/tasks" class="<#if naviSel == "6">naviSelected</#if>">Tasks</a></ul>
                 <ul><a href="/admin/raster/list" class="<#if naviSel == "7">naviSelected</#if>">Liste</a></ul>
-                <ul><a href="/admin/raster/data" class="<#if naviSel == "8">naviSelected</#if>">Daten</a></ul>
+                <!--ul><a href="/admin/raster/data" class="<#if naviSel == "8">naviSelected</#if>">Daten</a></ul-->
             </li>
             <li>Layerdaten
                 <ul><a href="/admin/layer/upload" class="<#if naviSel == "9">naviSelected</#if>">Upload</a></ul>

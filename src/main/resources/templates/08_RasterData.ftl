@@ -10,6 +10,7 @@
     </div>
     <div class="col-md-8 m-4">
         <h1 class="text-primary">Raster Daten</h1>
+        ${id} - ${fileName}
     </div>
 </div>
 

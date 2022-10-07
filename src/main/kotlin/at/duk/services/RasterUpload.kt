@@ -1,6 +1,9 @@
 package at.duk.services
 
+import at.duk.tables.TableRasterData
 import at.duk.tables.TableRasterTasks
+import at.duk.tables.TableRasterTasks.uploadedRasterDataId
+import at.duk.tables.TableUploadedRasterData
 import io.ktor.server.config.*
 import koodies.exec.Process
 import koodies.exec.error
@@ -91,6 +94,40 @@ class RasterUpload {
             .map { kotlin.random.Random.nextInt(0, charPool.size) }
             .map(charPool::get)
             .joinToString("")
+
+        fun importIntoRasterData(rasterTasksId: Int): Int {
+            var rasterDataId = -1
+
+            transaction {
+                val complexJoin = Join(
+                    TableRasterTasks, TableUploadedRasterData,
+                    onColumn = TableRasterTasks.uploadedRasterDataId, otherColumn = TableUploadedRasterData.id,
+                    joinType = JoinType.INNER)
+
+                val res = complexJoin.select{ TableRasterTasks.id eq rasterTasksId }.first()
+                val tmpTableName = res[TableUploadedRasterData.tmpTable]
+                rasterDataId = TableRasterData.insertAndGetId {
+                    it[TableRasterData.filename] = res[TableUploadedRasterData.filename]
+                    it[TableRasterData.name] = res[TableUploadedRasterData.name]
+                    it[TableRasterData.tmpTable] = res[TableUploadedRasterData.tmpTable]
+                    it[TableRasterData.dataComplete] = false
+                }.value
+
+                val sql = "UPDATE raster_data " +
+                    "SET rast = $tmpTableName.rast " +
+                        " FROM $tmpTableName " +
+                        " WHERE raster_data.id = $rasterDataId " +
+                        " AND $tmpTableName.rid = 1"
+                exec(sql)
+
+                // todo: calculate quintils for raster_data based on column rast, saved as jsonb
+
+                TableRasterTasks.update ({ TableRasterTasks.id eq rasterTasksId }) { table ->
+                    table[imported] = true
+                }
+            }
+            return rasterDataId
+        }
 
     }
 }

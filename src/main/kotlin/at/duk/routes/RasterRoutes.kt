@@ -2,6 +2,7 @@ package at.duk.routes
 
 import at.duk.models.RasterTask
 import at.duk.services.RasterUpload
+import at.duk.tables.TableRasterData
 import at.duk.tables.TableRasterTasks
 import at.duk.tables.TableUploadedRasterData
 import io.ktor.http.content.*
@@ -106,12 +107,35 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             call.respond(FreeMarkerContent("06_RasterTasks.ftl", mapOf("result" to result)))
         }
 
+        get("/tasksAction") {
+            val rasterTasksId = call.request.queryParameters["rasterTasksId"]
+            var rasterDataId = -1
+            rasterTasksId?.toInt()?.let { it1 -> rasterDataId = RasterUpload.importIntoRasterData(it1) }
+            if (rasterDataId > -1) {
+                // val res = TableRasterData.select { TableRasterData.id eq rasterDataId }.first()
+                call.respondRedirect("./$rasterDataId")
+            }
+
+        }
+
+
+
         get("/list") {
             call.respond(FreeMarkerContent("07_RasterList.ftl", null))
         }
 
-        get("/data") {
-            call.respond(FreeMarkerContent("08_RasterData.ftl", null))
+        get("/{id}") {
+            println(call.parameters["id"])
+            val model = emptyMap<String, String>().toMutableMap()
+            call.parameters["id"]?.toIntOrNull()?.let {
+                transaction {
+                    val res = TableRasterData.select { TableRasterData.id eq it }.first()
+                    model["id"] = res[TableRasterData.id].toString()
+                    model["fileName"] = res[TableRasterData.filename]
+                }
+            }
+
+            call.respond(FreeMarkerContent("08_RasterData.ftl", model))
         }
 
 

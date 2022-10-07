@@ -43,7 +43,7 @@
                                 <#if prop.imported>
                                     IMPORTIERT
                                 <#else>
-                                    <Button>Import</Button>
+                                    <Button name="bt_${prop.id}" title="${prop.id}" type="submit" onclick="submit06(${prop.id})">Import</Button>
                                 </#if>
                             </td>
                             <td>
@@ -59,5 +59,8 @@
 
 </div>
 
+    <form name="form06submit" id="form06submit" action="./tasksAction">
+        <input type="hidden" name="rasterTasksId" id="rasterTasksId" value="">
+    <form>
 </body>
 </html>
