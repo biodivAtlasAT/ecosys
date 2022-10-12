@@ -1,9 +1,7 @@
 package at.duk.services
 
-import at.duk.tables.TablePackages
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableRasterTasks
-import at.duk.tables.TableRasterTasks.uploadedRasterDataId
 import at.duk.tables.TableUploadedRasterData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.server.config.*
@@ -13,9 +11,7 @@ import koodies.exec.exitCode
 import koodies.shell.ShellScript
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Paths
@@ -28,7 +24,7 @@ class RasterUpload {
                 "\"%uploadDirectory%\\%tifFileName%\" public.%tableName% > %uploadDirectory%\\rasterImport.sql\n" +
                 "\"%postgresqlBinDirectory%\\psql\" -f %uploadDirectory%\\rasterImport.sql %connection%"
 
-        val mapper = jacksonObjectMapper()
+        private val mapper = jacksonObjectMapper()
 
         fun uploadIntoRasterTasks(
             fileName: String,
@@ -37,7 +33,9 @@ class RasterUpload {
             rasterTasksId: EntityID<Int>
         ) {
             try {
-                ShellScript(generateScripts(config, tmpName, fileName, rasterTasksId.value)).exec.async().also {
+                val tmpFolder = generateScripts(config, tmpName, fileName, rasterTasksId.value)
+
+                ShellScript(tmpFolder.resolve("import.bat").toString()).exec.async().also {
                     val pidV = it.pid
                     transaction {
                         TableRasterTasks.update({ TableRasterTasks.id eq rasterTasksId }) { stmt ->
@@ -55,10 +53,19 @@ class RasterUpload {
                             }
                         }
                     } else {
+                        val inpFile = tmpFolder.resolve("rasterImport.sql")
+                        var exitCode = it.exitCode
+                        var msg = "Terminated successfully"
+
+                        if (!inpFile.exists() || inpFile.length() == 0L) {
+                            exitCode = -1
+                            msg = "Error: File rasterInput.sql is empty!"
+                        }
+
                         transaction {
                             TableRasterTasks.update({ TableRasterTasks.id eq rasterTasksId }) { table ->
-                                table[rc] = it.exitCode
-                                table[message] = "Terminated successfully"
+                                table[rc] = exitCode
+                                table[message] = msg
                                 table[end] = CurrentDateTime
                             }
                         }
@@ -75,7 +82,7 @@ class RasterUpload {
             }
         }
 
-        private fun generateScripts(config: ApplicationConfig, tmpName: String, fileName: String, id: Int): String {
+        private fun generateScripts(config: ApplicationConfig, tmpName: String, fileName: String, id: Int): File {
             val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
             val jobsPath = File(dataCacheDirectory).resolve("rasterData").resolve("uploads").resolve(tmpName)
 
@@ -93,7 +100,8 @@ class RasterUpload {
 
             jobsPath.resolve("import.bat").writeText(fileContent)
             // check for OS
-            return jobsPath.resolve("import.bat").toString()
+            //return jobsPath.resolve("import.bat").toString()
+            return jobsPath
         }
 
         fun genTempName() = (1..12)

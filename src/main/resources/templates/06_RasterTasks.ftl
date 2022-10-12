@@ -43,7 +43,9 @@
                                 <#if prop.imported>
                                     IMPORTIERT
                                 <#else>
-                                    <Button name="bt_${prop.id}" title="${prop.id}" type="submit" onclick="submit06(${prop.id})">Import</Button>
+                                    <#if prop.rc == 0>
+                                        <Button name="bt_${prop.id}" title="${prop.id}" type="submit" onclick="submit06(${prop.id})">Import</Button>
+                                    </#if>
                                 </#if>
                             </td>
                             <td>
