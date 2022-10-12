@@ -13,7 +13,7 @@ import java.nio.file.Paths
 
 fun Route.adminRouting(config: ApplicationConfig) {
     route("/admin") {
-        get("/") {
+        get("") {
             call.respond(FreeMarkerContent("01_Start.ftl", null))
         }
 
