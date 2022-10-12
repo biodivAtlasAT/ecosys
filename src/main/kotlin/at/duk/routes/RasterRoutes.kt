@@ -1,5 +1,6 @@
 package at.duk.routes
 
+import at.duk.models.RasterData
 import at.duk.models.RasterTask
 import at.duk.services.RasterUpload
 import at.duk.tables.*
@@ -48,6 +49,8 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                     is PartData.FormItem -> { fileDescription = part.value }
                     is PartData.FileItem -> {
                         fileName = part.originalFileName as String
+                        val re = "[^A-Za-z0-9 ]".toRegex()
+                        fileName = re.replace(fileName, "_")
                         var fileBytes = part.streamProvider().readBytes()
                         File("$cachePath/$tmpName/$fileName").writeBytes(fileBytes)
                     }
@@ -95,7 +98,6 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                     result.add(RasterTask(it[TableRasterTasks.id].value,
                         it[TableRasterTasks.pid],
                         it[TableRasterTasks.start].format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss")),
-                        //it[TableRasterTasks.end].format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss"))?:"",
                         endeStr,
                         it[TableRasterTasks.uploadedRasterDataId],
                         it[TableUploadedRasterData.name],
@@ -121,11 +123,32 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
 
         get("/list") {
-            call.respond(FreeMarkerContent("07_RasterList.ftl", null))
+            val liste: MutableList<RasterData> = emptyList<RasterData>().toMutableList()
+            val sql = "SELECT d.id as id, d.name as name, d.dimension as dimension, s.name service_name, " +
+                    "p.name as package_name, d.data_complete FROM public.raster_data d" +
+                    "   LEFT JOIN public.services s" +
+                    "    ON d.service_id = s.id" +
+                    "   LEFT JOIN public.packages p" +
+                    "    ON d.package_id = p.id" +
+                    "   ORDER BY p.name, s.name, d.name DESC"
+
+                transaction {
+                    exec(sql) { rs ->
+                        while(rs.next()) {
+                            val id = rs.getInt("id")
+                            val name = rs.getString("name")
+                            val dimension = rs.getString("dimension") ?: ""
+                            val serviceName = rs.getString("service_name") ?: ""
+                            val packageName = rs.getString("package_name") ?: ""
+                            val dataComplete = rs.getBoolean("data_complete")
+                            liste.add(RasterData(id, name, dimension, serviceName, packageName, dataComplete))
+                        }
+                    }
+                }
+            call.respond(FreeMarkerContent("07_RasterList.ftl", mapOf("result" to liste)))
         }
 
         get("/{id}") {
-            println(call.parameters["id"])
             val model = emptyMap<String, Any>().toMutableMap()
             val packageList = emptyList<Map<String, String>>().toMutableList()
             val serviceList = emptyList<Map<String, String>>().toMutableList()

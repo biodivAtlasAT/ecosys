@@ -10,11 +10,13 @@ import koodies.exec.error
 import koodies.exec.exitCode
 import koodies.shell.ShellScript
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.EntityIDFactory
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Paths
+
 
 class RasterUpload {
     companion object {
@@ -34,8 +36,9 @@ class RasterUpload {
         ) {
             try {
                 val tmpFolder = generateScripts(config, tmpName, fileName, rasterTasksId.value)
+                val scriptName = if (System.getProperty("os.name").lowercase().contains("win")) "import.bat" else "import.sh"
 
-                ShellScript(tmpFolder.resolve("import.bat").toString()).exec.async().also {
+                ShellScript(tmpFolder.resolve(scriptName).toString()).exec.async().also {
                     val pidV = it.pid
                     transaction {
                         TableRasterTasks.update({ TableRasterTasks.id eq rasterTasksId }) { stmt ->
@@ -156,13 +159,10 @@ class RasterUpload {
                     it[TableRasterData.rasterTaskId] = rasterTasksId
                     it[TableRasterData.statistics] = mapper.writeValueAsString(quints)
                 }
-
-                val sqlVacuum = "VACUUM ANALYZE raster_data;"
-                exec(sqlVacuum)
-
             }
             return rasterDataId
         }
 
     }
+
 }

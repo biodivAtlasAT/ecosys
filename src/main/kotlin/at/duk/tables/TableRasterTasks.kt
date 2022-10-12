@@ -10,7 +10,7 @@ object TableRasterTasks : IntIdTable("raster_tasks") {
     val start: Column<LocalDateTime> = datetime("start")
     val end: Column<LocalDateTime> = datetime("end")
     val uploadedRasterDataId: Column<Int> = integer("uploaded_raster_data_id")
-    val rc: Column<Int> = integer("rc").default(-99999)
+    val rc: Column<Int?> = integer("rc").nullable()
     val message: Column<String> = varchar("message", 4096).default("")
     val imported: Column<Boolean> = bool("imported").default(false)
 }

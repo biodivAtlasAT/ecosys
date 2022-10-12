@@ -37,14 +37,21 @@
 
                                 </#if>
                             <td>${prop.name}</td>
-                            <td>${prop.rc}</td>
+                            <td>
+                                <#if prop.rc?has_content>${prop.rc}
+                                <#else>
+
+                                </#if>
+                            </td>
                             <td>${prop.message}</td>
                             <td>
-                                <#if prop.imported>
-                                    IMPORTIERT
-                                <#else>
-                                    <#if prop.rc == 0>
-                                        <Button name="bt_${prop.id}" title="${prop.id}" type="submit" onclick="submit06(${prop.id})">Import</Button>
+                                <#if prop.rc?has_content>
+                                    <#if prop.imported>
+                                        IMPORTIERT
+                                    <#else>
+                                        <#if prop.rc == 0>
+                                            <Button name="bt_${prop.id}" title="${prop.id}" type="submit" onclick="submit06(${prop.id})">Import</Button>
+                                        </#if>
                                     </#if>
                                 </#if>
                             </td>
@@ -52,7 +59,9 @@
                                 <#if prop.imported>
 
                                 <#else>
-                                    <Button>Löschen</Button>
+                                    <#if prop.rc?has_content>
+                                        <Button>Löschen</Button>
+                                    </#if>
                                 </#if>
 
                             </td>
