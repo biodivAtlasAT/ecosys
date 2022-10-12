@@ -5,6 +5,7 @@ import at.duk.tables.TableRasterTasks
 import at.duk.tables.TableUploadedRasterData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.server.config.*
+import koodies.exec.CommandLine
 import koodies.exec.Process
 import koodies.exec.error
 import koodies.exec.exitCode
@@ -26,6 +27,10 @@ class RasterUpload {
                 "\"%uploadDirectory%\\%tifFileName%\" public.%tableName% > %uploadDirectory%\\rasterImport.sql\n" +
                 "\"%postgresqlBinDirectory%\\psql\" -f %uploadDirectory%\\rasterImport.sql %connection%"
 
+        private const val unixScript = "%postgresqlBinDirectory%/raster2pgsql -b 1 -F -I -C -s 4326 " +
+                "%uploadDirectory%/%tifFileName% public.%tableName% > %uploadDirectory%/rasterImport.sql\n" +
+                "%postgresqlBinDirectory%/psql -f %uploadDirectory%/rasterImport.sql %connection%"
+
         private val mapper = jacksonObjectMapper()
 
         fun uploadIntoRasterTasks(
@@ -35,8 +40,12 @@ class RasterUpload {
             rasterTasksId: EntityID<Int>
         ) {
             try {
-                val tmpFolder = generateScripts(config, tmpName, fileName, rasterTasksId.value)
-                val scriptName = if (System.getProperty("os.name").lowercase().contains("win")) "import.bat" else "import.sh"
+                val osIsWin = System.getProperty("os.name").lowercase().contains("win")
+                val scriptName = if (osIsWin) "import.bat" else "import.sh"
+                val tmpFolder = generateScripts(config, tmpName, fileName, rasterTasksId.value, osIsWin)
+
+                if (!osIsWin)
+                    ShellScript("chmod 777 ${tmpFolder.resolve(scriptName).toString()}").exec()
 
                 ShellScript(tmpFolder.resolve(scriptName).toString()).exec.async().also {
                     val pidV = it.pid
@@ -85,25 +94,33 @@ class RasterUpload {
             }
         }
 
-        private fun generateScripts(config: ApplicationConfig, tmpName: String, fileName: String, id: Int): File {
+        private fun generateScripts(config: ApplicationConfig, tmpName: String, fileName: String, id: Int, osIsWin: Boolean): File {
             val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
             val jobsPath = File(dataCacheDirectory).resolve("rasterData").resolve("uploads").resolve(tmpName)
 
             val conn = (config.propertyOrNull("ktor.database.connection.jdbc")?.getString() ?: "").split("//")[1]
             val user = config.propertyOrNull("ktor.database.connection.user")?.getString() ?: "not configured"
-            val passwd = config.propertyOrNull("ktor.database.connection.user")?.getString() ?: "not configured"
+            val passwd = config.propertyOrNull("ktor.database.connection.password")?.getString() ?: "not configured"
             val connStr = "postgresql://$user:$passwd@$conn"
 
-            val fileContent = windowsScript.replace("%postgresqlBinDirectory%", config.propertyOrNull("ktor.database.postgresqlBinDirectory")?.getString() ?:"")
+            val fileContentWin = windowsScript.replace("%postgresqlBinDirectory%", config.propertyOrNull("ktor.database.postgresqlBinDirectory")?.getString() ?:"")
                 .replace("%uploadDirectory%", jobsPath.toString())
                 .replace("%tifFileName%", fileName)
                 .replace("%tableName%", "table_$tmpName")
                 .replace ("%connection%", connStr)
                 .replace ("%id%", id.toString())
 
-            jobsPath.resolve("import.bat").writeText(fileContent)
-            // check for OS
-            //return jobsPath.resolve("import.bat").toString()
+            jobsPath.resolve("import.bat").writeText(fileContentWin)
+
+            val fileContentUnix = unixScript.replace("%postgresqlBinDirectory%", config.propertyOrNull("ktor.database.postgresqlBinDirectory")?.getString() ?:"")
+                .replace("%uploadDirectory%", jobsPath.toString())
+                .replace("%tifFileName%", fileName)
+                .replace("%tableName%", "table_$tmpName")
+                .replace ("%connection%", connStr)
+                .replace ("%id%", id.toString())
+
+            jobsPath.resolve("import.sh").writeText(fileContentUnix)
+
             return jobsPath
         }
 

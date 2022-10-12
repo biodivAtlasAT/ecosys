@@ -36,8 +36,13 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
         post("/uploadAction") {
             val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
+
+            val rasterDataFolder = File(dataCacheDirectory).resolve("rasterData")
+            if (!File("$rasterDataFolder").exists()) File("$rasterDataFolder").mkdir()
+
             val cachePath = File(dataCacheDirectory).resolve("rasterData").resolve("uploads")
             if (!File("$cachePath").exists()) File("$cachePath").mkdir()
+
             val tmpName = RasterUpload.genTempName()
             if (!File("$cachePath/$tmpName").exists()) File("$cachePath/$tmpName").mkdir()
 
@@ -88,7 +93,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                     onColumn = TableRasterTasks.uploadedRasterDataId, otherColumn = TableUploadedRasterData.id,
                     joinType = JoinType.INNER)
 
-                val res = complexJoin.selectAll().orderBy(TableRasterTasks.start, SortOrder.DESC).limit(40)
+                val res = complexJoin.selectAll().orderBy(TableRasterTasks.start, SortOrder.DESC).limit(100)
                 res.forEach {
                     val ende = it[TableRasterTasks.end]
                     var endeStr: String? = null
