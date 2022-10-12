@@ -85,9 +85,14 @@ CREATE TABLE IF NOT EXISTS public.raster_data
     raster_task_id integer,
     uploaded_raster_data_id integer,
     data_complete boolean,
-    statistics jsonb,
+    statistics character varying(128),
     PRIMARY KEY (id)
     );
+
+CREATE INDEX IF NOT EXISTS raster_data_st_convexhull_idx
+    ON public.raster_data USING gist
+        (st_convexhull(rast))
+    TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.services
     ADD CONSTRAINT categories_id_fkey FOREIGN KEY (category_id)

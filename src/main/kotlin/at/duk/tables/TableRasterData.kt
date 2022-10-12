@@ -1,5 +1,6 @@
 package at.duk.tables
 
+import freemarker.core.JSONOutputFormat
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 
@@ -14,4 +15,5 @@ object TableRasterData: IntIdTable("raster_data") {
         val packageId: Column<Int?> = integer("package_id").nullable()
         val rasterTaskId: Column<Int?> = integer("raster_task_id").nullable()
         val uploadedRasterDataId: Column<Int?> = integer("uploaded_raster_data_id").nullable()
+        val statistics: Column<String?> = varchar("statistics", 128).nullable()
 }

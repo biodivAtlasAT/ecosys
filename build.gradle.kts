@@ -66,6 +66,7 @@ dependencies {
     implementation ("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation ("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.bkahlert:koodies:1.6.2")
+    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.1")
 
 
 

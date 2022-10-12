@@ -1,9 +1,11 @@
 package at.duk.services
 
+import at.duk.tables.TablePackages
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableRasterTasks
 import at.duk.tables.TableRasterTasks.uploadedRasterDataId
 import at.duk.tables.TableUploadedRasterData
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.server.config.*
 import koodies.exec.Process
 import koodies.exec.error
@@ -11,7 +13,9 @@ import koodies.exec.exitCode
 import koodies.shell.ShellScript
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Paths
@@ -23,6 +27,8 @@ class RasterUpload {
         private const val windowsScript = "\"%postgresqlBinDirectory%\\raster2pgsql\" -b 1 -F -I -C -s 4326 " +
                 "\"%uploadDirectory%\\%tifFileName%\" public.%tableName% > %uploadDirectory%\\rasterImport.sql\n" +
                 "\"%postgresqlBinDirectory%\\psql\" -f %uploadDirectory%\\rasterImport.sql %connection%"
+
+        val mapper = jacksonObjectMapper()
 
         fun uploadIntoRasterTasks(
             fileName: String,
@@ -121,7 +127,17 @@ class RasterUpload {
                         " AND $tmpTableName.rid = 1"
                 exec(sql)
 
-                // todo: calculate quintils for raster_data based on column rast, saved as jsonb
+                // calculate quintils for raster_data based on column rast, saved as json in a varchar
+                val sqlStatistics = "SELECT ST_Quantile(rast, 1, true, ARRAY[0.2,0.4,0.6,0.8])::Text As pvq FROM raster_data r WHERE id=${rasterDataId};"
+                val quints = mutableMapOf<Double, Double>()
+                exec(sqlStatistics) { rs ->
+                    while(rs.next()) {
+                        // Result is string of record "(0.2,8)"
+                        val pvq = rs.getString("pvq")
+                        val withoutBracketsParts = pvq.replace("(", "").replace(")","").split(",")
+                        quints[withoutBracketsParts[0].toDouble()] = withoutBracketsParts[1].toDouble()
+                    }
+                }
 
                 TableRasterTasks.update ({ TableRasterTasks.id eq rasterTasksId }) { table ->
                     table[imported] = true
@@ -130,7 +146,12 @@ class RasterUpload {
                 TableRasterData.update ({ TableRasterData.id eq rasterDataId }) {
                     it[TableRasterData.uploadedRasterDataId] = uploadedRasterDataId
                     it[TableRasterData.rasterTaskId] = rasterTasksId
+                    it[TableRasterData.statistics] = mapper.writeValueAsString(quints)
                 }
+
+                val sqlVacuum = "VACUUM ANALYZE raster_data;"
+                exec(sqlVacuum)
+
             }
             return rasterDataId
         }
