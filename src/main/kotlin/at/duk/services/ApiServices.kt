@@ -25,11 +25,12 @@ class ApiServices {
                     while (rs.next()) {
                         if (lastServiceId != rs.getInt("service_id")) {
                             if (lastServiceId != -1)
-                                result[rs.getInt("service_id")] = lastListofPoints.toMutableList()
+                                result[lastServiceId] = lastListofPoints.toMutableList()
                             lastListofPoints.clear()
                             lastServiceId = rs.getInt("service_id")
                         }
-                        lastListofPoints.add(RasterServiceVal(rs.getDouble("v"), rs.getString("statistics"), rs.getString("dimension")))
+                        val v = if (rs.getObject("v") == null) null else rs.getDouble("v")
+                        lastListofPoints.add(RasterServiceVal(v, rs.getString("statistics"), rs.getString("dimension")))
                     }
                     if (lastServiceId != -1)
                         result[lastServiceId] = lastListofPoints.toMutableList()
