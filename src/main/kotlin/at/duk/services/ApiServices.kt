@@ -1,24 +1,21 @@
 package at.duk.services
 
-import at.duk.models.RasterDataRequest
-import at.duk.models.RasterDataResponse
-import at.duk.models.RasterServiceVal
-import at.duk.models.RasterServiceVals
+import at.duk.models.*
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class ApiServices {
     companion object {
 
-        fun generateRasterDataResponseResponse(rasterDataRequest: RasterDataRequest): RasterDataResponse {
-            var str = ""
+        private val mapper = jacksonObjectMapper()
+        fun generateRasterDataResponseResponse(rasterDataRequest: RasterDataRequest): String {
 
             checkServiceIDsagainstPackageID(rasterDataRequest)
-            // 2. union statement for every coord for every raster_data
+
             val unionStatementsql = generateUnionStatement(rasterDataRequest)
-print ("--->: $unionStatementsql")
             var lastServiceId = -1
             val lastListofPoints = mutableListOf<RasterServiceVal>()
             val result = mutableMapOf<Int, MutableList<RasterServiceVal>>()
@@ -39,7 +36,6 @@ print ("--->: $unionStatementsql")
                 }
 
                 TableServices.select { TableServices.deleted eq null }.forEach {
-                    println("!!! : ${it[TableServices.id].value}")
                     if (result.containsKey(it[TableServices.id].value)) {
                         val l = result[it[TableServices.id]!!.value] ?: emptyList<RasterServiceVal>().toMutableList()
                         serviceList.add(
@@ -47,12 +43,9 @@ print ("--->: $unionStatementsql")
                     }
                 }
             }
-println("=======> $result")
-            // {1=[RasterServiceVal(val=0.0, statistics={"0.2":31.0,"0.4":128.0,"0.6":128.0,"0.8":128.0}), RasterServiceVal(val=0.0, statistics={"0.2":31.0,"0.4":128.0,"0.6":128.0,"0.8":128.0})]}
-println("=======> $serviceList")
-//            [RasterServiceVals(id=1, vals=[RasterServiceVal(val=0.0, statistics={"0.2":31.0,"0.4":128.0,"0.6":128.0,"0.8":128.0}, dimension=kg), RasterServiceVal(val=0.0, statistics={"0.2":31.0,"0.4":128.0,"0.6":128.0,"0.8":128.0}, dimension=kg)], svg=static/svg/nahrung.svg, dim=kg)]
 
-            return RasterDataResponse(serviceList)
+            return mapper.writeValueAsString(EcosysRasterDataResponse(ResponseError(0, ""), RasterDataResponse(serviceList)))
+
         }
 
         // Removes possible serviceIDs if they not belonging zo the given packageID
@@ -71,11 +64,6 @@ println("=======> $serviceList")
         }
 
         private fun generateUnionStatement(rasterDataRequest: RasterDataRequest): String {
-            /*select 1 as pointId, id, service_id, ST_Value(rast, ST_SetSRID(ST_MakePoint(15.8631722, 48.4062342), 4326)) as v
-            from raster_data where service_id in (3, 4) union all select  2 as pointId, id, service_id,ST_Value(rast, ST_SetSRID(ST_MakePoint(15.9631722, 48.5062342), 4326)) as v
-            from raster_data where service_id in (3, 4) union all select  3 as pointId, id, service_id,ST_Value(rast, ST_SetSRID(ST_MakePoint(15.7631722, 48.3062342), 4326)) as v
-            from raster_data where service_id in (3, 4);*/
-
             val selStmtList = mutableListOf<String>()
             rasterDataRequest.coordsList.forEachIndexed { index, pair ->
                 selStmtList.add("Select $index as pointId, dimension, statistics, id, service_id, ST_Value(rast, ST_SetSRID(ST_MakePoint(${pair.first}, ${pair.second}), 4326)) as v " +

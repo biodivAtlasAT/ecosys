@@ -1,6 +1,8 @@
 package at.duk.routes
 
+import at.duk.models.EcosysRasterDataResponse
 import at.duk.models.RasterDataRequest
+import at.duk.models.ResponseError
 import at.duk.services.ApiServices
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.http.*
@@ -34,18 +36,7 @@ fun Route.apiRouting() {
                 if (!it.reqDataExists())
                     call.respondText(badRequestData, ContentType.parse("application/json"), HttpStatusCode.OK)
             }
-
-/*            if (packageID != null && coordsList.isNotEmpty() && services != null) {
-                str = "{'error': {'no': 0,'msg': ''},'data': [{'id': 1, 'vals': [{'val': '13.234','quantil': '2'}, {'val': '19.8','quantil': '4'}],'svg':'./svg/sport.svg','dim': 'km'},{'id': 4,'vals': [{'val': '43.234','quantil': '3'},{'val': '49.8','quantil': '4'}],'svg': './svg/wasser.svg','dim': 'm3'},{'id': 5,'vals': [{'val': '53.234','quantil': '0'},{'val': '59.8','quantil': '1'}],'svg': './svg/nahrung.svg','dim': ''}]}"
-            }*/
-            val respJson = ApiServices.generateRasterDataResponseResponse(reqParam)
-            val mapper = jacksonObjectMapper()
-            val str = mapper.writeValueAsString(respJson)
-println("STR: $str")
-            call.respondText(str, ContentType.parse("application/json"), HttpStatusCode.OK)
-
-            //val str = "{'error': {'no': 0,'msg': ''},'data': [{'id': 1, 'vals': [{'val': '13.234','quantil': '2'}, {'val': '19.8','quantil': '4'}],'svg':'./svg/sport.svg','dim': 'km'},{'id': 4,'vals': [{'val': '43.234','quantil': '3'},{'val': '49.8','quantil': '4'}],'svg': './svg/wasser.svg','dim': 'm3'},{'id': 5,'vals': [{'val': '53.234','quantil': '0'},{'val': '59.8','quantil': '1'}],'svg': './svg/nahrung.svg','dim': ''}]}"
-            //call.respondText(str, ContentType.parse("application/json"), HttpStatusCode.OK)
+            call.respondText(ApiServices.generateRasterDataResponseResponse(reqParam), ContentType.parse("application/json"), HttpStatusCode.OK)
         }
     }
 }
