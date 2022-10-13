@@ -1,11 +1,17 @@
 package at.duk.routes
 
+import at.duk.models.RasterDataRequest
+import at.duk.services.ApiServices
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.apiRouting() {
+
+    val badRequestData = "{'error':{'no':2,'msg':'Parameters not valid!'}}"
+
     route("/api") {
         get("/packages") {
             // dummy response
@@ -22,21 +28,24 @@ fun Route.apiRouting() {
             call.respondText(str, ContentType.parse("application/json"), HttpStatusCode.OK)
         }
 
-        post("/rasterData") {
-            var str = "{'error':{'no':2,'msg':'Parameters not valid!'}}"
-            val packageID = call.request.queryParameters["packageID"]
-            val services = call.request.queryParameters["services"]?.replace("[","")?. replace("]","")?.split(",")?.toList()
-            val coords = call.request.queryParameters["coords"]?.replace("[","")?. replace("]","")?.split(",")?.toList()
-            val coordsList: MutableList<Pair<String, String>> = emptyList<Pair<String, String>>().toMutableList()
-            coords?.forEach {
-                val lng_lat = it.replace("(","").replace(")","").split("/")
-                if (lng_lat.size == 2)
-                    coordsList.add(Pair(lng_lat[0], lng_lat[1]))
+        get("/rasterData") {
+            val reqParam = RasterDataRequest(call.request).also {
+                it.initCoordsList()
+                if (!it.reqDataExists())
+                    call.respondText(badRequestData, ContentType.parse("application/json"), HttpStatusCode.OK)
             }
-            if (packageID != null && coordsList.isNotEmpty() && services != null) {
+
+/*            if (packageID != null && coordsList.isNotEmpty() && services != null) {
                 str = "{'error': {'no': 0,'msg': ''},'data': [{'id': 1, 'vals': [{'val': '13.234','quantil': '2'}, {'val': '19.8','quantil': '4'}],'svg':'./svg/sport.svg','dim': 'km'},{'id': 4,'vals': [{'val': '43.234','quantil': '3'},{'val': '49.8','quantil': '4'}],'svg': './svg/wasser.svg','dim': 'm3'},{'id': 5,'vals': [{'val': '53.234','quantil': '0'},{'val': '59.8','quantil': '1'}],'svg': './svg/nahrung.svg','dim': ''}]}"
-            }
+            }*/
+            val respJson = ApiServices.generateRasterDataResponseResponse(reqParam)
+            val mapper = jacksonObjectMapper()
+            val str = mapper.writeValueAsString(respJson)
+println("STR: $str")
             call.respondText(str, ContentType.parse("application/json"), HttpStatusCode.OK)
+
+            //val str = "{'error': {'no': 0,'msg': ''},'data': [{'id': 1, 'vals': [{'val': '13.234','quantil': '2'}, {'val': '19.8','quantil': '4'}],'svg':'./svg/sport.svg','dim': 'km'},{'id': 4,'vals': [{'val': '43.234','quantil': '3'},{'val': '49.8','quantil': '4'}],'svg': './svg/wasser.svg','dim': 'm3'},{'id': 5,'vals': [{'val': '53.234','quantil': '0'},{'val': '59.8','quantil': '1'}],'svg': './svg/nahrung.svg','dim': ''}]}"
+            //call.respondText(str, ContentType.parse("application/json"), HttpStatusCode.OK)
         }
     }
 }

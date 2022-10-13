@@ -11,5 +11,4 @@ object TableServices: IntIdTable("services") {
     val deleted = datetime("deleted").nullable()
     val categoryId = TableServices.integer("category_id")
     val svgPath = TableServices.varchar("svg_path", length = 512)
-
 }
