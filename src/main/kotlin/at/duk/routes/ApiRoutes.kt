@@ -22,11 +22,11 @@ fun Route.apiRouting() {
         }
 
         get("/services") {
-            var str = "{'error':{'no':1,'msg':'packageID not valid!'}}"
-            if (call.request.queryParameters["packageID"] == "1") {
-                str =
-                    "{'error':{'no':0,'msg':''},'services':[{'id':0,'category':{'id':0,'name':'Kulturelle Ökosystemleistungen'},'name':'Sport, Spiel'},{'id':1,'category':{'id':0,'name':'Kulturelle Ökosystemleistungen'},'name':'Erholung'},{'id':2,'category':{'id':1,'name':'Versorgende Ökosystemleistungen'},'name':'Nahrungsmittel, Ernten, Sammeln'},{'id':3,'category':{'id':1,'name':'Versorgende Ökosystemleistungen'},'name':'Trinkwasser'},{'id':4,'category':{'id':2,'name':'Regulierende Ökosystemleistungen'},'name':'Wasserrückhalt'},{'id':5,'category':{'id':2,'name':'Regulierende Ökosystemleistungen'},'name':'Bestäubungspotenzial'},{'id':6,'category':{'id':2,'name':'Regulierende Ökosystemleistungen'},'name':'Beschattung'}]}"
+            call.request.queryParameters["packageID"]?.toIntOrNull()?.let {
+                call.respondText(ApiServices.generateServiceResponse(it), ContentType.parse("application/json"), HttpStatusCode.OK)
+                return@get
             }
+            val str = "{'error':{'no':1,'msg':'no packageID found!'}}"
             call.respondText(str, ContentType.parse("application/json"), HttpStatusCode.OK)
         }
 

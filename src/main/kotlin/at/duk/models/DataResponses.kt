@@ -42,5 +42,5 @@ data class ResponseError(val id: Int, val msg: String)
 @Serializable
 data class EcosysRasterDataResponse(val no: ResponseError, val data: RasterDataResponse )
 
-
-
+@Serializable
+data class EcosysServiceDataResponse(val no: ResponseError, val services: List<ServiceData> )

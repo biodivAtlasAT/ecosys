@@ -11,6 +11,29 @@ class ApiServices {
     companion object {
 
         private val mapper = jacksonObjectMapper()
+
+        fun generateServiceResponse(packageId: Int): String {
+            val sql = "select s.id as service_id, s.name as service_name, s.category_id as category_id, c.name as category_name from services s, categories c where" +
+                    " s.id in (select distinct (service_id) from raster_data where package_id = 1)" +
+                    " and s.deleted is null and s.category_id = c.id;"
+
+            val categoryList: MutableMap<Int, CategoryData> = emptyMap<Int, CategoryData>().toMutableMap()
+            val serviceList: MutableList<ServiceData> = emptyList<ServiceData>().toMutableList()
+
+            transaction {
+                exec(sql) { rs ->
+                    while (rs.next()) {
+                        if (!categoryList.containsKey(rs.getInt("category_id")))
+                            categoryList[rs.getInt("category_id")] =
+                                CategoryData(rs.getInt("category_id"), rs.getString("category_name"))
+                        val category = categoryList[rs.getInt("category_id")]!!
+                        serviceList.add(ServiceData(rs.getInt("service_id"), rs.getString("service_name"), category))
+                        }
+                    }
+                }
+            return mapper.writeValueAsString(EcosysServiceDataResponse(ResponseError(0, ""), serviceList))
+        }
+
         fun generateRasterDataResponseResponse(rasterDataRequest: RasterDataRequest): String {
 
             checkServiceIDsagainstPackageID(rasterDataRequest)
