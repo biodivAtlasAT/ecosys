@@ -79,7 +79,7 @@ class ApiServices {
                 }
             }
 
-            return mapper.writeValueAsString(EcosysRasterDataResponse(ResponseError(0, ""), RasterDataResponse(serviceList)))
+            return mapper.writeValueAsString(EcosysRasterDataResponse(ResponseError(0, ""), serviceList))
 
         }
 
@@ -102,7 +102,7 @@ class ApiServices {
             val selStmtList = mutableListOf<String>()
             rasterDataRequest.coordsList.forEachIndexed { index, pair ->
                 selStmtList.add("Select $index as pointId, dimension, statistics, id, service_id, ST_Value(rast, ST_SetSRID(ST_MakePoint(${pair.first}, ${pair.second}), 4326)) as v " +
-                    "from raster_data where service_id in ${rasterDataRequest.services!!.joinToString(separator = ",", prefix = "(", postfix = ")") { it.toString() }}")
+                    "from raster_data where data_complete is true and service_id in ${rasterDataRequest.services!!.joinToString(separator = ",", prefix = "(", postfix = ")") { it.toString() }}")
             }
             return selStmtList.joinToString(separator = " union all ", postfix = " order by service_id, pointId") { it }
         }
