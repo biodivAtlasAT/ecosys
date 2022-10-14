@@ -84,7 +84,7 @@ class ApiServices {
 
         }
 
-        // Removes possible serviceIDs if they not belonging zo the given packageID
+        // Removes possible serviceIDs if they do not belong to the given packageID
         fun checkServiceIDsagainstPackageID(rasterDataRequest: RasterDataRequest) {
             val idsToDelete = rasterDataRequest.services?.toMutableList() ?: emptyList<Int>().toMutableList()
             transaction {
