@@ -37,10 +37,13 @@ data class RasterServiceVal(@JsonProperty val `val`: Double?, @JsonIgnore val st
 }
 
 @Serializable
-data class ResponseError(val id: Int, val msg: String)
+data class ResponseError(val no: Int, val msg: String)
 
 @Serializable
-data class EcosysRasterDataResponse(val no: ResponseError, val data: RasterDataResponse )
+data class EcosysRasterDataResponse(val error: ResponseError, val data: RasterDataResponse )
 
 @Serializable
-data class EcosysServiceDataResponse(val no: ResponseError, val services: List<ServiceData> )
+data class EcosysServiceDataResponse(val error: ResponseError, val services: List<ServiceData> )
+
+@Serializable
+data class EcosysPackageDataResponse(val error: ResponseError, val packages: List<PackageData> )

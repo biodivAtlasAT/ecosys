@@ -16,9 +16,7 @@ fun Route.apiRouting() {
 
     route("/api") {
         get("/packages") {
-            // dummy response
-            val str = "{ 'error': { 'no': 0, 'msg': '' }, 'packages': [{ 'id': 1, 'name': 'Daten für das Jahr 2021', 'default': true }, {'id': 2, 'name': 'Datenlieferung von ZAMG 2015', 'default': false } "
-            call.respondText(str, ContentType.parse("application/json"), HttpStatusCode.OK)
+            call.respondText(ApiServices.generatePackageResponse(), ContentType.parse("application/json"), HttpStatusCode.OK)
         }
 
         get("/services") {

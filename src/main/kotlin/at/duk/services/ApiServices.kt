@@ -1,6 +1,7 @@
 package at.duk.services
 
 import at.duk.models.*
+import at.duk.tables.TablePackages
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -12,9 +13,19 @@ class ApiServices {
 
         private val mapper = jacksonObjectMapper()
 
+        fun generatePackageResponse(): String{
+            val packageList: MutableList<PackageData> = emptyList<PackageData>().toMutableList()
+            transaction {
+                TablePackages.select { TablePackages.deleted eq null }.forEach { rs ->
+                    packageList.add(PackageData(rs[TablePackages.id].value, rs[TablePackages.name], rs[TablePackages.default]))
+                }
+            }
+            return mapper.writeValueAsString(EcosysPackageDataResponse(ResponseError(0, ""), packageList))
+        }
+
         fun generateServiceResponse(packageId: Int): String {
             val sql = "select s.id as service_id, s.name as service_name, s.category_id as category_id, c.name as category_name from services s, categories c where" +
-                    " s.id in (select distinct (service_id) from raster_data where package_id = 1)" +
+                    " s.id in (select distinct (service_id) from raster_data where package_id = $packageId)" +
                     " and s.deleted is null and s.category_id = c.id;"
 
             val categoryList: MutableMap<Int, CategoryData> = emptyMap<Int, CategoryData>().toMutableMap()
