@@ -25,7 +25,6 @@ data class RasterServiceVal(@JsonProperty val `val`: Double?, @JsonIgnore val st
             quantil = limits.size  // sets max
             run breaking@{
                 limits.map { it.value }.forEachIndexed { index, ele ->
-                    println("$index: $ele")
                     if (it <= ele) {
                         quantil = index
                         return@breaking

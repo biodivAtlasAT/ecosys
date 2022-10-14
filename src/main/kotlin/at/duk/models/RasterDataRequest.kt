@@ -5,7 +5,7 @@ import io.ktor.server.request.*
 
 class RasterDataRequest(request: ApplicationRequest) {
     val packageID = request.queryParameters["packageID"]?.toIntOrNull()
-    val services = request.queryParameters["services"]?.replace("[","")?. replace("]","")?.split(",")?.map { it.toInt() }?.toMutableList()
+    var services = request.queryParameters["services"]?.replace("[","")?. replace("]","")?.split(",")?.map { it.toInt() }?.toMutableList()
     val coords = request.queryParameters["coords"]?.replace("[","")?. replace("]","")?.split(",")?.toList()
     val coordsList: MutableList<Pair<Double, Double>> = emptyList<Pair<Double, Double>>().toMutableList()
 
@@ -18,7 +18,10 @@ class RasterDataRequest(request: ApplicationRequest) {
                 lng?.let { lat?.let { coordsList.add(Pair(lng, lat)) }} }
             }
         }
+    fun initServicesList() {
+        services = services?: listOf(-1).toMutableList()
+    }
 
-    fun reqDataExists() = (packageID != null && services != null && services.isNotEmpty() && coordsList.isNotEmpty())
+    fun reqDataExists() = (packageID != null && services != null && services!!.isNotEmpty() && coordsList.isNotEmpty())
 
 }

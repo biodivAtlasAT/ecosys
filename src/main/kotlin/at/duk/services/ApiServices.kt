@@ -54,6 +54,7 @@ class ApiServices {
             val lastListofPoints = mutableListOf<RasterServiceVal>()
             val result = mutableMapOf<Int, MutableList<RasterServiceVal>>()
             val serviceList = mutableListOf<RasterServiceVals>()
+            rasterDataRequest.services
             transaction {
                 exec(unionStatementsql) { rs ->
                     while (rs.next()) {
@@ -96,6 +97,8 @@ class ApiServices {
                 }
             }
             rasterDataRequest.services?.removeAll(idsToDelete)
+            // add only for select statement "in"
+            if (rasterDataRequest.services?.isEmpty() == true) rasterDataRequest.services!!.add(-1)
         }
 
         private fun generateUnionStatement(rasterDataRequest: RasterDataRequest): String {

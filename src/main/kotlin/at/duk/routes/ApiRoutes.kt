@@ -31,6 +31,7 @@ fun Route.apiRouting() {
         get("/rasterData") {
             val reqParam = RasterDataRequest(call.request).also {
                 it.initCoordsList()
+                it.initServicesList()
                 if (!it.reqDataExists())
                     call.respondText(badRequestData, ContentType.parse("application/json"), HttpStatusCode.OK)
             }
