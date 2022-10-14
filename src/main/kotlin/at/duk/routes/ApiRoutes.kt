@@ -28,7 +28,7 @@ fun Route.apiRouting() {
             call.respondText(str, ContentType.parse("application/json"), HttpStatusCode.OK)
         }
 
-        get("/rasterData") {
+        post("/rasterData") {
             val reqParam = RasterDataRequest(call.request).also {
                 it.initCoordsList()
                 it.initServicesList()
