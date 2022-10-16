@@ -2,6 +2,7 @@ package at.duk.routes
 
 import at.duk.models.CategoryData
 import at.duk.services.AdminServices
+import at.duk.services.RasterServices
 import at.duk.tables.TableCategories
 import at.duk.tables.TableServices
 import io.ktor.server.application.*
@@ -33,6 +34,7 @@ fun Route.adminRouting(config: ApplicationConfig) {
                     TableServices.select { TableServices.deleted eq null }.map { rs -> rs[TableServices.categoryId]}
                 )
             }
+
             call.respond(
                 FreeMarkerContent(
                     "02_Categories.ftl",
@@ -42,7 +44,13 @@ fun Route.adminRouting(config: ApplicationConfig) {
         }
 
         post("/categoryUpdate") {
-            AdminServices.categoryUpdate(call.receiveParameters())
+            val formParameters = call.receiveParameters()
+            when(formParameters["mode"]?.toIntOrNull()?:-1) {
+                0 -> if (formParameters["name"] != "")
+                        AdminServices.categoryInsertOrUpdate(formParameters)
+                1 -> AdminServices.categoryDelete(formParameters)
+                else -> { }
+            }
             call.respondRedirect("./categories")
         }
 

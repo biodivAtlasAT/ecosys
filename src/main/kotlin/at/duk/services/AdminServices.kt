@@ -16,37 +16,31 @@ import java.time.LocalDateTime
 
 class AdminServices {
     companion object {
-        fun categoryUpdate(formParameters: Parameters) {
-            val mode = formParameters["mode"]?.toIntOrNull()?:-1
-
-            if(mode == 0 && formParameters["name"] != "")
-                formParameters["name"]?.let { name ->
-                    formParameters["id"]?.toIntOrNull().let { id ->
-                        transaction {
-                            if (id == -1)
-                                TableCategories.insert {
-                                    it[TableCategories.name] = name
-                                    it[TableCategories.created] = LocalDateTime.now()
-                                }
-                            else
-                                TableCategories.update({ TableCategories.id eq id }) {
-                                    it[TableCategories.name] = name
-                                    it[TableCategories.updated] = LocalDateTime.now()
-                                }
-                        }
-                    }
+        fun categoryDelete(formParameters: Parameters) = formParameters["id"]?.toIntOrNull().let { id ->
+            transaction {
+                TableCategories.update({ TableCategories.id eq id }) {
+                    it[TableCategories.deleted] = LocalDateTime.now()
                 }
-            if (mode == 1)
-                formParameters["mode"]?.let {
-                    formParameters["id"]?.toIntOrNull().let { id ->
-                        transaction {
-                            TableCategories.update({ TableCategories.id eq id }) {
-                                it[TableCategories.deleted] = LocalDateTime.now()
-                            }
-                        }
-                    }
-                }
-
+            }
         }
+
+        fun categoryInsertOrUpdate(formParameters: Parameters) = formParameters["name"]?.let { name ->
+            formParameters["id"]?.toIntOrNull().let { id ->
+                transaction {
+                    if (id == -1)
+                        TableCategories.insert {
+                            it[TableCategories.name] = name
+                            it[TableCategories.created] = LocalDateTime.now()
+                        }
+                    else
+                        TableCategories.update({ TableCategories.id eq id }) {
+                            it[TableCategories.name] = name
+                            it[TableCategories.updated] = LocalDateTime.now()
+                        }
+                }
+            }
+        }
+
+
     }
 }

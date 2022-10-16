@@ -181,15 +181,6 @@ class RasterServices {
             return rasterDataId
         }
 
-
-        fun packageUpdate(formParameters: Parameters) =
-            when(formParameters["mode"]?.toIntOrNull()?:-1) {
-                0 -> if (formParameters["name"] != "")
-                        packageInsertOrUpdate(formParameters, formParameters["default"]?.toBoolean()?:false) else {}
-                1 -> packageDelete(formParameters)
-                else -> { }
-            }
-
         fun packageDelete(formParameters: Parameters) = formParameters["mode"]?.let {
             formParameters["id"]?.toIntOrNull().let { id ->
                 transaction {

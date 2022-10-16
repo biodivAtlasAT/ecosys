@@ -47,7 +47,6 @@ fun Route.rasterRouting(config: ApplicationConfig) {
         }
         post("/packageUpdate") {
             val formParameters = call.receiveParameters()
-
             when(formParameters["mode"]?.toIntOrNull()?:-1) {
                 0 -> if (formParameters["name"] != "")
                         RasterServices.packageInsertOrUpdate(formParameters,formParameters["default"]?.toBoolean() ?: false)
