@@ -1,12 +1,9 @@
 package at.duk.routes
 
 import at.duk.models.CategoryData
-import at.duk.services.AdminService
-import at.duk.services.AdminService.Companion.categoryUpdate
+import at.duk.services.AdminServices
 import at.duk.tables.TableCategories
-import at.duk.tables.TableRasterTasks
 import at.duk.tables.TableServices
-import at.duk.tables.TableUploadedRasterData
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
@@ -15,7 +12,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDateTime
 
 fun Route.adminRouting(config: ApplicationConfig) {
     route("/admin") {
@@ -46,7 +42,7 @@ fun Route.adminRouting(config: ApplicationConfig) {
         }
 
         post("/categoryUpdate") {
-            AdminService.categoryUpdate(call.receiveParameters())
+            AdminServices.categoryUpdate(call.receiveParameters())
             call.respondRedirect("./categories")
         }
 

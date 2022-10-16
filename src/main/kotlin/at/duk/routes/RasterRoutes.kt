@@ -1,11 +1,9 @@
 package at.duk.routes
 
-import at.duk.models.CategoryData
 import at.duk.models.PackageData
 import at.duk.models.RasterData
 import at.duk.models.RasterTask
-import at.duk.services.AdminService
-import at.duk.services.RasterUpload
+import at.duk.services.RasterServices
 import at.duk.tables.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -18,11 +16,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
-import java.nio.charset.Charset
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
 
@@ -54,8 +50,8 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
             when(formParameters["mode"]?.toIntOrNull()?:-1) {
                 0 -> if (formParameters["name"] != "")
-                        RasterUpload.packageInsertOrUpdate(formParameters,formParameters["default"]?.toBoolean() ?: false)
-                1 -> RasterUpload.packageDelete(formParameters)
+                        RasterServices.packageInsertOrUpdate(formParameters,formParameters["default"]?.toBoolean() ?: false)
+                1 -> RasterServices.packageDelete(formParameters)
                 else -> { }
             }
             call.respondRedirect("./packages")
@@ -75,7 +71,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             val cachePath = File(dataCacheDirectory).resolve("rasterData").resolve("uploads")
             if (!File("$cachePath").exists()) File("$cachePath").mkdir()
 
-            val tmpName = RasterUpload.genTempName()
+            val tmpName = RasterServices.genTempName()
             if (!File("$cachePath/$tmpName").exists()) File("$cachePath/$tmpName").mkdir()
 
             val multipartData = call.receiveMultipart()
@@ -112,7 +108,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             }
 
             launch(Dispatchers.Default) {
-                RasterUpload.uploadIntoRasterTasks(fileName, config, tmpName, rasterTasksId)
+                RasterServices.uploadIntoRasterTasks(fileName, config, tmpName, rasterTasksId)
             }
             call.respondRedirect("./tasks")
         }
@@ -129,8 +125,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                 res.forEach {
                     val ende = it[TableRasterTasks.end]
                     var endeStr: String? = null
-                    if (ende != null)
-                        endeStr = ende.format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss"))
+                    endeStr = ende.format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss"))
 
                     result.add(RasterTask(it[TableRasterTasks.id].value,
                         it[TableRasterTasks.pid],
@@ -149,7 +144,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
         get("/tasksAction") {
             val rasterTasksId = call.request.queryParameters["rasterTasksId"]
             var rasterDataId = -1
-            rasterTasksId?.toInt()?.let { it1 -> rasterDataId = RasterUpload.importIntoRasterData(it1) }
+            rasterTasksId?.toInt()?.let { it1 -> rasterDataId = RasterServices.importIntoRasterData(it1) }
             if (rasterDataId > -1) {
                 // val res = TableRasterData.select { TableRasterData.id eq rasterDataId }.first()
                 call.respondRedirect("./$rasterDataId")

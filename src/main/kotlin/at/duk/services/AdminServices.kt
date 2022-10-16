@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
 
-class AdminService {
+class AdminServices {
     companion object {
         fun categoryUpdate(formParameters: Parameters) {
             val mode = formParameters["mode"]?.toIntOrNull()?:-1

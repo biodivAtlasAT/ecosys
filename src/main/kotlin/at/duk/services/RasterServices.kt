@@ -20,7 +20,7 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 
 
-class RasterUpload {
+class RasterServices {
     companion object {
         private val charPool : List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
@@ -43,7 +43,7 @@ class RasterUpload {
             try {
                 val osIsWin = System.getProperty("os.name").lowercase().contains("win")
                 val scriptName = if (osIsWin) "import.bat" else "import.sh"
-                val tmpFolder = generateScripts(config, tmpName, fileName, rasterTasksId.value, osIsWin)
+                val tmpFolder = generateScripts(config, tmpName, fileName, rasterTasksId.value)
 
                 if (!osIsWin)
                     ShellScript("chmod 777 ${tmpFolder.resolve(scriptName).toString()}").exec()
@@ -95,7 +95,7 @@ class RasterUpload {
             }
         }
 
-        private fun generateScripts(config: ApplicationConfig, tmpName: String, fileName: String, id: Int, osIsWin: Boolean): File {
+        private fun generateScripts(config: ApplicationConfig, tmpName: String, fileName: String, id: Int): File {
             val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
             val jobsPath = File(dataCacheDirectory).resolve("rasterData").resolve("uploads").resolve(tmpName)
 
