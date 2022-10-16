@@ -19,7 +19,7 @@ class AdminService {
         fun categoryUpdate(formParameters: Parameters) {
             val mode = formParameters["mode"]?.toIntOrNull()?:-1
 
-            if(mode == 0)
+            if(mode == 0 && formParameters["name"] != "")
                 formParameters["name"]?.let { name ->
                     formParameters["id"]?.toIntOrNull().let { id ->
                         transaction {

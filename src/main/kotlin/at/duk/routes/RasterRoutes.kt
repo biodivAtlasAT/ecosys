@@ -1,7 +1,10 @@
 package at.duk.routes
 
+import at.duk.models.CategoryData
+import at.duk.models.PackageData
 import at.duk.models.RasterData
 import at.duk.models.RasterTask
+import at.duk.services.AdminService
 import at.duk.services.RasterUpload
 import at.duk.tables.*
 import io.ktor.http.content.*
@@ -27,8 +30,37 @@ fun Route.rasterRouting(config: ApplicationConfig) {
     route("/admin/raster") {
 
         get("/packages") {
-            call.respond(FreeMarkerContent("04_Packages.ftl", null))
+            val idsInUse = mutableListOf<Int>()
+            val packagesList = mutableListOf<PackageData>()
+
+            transaction {
+                packagesList.addAll(
+                    TablePackages.select { TablePackages.deleted eq null }.orderBy(TablePackages.name)
+                        .map { rs -> PackageData(rs[TablePackages.id].value, rs[TablePackages.name], rs[TablePackages.default]) }
+                )
+                idsInUse.addAll(
+                    TableRasterData.selectAll().map { rs -> rs[TableRasterData.packageId]?:-1}
+                )
+            }
+            call.respond(
+                FreeMarkerContent(
+                    "04_Packages.ftl",
+                    mapOf("result" to packagesList, "maxCount" to packagesList.size, "idsInUse" to idsInUse.distinct())
+                )
+            )
         }
+        post("/packageUpdate") {
+            val formParameters = call.receiveParameters()
+
+            when(formParameters["mode"]?.toIntOrNull()?:-1) {
+                0 -> if (formParameters["name"] != "")
+                        RasterUpload.packageInsertOrUpdate(formParameters,formParameters["default"]?.toBoolean() ?: false)
+                1 -> RasterUpload.packageDelete(formParameters)
+                else -> { }
+            }
+            call.respondRedirect("./packages")
+        }
+
 
         get("/upload") {
             call.respond(FreeMarkerContent("05_RasterUpload.ftl", null))

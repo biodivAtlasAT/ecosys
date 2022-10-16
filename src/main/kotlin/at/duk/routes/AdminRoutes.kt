@@ -25,10 +25,6 @@ fun Route.adminRouting(config: ApplicationConfig) {
         }
 
         get("/categories") {
-            val complexJoin = Join(
-                TableCategories, TableServices,
-                onColumn = TableCategories.id, otherColumn = TableServices.categoryId,
-                joinType = JoinType.LEFT, additionalConstraint = { TableServices.id eq null })
             val idsInUse = mutableListOf<Int>()
             val categoriesList: MutableList<CategoryData> = emptyList<CategoryData>().toMutableList()
 
@@ -38,8 +34,7 @@ fun Route.adminRouting(config: ApplicationConfig) {
                         .map { rs -> CategoryData(rs[TableCategories.id].value, rs[TableCategories.name]) }
                 )
                 idsInUse.addAll(
-                    TableServices.select { TableServices.deleted eq null }
-                        .map { rs -> rs[TableServices.categoryId]}
+                    TableServices.select { TableServices.deleted eq null }.map { rs -> rs[TableServices.categoryId]}
                 )
             }
             call.respond(

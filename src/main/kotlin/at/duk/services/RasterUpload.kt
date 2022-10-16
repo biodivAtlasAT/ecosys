@@ -1,9 +1,8 @@
 package at.duk.services
 
-import at.duk.tables.TableRasterData
-import at.duk.tables.TableRasterTasks
-import at.duk.tables.TableUploadedRasterData
+import at.duk.tables.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.ktor.http.*
 import io.ktor.server.config.*
 import koodies.exec.CommandLine
 import koodies.exec.Process
@@ -13,10 +12,12 @@ import koodies.shell.ShellScript
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.EntityIDFactory
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Paths
+import java.time.LocalDateTime
 
 
 class RasterUpload {
@@ -178,6 +179,52 @@ class RasterUpload {
                 }
             }
             return rasterDataId
+        }
+
+
+        fun packageUpdate(formParameters: Parameters) =
+            when(formParameters["mode"]?.toIntOrNull()?:-1) {
+                0 -> if (formParameters["name"] != "")
+                        packageInsertOrUpdate(formParameters, formParameters["default"]?.toBoolean()?:false) else {}
+                1 -> packageDelete(formParameters)
+                else -> { }
+            }
+
+        fun packageDelete(formParameters: Parameters) = formParameters["mode"]?.let {
+            formParameters["id"]?.toIntOrNull().let { id ->
+                transaction {
+                    TablePackages.update({ TablePackages.id eq id }) {
+                        it[TablePackages.deleted] = LocalDateTime.now()
+                    }
+                }
+            }
+        }
+
+        fun packageInsertOrUpdate(formParameters: Parameters, defaultVal: Boolean) = formParameters["name"]?.let { name ->
+            formParameters["id"]?.toIntOrNull().let { id ->
+                transaction {
+                    if(defaultVal) {
+                        TablePackages.update({ TablePackages.default eq true }) {
+                            it[TablePackages.default] = false
+                        }
+                    }
+                    if (id == -1) {
+                        // for the initial case: one record must be default, even if not set in form!
+                        val defVal = (TablePackages.select { TablePackages.deleted eq null }.count() == 0L) || defaultVal
+                        TablePackages.insert {
+                            it[TablePackages.name] = name
+                            it[TablePackages.default] = defVal
+                            it[TablePackages.created] = LocalDateTime.now()
+                        }
+                    }
+                    else
+                        TablePackages.update({ TablePackages.id eq id }) {
+                            it[TablePackages.name] = name
+                            it[TablePackages.default] = defaultVal
+                            it[TablePackages.updated] = LocalDateTime.now()
+                        }
+                }
+            }
         }
 
     }
