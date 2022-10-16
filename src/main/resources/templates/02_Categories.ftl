@@ -33,7 +33,8 @@
                                 <input type="text" class="noClass" name="name_${prop.id}" id="name_${prop.id}" value="${prop.name}" disabled size="50" maxlength="128">
                                 <button id="bt_${prop.id}" class="btn btn-sm btn-outline-primary" style="margin-top:-4px" role="button" onclick='categoryEdit("${prop.id}", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordEdit}</button>
                             </td>
-                            <td><button id= "btDel_${prop.id}" class="btn btn-sm btn-outline-danger" role="button" onclick='categoryDelete("${prop.id}");'>${wordDelete}</button>
+                            <td>
+                                <button id= "btDel_${prop.id}" class="btn btn-sm btn-outline-danger" role="button" onclick='categoryDelete("${prop.id}", <#if idsInUse?seq_contains(prop.id)>true<#else>false</#if>);'>${wordDelete}</button>
                             </td>
                         </tr>
                     </#list>
@@ -78,6 +79,24 @@
             </div>
         </div>
     </div>
+
+<div class="modal fade" id="MessageModalNotAllowed" tabindex="-1" aria-labelledby="MessageModalNotAllowedLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Der Eintrag darf nicht gelöscht werden, da er noch einer (Ökosystem-)Leistung zugeordnet ist!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schlie&szlig;en</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 </body>
 </html>

@@ -4,13 +4,15 @@ function submit06(id) {
 }
 
 function categoryEdit(idx, maxCount, wordSave, wordEdit) {
-
+    // if the "save" button is clicked, submit the form
     if (document.getElementById("bt_"+idx).classList.contains("funcSave")) {
         document.getElementById("saveFormName").value = document.getElementById("name_"+idx).value
         document.getElementById("saveFormId").value = document.getElementById("id_"+idx).textContent
         document.getElementById("categorySave").submit();
     }
 
+    // get every input field (via the class name "noClass")
+    // and disable the fields
     let eles = document.getElementsByClassName("noClass");
     for (let i = 0; i < eles.length; i++) {
         eles[i].disabled = true;
@@ -25,6 +27,7 @@ function categoryEdit(idx, maxCount, wordSave, wordEdit) {
         if (calcId > -1)
             document.getElementById("btDel_" + calcId).style.visibility = "visible";
     }
+    // enable the input field and the button
     let inpId = "name_"+idx;
     document.getElementById(inpId).style.backgroundColor = '#CEE3F6';
     document.getElementById(inpId).disabled = false;
@@ -40,7 +43,15 @@ function categoryEdit(idx, maxCount, wordSave, wordEdit) {
 
 }
 
-function categoryDelete(idx) {
+function categoryDelete(idx, allowed) {
+    if (allowed) {
+        new bootstrap.Modal(document.getElementById('MessageModalNotAllowed'),
+            {
+                keyboard: false
+            }).show()
+        return;
+    }
+
     document.getElementById("saveFormId").value = document.getElementById("id_"+idx).textContent
     document.getElementById("saveFormMode").value = 1
     new bootstrap.Modal(document.getElementById('MessageModal'),
