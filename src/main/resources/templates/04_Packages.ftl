@@ -48,7 +48,7 @@
                     <tr>
                         <td><span id="id_-1" style="visibility:hidden;">-1</span></td>
                         <td>
-                            <input type="text" class="noClass" name="name_-1" id="name_-1" value="" size="50" maxlength="128">
+                            <input type="text" class="noClass" name="name_-1" id="name_-1" value="" size="50" maxlength="128"  style="background-color: #CEE3F6">
                         </td>
                         <td style="text-align:center">
                             <input type="radio" id="rb_-1" name="default">

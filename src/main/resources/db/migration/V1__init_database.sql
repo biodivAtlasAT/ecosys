@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS public.services
     updated timestamp without time zone DEFAULT null,
     deleted timestamp without time zone DEFAULT null,
     category_id integer NOT NULL,
-    svg_path character varying (512),
+    svg_path character varying (512) DEFAULT null,
+    original_svg_name character varying (128) DEFAULT null,
     CONSTRAINT id_unique UNIQUE (id)
     );
 

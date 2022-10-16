@@ -41,7 +41,7 @@
                     <tr>
                         <td><span id="id_-1" style="visibility:hidden;">-1</span></td>
                         <td>
-                            <input type="text" class="noClass" name="name_-1" id="name_-1" value="" size="50" maxlength="128">
+                            <input type="text" class="noClass" name="name_-1" id="name_-1" value="" size="50" maxlength="128" style="background-color: #CEE3F6">
                             <button id="bt_-1" style="margin-top:-4px" class="btn btn-sm btn-primary funcSave" role="button" onclick='categoryEdit("-1", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordSave}</button>
                         </td>
                         <td>&nbsp;

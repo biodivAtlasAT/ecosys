@@ -6,6 +6,7 @@ import at.duk.models.ResponseError
 import at.duk.tables.TableCategories
 
 import at.duk.tables.TablePackages
+import at.duk.tables.TableServices
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
@@ -36,6 +37,34 @@ class AdminServices {
                         TableCategories.update({ TableCategories.id eq id }) {
                             it[TableCategories.name] = name
                             it[TableCategories.updated] = LocalDateTime.now()
+                        }
+                }
+            }
+        }
+
+        fun serviceDelete(formParameters: Parameters) = formParameters["id"]?.toIntOrNull().let { id ->
+            transaction {
+                TableServices.update({ TableServices.id eq id }) {
+                    it[TableServices.deleted] = LocalDateTime.now()
+                }
+            }
+        }
+
+        fun serviceInsertOrUpdate(formParameters: Parameters) = formParameters["name"]?.let { name ->
+            val categoryId = formParameters["categoryId"]?.toIntOrNull()?:-1
+            formParameters["id"]?.toIntOrNull().let { id ->
+                transaction {
+                    if (id == -1)
+                        TableServices.insert {
+                            it[TableServices.name] = name
+                            it[TableServices.categoryId] = categoryId
+                            it[TableServices.created] = LocalDateTime.now()
+                        }
+                    else
+                        TableServices.update({ TableServices.id eq id }) {
+                            it[TableServices.name] = name
+                            it[TableServices.categoryId] = categoryId
+                            it[TableServices.updated] = LocalDateTime.now()
                         }
                 }
             }
