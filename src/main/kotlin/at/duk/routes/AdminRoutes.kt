@@ -140,7 +140,11 @@ fun Route.adminRouting(config: ApplicationConfig) {
                 }
             }
 
-            updateTableServices(uploadId,svgDataFolder, tmpFileName, fileName)
+            if (File(fileName).extension == "svg")
+                updateTableServices(uploadId, svgDataFolder, tmpFileName, fileName)
+            else
+                svgDataFolder.resolve(tmpFileName).delete()
+
             call.respondRedirect("./services")
         }
 

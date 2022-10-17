@@ -164,7 +164,7 @@
                     <div class="row">
                         <div class="col-md-2 m-2">Datei (*.svg):</div>
                         <div class="col-md-7 m-2">
-                            <input type="file" size="32" maxlength="512" name="filename">
+                            <input type="file" size="32" maxlength="512" name="filename" accept=".svg">
                             <input type="hidden" name="uploadId" id="uploadId" value="-1">
                         </div>
                     </div>
