@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.nio.file.Paths
 
+const val DUMMY_SVG_PATH = "static/svg/dummy.svg"
 
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)

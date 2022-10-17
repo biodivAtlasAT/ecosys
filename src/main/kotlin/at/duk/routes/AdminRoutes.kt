@@ -1,8 +1,11 @@
 package at.duk.routes
 
+import at.duk.DUMMY_SVG_PATH
 import at.duk.models.CategoryData
 import at.duk.models.ServiceData
 import at.duk.services.AdminServices
+import at.duk.services.AdminServices.Companion.resolveSVGPath
+import at.duk.services.RasterServices
 import at.duk.tables.TableCategories
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
@@ -17,9 +20,11 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Paths
+import java.time.LocalDateTime
 
 
 fun Route.adminRouting(config: ApplicationConfig) {
+
     route("/admin") {
         get("") {
 
@@ -70,7 +75,7 @@ fun Route.adminRouting(config: ApplicationConfig) {
                 servicesList.addAll(
                     TableServices.select { TableServices.deleted eq null }.orderBy(TableServices.name)
                         .map { rs -> ServiceData(rs[TableServices.id].value, rs[TableServices.name], null,rs[TableServices.categoryId],
-                            rs[TableServices.svgPath]?:"static/svg/dummy.svg", rs[TableServices.originalSvgName]?:"dummy.svg" ) }
+                            resolveSVGPath(rs[TableServices.svgPath]), rs[TableServices.originalSvgName]?:"dummy.svg" ) }
                 )
                 idsInUse.addAll(
                     TableRasterData.selectAll().map { rs -> rs[TableRasterData.serviceId]?:-1}
@@ -100,25 +105,65 @@ fun Route.adminRouting(config: ApplicationConfig) {
             call.respondRedirect("./services")
         }
 
+        post("/serviceSVGDelete") {
+            val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
+            val svgDataFolder = File(dataCacheDirectory).resolve("svg").toString()
+            val id = call.receiveParameters()["id"]?.toIntOrNull()?:-1
+            if (id > -1) {
+                transaction {
+                    TableServices.select { TableServices.id eq id }.first().let { it[TableServices.svgPath] } ?.let { svgPath ->
+                        if (File("$svgDataFolder/$svgPath").exists())
+                            File("$svgDataFolder/$svgPath").delete()
+                    }
+                    TableServices.update ({ TableServices.id eq id }) {
+                        it[TableServices.svgPath] = null
+                        it[TableServices.originalSvgName] = null
+                        it[TableServices.updated] = LocalDateTime.now()
+                    }
+                }
+            }
+            call.respondRedirect("./services")
+        }
+
         post("/serviceSVGUpdate") {
 
-            val resourceDirectory = Paths.get("resources")
+            val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
 
+            val svgDataFolder = File(dataCacheDirectory).resolve("svg")
+            if (!File("$svgDataFolder").exists()) File("$svgDataFolder").mkdir()
 
-            val multipartData = call.receiveMultipart()
-            var fileDescription = ""
+            var tmpFileName = "SVG_${RasterServices.genTempName(15)}.svg"
+            // to prevent existing names
+            while(File(svgDataFolder.resolve(tmpFileName).toString()).exists()) tmpFileName = "SVG_${RasterServices.genTempName(15)}.svg"
+
             var fileName = ""
-            multipartData.forEachPart { part ->
+            var uploadId = -1
+            call.receiveMultipart().forEachPart { part ->
                 when (part) {
-                    is PartData.FormItem -> { fileDescription = part.value }
+                    is PartData.FormItem -> {
+                        if (part.name == "uploadId") uploadId = part.value.toIntOrNull()?:-1
+                    }
                     is PartData.FileItem -> {
                         fileName = part.originalFileName as String
-                        val re = "[^A-Za-z0-9 ]".toRegex()
-                        fileName = re.replace(fileName, "_")
-                        var fileBytes = part.streamProvider().readBytes()
-                        File("$resourceDirectory/static/tmp/$fileName").writeBytes(fileBytes)
+                        val fileBytes = part.streamProvider().readBytes()
+                        File(svgDataFolder.resolve(tmpFileName).toString()).writeBytes(fileBytes)
                     }
                     else -> {}
+                }
+            }
+            if(uploadId != -1 && File(svgDataFolder.resolve(tmpFileName).toString()).exists()) {
+                transaction {
+                    // check for update --> delete svg file!!!
+                    TableServices.select { TableServices.id eq uploadId }.first().let { it[TableServices.svgPath] }
+                        ?.let { svgPath ->
+                            if (File("$svgDataFolder/$svgPath").exists())
+                                File("$svgDataFolder/$svgPath").delete()
+                        }
+                    TableServices.update({ TableServices.id eq uploadId }) {
+                        it[TableServices.svgPath] = "$tmpFileName"
+                        it[TableServices.originalSvgName] = fileName
+                        it[TableServices.updated] = LocalDateTime.now()
+                    }
                 }
             }
 

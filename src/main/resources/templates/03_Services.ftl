@@ -54,10 +54,10 @@
                                 <img src="/${prop.svgPath}" style="width: 40px" alt="${prop.originalSvgName}" title="${prop.originalSvgName}">
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary" onclick="serviceSVHUpload(${prop.id});">Upload</button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="serviceSVGUpload(${prop.id});">Upload</button>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="serviceSVGDelete(${prop.id});">Delete</button>
                             </td>
                         </tr>
                     </#list>
@@ -93,6 +93,10 @@
     <input type="hidden" id="saveFormId" name="id" value="-1">
     <input type="hidden" id="saveFormCategoryId" name="categoryId" value="-1">
     <input type="hidden" id="saveFormMode" name="mode" value="0">
+</form>
+
+<form id="serviceSVGDelete" onclick="serviceSVGDelete()" action="./serviceSVGDelete" method="post">
+    <input type="hidden" id="serviceSVGDeleteFormId" name="id" value="-1">
 </form>
 
 
@@ -159,13 +163,34 @@
                 <form method="post" id="uploadSVG" enctype="multipart/form-data" action="./serviceSVGUpdate">
                     <div class="row">
                         <div class="col-md-2 m-2">Datei (*.svg):</div>
-                        <div class="col-md-7 m-2"><input type="file" size="32" maxlength="512" name="filename"></div>
+                        <div class="col-md-7 m-2">
+                            <input type="file" size="32" maxlength="512" name="filename">
+                            <input type="hidden" name="uploadId" id="uploadId" value="-1">
+                        </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schlie&szlig;en</button>
                 <button type="button" class="btn btn-primary" onclick="document.getElementById('uploadSVG').submit();return true;">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="svgModalDelete" tabindex="-1" aria-labelledby="svgModalDelete" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Rückfrage</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Soll der Eintrag wirklich gelöscht werden?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schlie&szlig;en</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('serviceSVGDelete').submit();return true;">Löschen</button>
             </div>
         </div>
     </div>

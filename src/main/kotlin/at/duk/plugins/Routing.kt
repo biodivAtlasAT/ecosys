@@ -48,5 +48,20 @@ fun Application.configureRouting() {
             resources("static")
         }
 
+        get("/assets/svg/{showSVG}") {
+            val svgDataFolder = File(dataCacheDirectory).resolve("svg")
+            val fileName = call.parameters["showSVG"]?.toString()?:""
+            if(fileName == "")
+                call.respond(HttpStatusCode.NotFound)
+
+            val file = File("$svgDataFolder/$fileName")
+            call.response.header(
+                HttpHeaders.ContentDisposition,
+                ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, fileName)
+                    .toString()
+            )
+            call.respondFile(file)
+        }
+
     }
 }

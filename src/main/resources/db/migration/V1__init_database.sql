@@ -152,12 +152,12 @@ INSERT INTO public.categories(name, created) VALUES ('Kulturelle Ökosystemleist
 INSERT INTO public.categories(name, created) VALUES ('Regulierende Ökosystemleistungen', NOW());
 INSERT INTO public.categories(name, created) VALUES ('Unterstützende Ökosystemleistungen', NOW());
 
-INSERT INTO public.Services(name, created, svg_path, category_id) VALUES ('Nährstoffkreislauf', NOW(), 'static/svg/nahrung.svg', 1);
-INSERT INTO public.Services(name, created, svg_path, category_id) VALUES ('Luftreinigung', NOW(), 'static/svg/wasser.svg', 1);
-INSERT INTO public.Services(name, created, svg_path, category_id) VALUES ('Klimaregulierung', NOW(), 'static/svg/sport.svg', 1);
-INSERT INTO public.Services(name, created, svg_path, category_id) VALUES ('Erleben der Natur', NOW(), 'static/svg/sport.svg', 2);
-INSERT INTO public.Services(name, created, svg_path, category_id) VALUES ('Hochwasserregulierung', NOW(), 'static/svg/wasser.svg', 2);
-INSERT INTO public.Services(name, created, svg_path, category_id) VALUES ('Bestäubungsleistung', NOW(), 'static/svg/nahrung.svg', 3);
+INSERT INTO public.Services(name, created, category_id) VALUES ('Nährstoffkreislauf', NOW(), 1);
+INSERT INTO public.Services(name, created, category_id) VALUES ('Luftreinigung', NOW(), 1);
+INSERT INTO public.Services(name, created, category_id) VALUES ('Klimaregulierung', NOW(), 1);
+INSERT INTO public.Services(name, created, category_id) VALUES ('Erleben der Natur', NOW(), 2);
+INSERT INTO public.Services(name, created, category_id) VALUES ('Hochwasserregulierung', NOW(), 2);
+INSERT INTO public.Services(name, created, category_id) VALUES ('Bestäubungsleistung', NOW(), 3);
 
 INSERT INTO public.Packages(name, "default", created) VALUES ('ZAMG 2019', True, NOW());
 INSERT INTO public.Packages(name, "default", created) VALUES ('Provider von Österreich 2017', False, NOW());

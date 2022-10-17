@@ -125,7 +125,7 @@ class RasterServices {
             return jobsPath
         }
 
-        fun genTempName() = (1..12)
+        fun genTempName(max: Int = 12) = (1..max)
             .map { kotlin.random.Random.nextInt(0, charPool.size) }
             .map(charPool::get)
             .joinToString("")

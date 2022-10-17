@@ -70,6 +70,11 @@ class AdminServices {
             }
         }
 
+        fun resolveSVGPath(str: String?) =  if (str == null)
+                "static/svg/dummy.svg"
+            else
+                "assets/svg/$str"
+
 
     }
 }

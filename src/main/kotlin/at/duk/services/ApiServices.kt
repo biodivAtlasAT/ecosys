@@ -1,6 +1,7 @@
 package at.duk.services
 
 import at.duk.models.*
+import at.duk.services.AdminServices.Companion.resolveSVGPath
 import at.duk.tables.TablePackages
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
@@ -24,12 +25,12 @@ class ApiServices {
         }
 
         fun generateServiceResponse(packageId: Int): String {
-            val sql = "select s.id as service_id, s.name as service_name, s.category_id as category_id, c.name as category_name from services s, categories c where" +
+            val sql = "select s.original_svg_name as original_svg_name, s.svg_path as svg_path, s.id as service_id, s.name as service_name, s.category_id as category_id, c.name as category_name from services s, categories c where" +
                     " s.id in (select distinct (service_id) from raster_data where package_id = $packageId)" +
                     " and s.deleted is null and s.category_id = c.id;"
 
-            val categoryList: MutableMap<Int, CategoryData> = emptyMap<Int, CategoryData>().toMutableMap()
-            val serviceList: MutableList<ServiceData> = emptyList<ServiceData>().toMutableList()
+            val categoryList = mutableMapOf<Int, CategoryData> ()
+            val serviceList = mutableListOf<ServiceData>()
 
             transaction {
                 exec(sql) { rs ->
@@ -38,7 +39,7 @@ class ApiServices {
                             categoryList[rs.getInt("category_id")] =
                                 CategoryData(rs.getInt("category_id"), rs.getString("category_name"))
                         val category = categoryList[rs.getInt("category_id")]!!
-                        serviceList.add(ServiceData(rs.getInt("service_id"), rs.getString("service_name"), category))
+                        serviceList.add(ServiceData(rs.getInt("service_id"), rs.getString("service_name"), category, category.id, resolveSVGPath(rs.getString("svg_path")), rs.getString("original_svg_name")))
                         }
                     }
                 }
@@ -75,7 +76,7 @@ class ApiServices {
                     if (result.containsKey(it[TableServices.id].value)) {
                         val l = result[it[TableServices.id]!!.value] ?: emptyList<RasterServiceVal>().toMutableList()
                         serviceList.add(
-                            RasterServiceVals(it[TableServices.id].value, l, it[TableServices.svgPath], l.first().dimension))
+                            RasterServiceVals(it[TableServices.id].value, l, resolveSVGPath(it[TableServices.svgPath]), l.first().dimension))
                     }
                 }
             }

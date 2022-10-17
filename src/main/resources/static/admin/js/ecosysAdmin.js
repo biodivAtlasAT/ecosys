@@ -194,8 +194,17 @@ function serviceDelete(idx, allowed) {
         }).show()
 }
 
-function serviceSVHUpload(idx) {
+function serviceSVGUpload(idx) {
+    document.getElementById("uploadId").value = idx
     new bootstrap.Modal(document.getElementById('UploadModal'),
+        {
+            keyboard: false
+        }).show()
+}
+
+function serviceSVGDelete(idx) {
+    document.getElementById("serviceSVGDeleteFormId").value = idx
+    new bootstrap.Modal(document.getElementById('svgModalDelete'),
         {
             keyboard: false
         }).show()
