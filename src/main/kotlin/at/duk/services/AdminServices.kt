@@ -13,6 +13,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import java.io.File
 import java.time.LocalDateTime
 
 class AdminServices {
@@ -75,6 +76,18 @@ class AdminServices {
             else
                 "assets/svg/$str"
 
+        fun getUniqueSVGName(svgDataFolder: File): String {
+            var tmpFileName = "SVG_${RasterServices.genTempName(15)}.svg"
+            while (File(svgDataFolder.resolve(tmpFileName).toString()).exists()) tmpFileName =
+                "SVG_${RasterServices.genTempName(15)}.svg"
+            return tmpFileName
+        }
+
+        fun getSVGDataFolder(dataCacheDirectory: String): File {
+            val svgDataFolder = File(dataCacheDirectory).resolve("svg")
+            if (!File("$svgDataFolder").exists()) File("$svgDataFolder").mkdir()
+            return svgDataFolder
+        }
 
     }
 }
