@@ -132,13 +132,13 @@ class RasterServices {
 
         fun importIntoRasterData(rasterTasksId: Int): Int {
             var rasterDataId = -1
+            val complexJoin = Join(
+                TableRasterTasks, TableUploadedRasterData,
+                onColumn = TableRasterTasks.uploadedRasterDataId, otherColumn = TableUploadedRasterData.id,
+                joinType = JoinType.INNER)
+
 
             transaction {
-                val complexJoin = Join(
-                    TableRasterTasks, TableUploadedRasterData,
-                    onColumn = TableRasterTasks.uploadedRasterDataId, otherColumn = TableUploadedRasterData.id,
-                    joinType = JoinType.INNER)
-
                 val res = complexJoin.select{ TableRasterTasks.id eq rasterTasksId }.first()
                 val tmpTableName = res[TableUploadedRasterData.tmpTable]
                 val uploadedRasterDataId = res[TableUploadedRasterData.id].value
@@ -177,9 +177,40 @@ class RasterServices {
                     it[TableRasterData.rasterTaskId] = rasterTasksId
                     it[TableRasterData.statistics] = mapper.writeValueAsString(quints)
                 }
+
+                exec("drop table $tmpTableName;")
             }
             return rasterDataId
         }
+
+        fun removeFromRasterData(rasterTasksId: Int, dataCacheDirectory: String) {
+            val complexJoin = Join(
+                TableRasterTasks, TableUploadedRasterData,
+                onColumn = TableRasterTasks.uploadedRasterDataId, otherColumn = TableUploadedRasterData.id,
+                joinType = JoinType.INNER)
+            var tmpTableName = ""
+            var tableUploadedRasterDataId = -1
+
+            transaction{
+                complexJoin.select{ TableRasterTasks.id eq rasterTasksId }.first().also {
+                    tmpTableName = it[TableUploadedRasterData.tmpTable]
+                    tableUploadedRasterDataId = it[TableUploadedRasterData.id].value
+                }
+                if (tableUploadedRasterDataId > -1) {
+                    TableRasterTasks.deleteWhere { TableRasterTasks.id eq rasterTasksId }
+                    TableUploadedRasterData.deleteWhere { TableUploadedRasterData.id eq tableUploadedRasterDataId }
+                    exec("DROP TABLE IF EXISTS $tmpTableName;")
+                }
+            }
+            // remove the temp folder and its content
+            if (tmpTableName.isNotEmpty()) {
+                val folderName = tmpTableName.substring(6)
+                val rasterDataFolder = File(dataCacheDirectory).resolve("rasterData").resolve("uploads").resolve(folderName)
+                if (File("$rasterDataFolder").exists())
+                    File("$rasterDataFolder").deleteRecursively()
+            }
+        }
+
 
         fun packageDelete(formParameters: Parameters) = formParameters["mode"]?.let {
             formParameters["id"]?.toIntOrNull().let { id ->

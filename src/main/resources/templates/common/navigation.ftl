@@ -24,7 +24,7 @@
             <li>Konfiguration
                 <ul><a href="/admin/cache/delete" class="<#if naviSel == "14">naviSelected</#if>">Cache Löschen</a></ul>
             </li>
-            <li><a href="/admin/">Logout</a></li>
+            <li><a href="/admin">Logout</a></li>
         </ul>
     </div>
 </div>

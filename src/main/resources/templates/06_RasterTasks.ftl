@@ -50,7 +50,7 @@
                                         IMPORTIERT
                                     <#else>
                                         <#if prop.rc == 0>
-                                            <Button name="bt_${prop.id}" title="${prop.id}" type="submit" onclick="submit06(${prop.id})">Import</Button>
+                                            <Button class="btn btn-sm btn-outline-primary" name="bt_${prop.id}" title="${prop.id}" type="submit" onclick="submit06(${prop.id}, 0)">Import</Button>
                                         </#if>
                                     </#if>
                                 </#if>
@@ -60,7 +60,7 @@
 
                                 <#else>
                                     <#if prop.rc?has_content>
-                                        <Button>Löschen</Button>
+                                        <Button class="btn btn-sm btn-outline-danger" onclick='rasterTaskDelete("${prop.id}")'>Löschen</Button>
                                     </#if>
                                 </#if>
 
@@ -77,6 +77,28 @@
 
     <form name="form06submit" id="form06submit" action="./tasksAction">
         <input type="hidden" name="rasterTasksId" id="rasterTasksId" value="">
+        <input type="hidden" name="mode" id="mode" value="0">
     <form>
+
+    <div class="modal fade" id="MessageModal" tabindex="-1" aria-labelledby="MessageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Rückfrage</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Soll der Eintrag wirklich gelöscht werden?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schlie&szlig;en</button>
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('form06submit').submit();return true;">Löschen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 </body>
 </html>

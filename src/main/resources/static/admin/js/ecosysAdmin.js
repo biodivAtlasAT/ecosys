@@ -1,5 +1,6 @@
-function submit06(id) {
+function submit06(id, mode) {
     document.getElementById("rasterTasksId").value = id;
+    document.getElementById("mode").value = mode;
     document.forms.form06submit.submit();
 }
 
@@ -205,6 +206,15 @@ function serviceSVGUpload(idx) {
 function serviceSVGDelete(idx) {
     document.getElementById("serviceSVGDeleteFormId").value = idx
     new bootstrap.Modal(document.getElementById('svgModalDelete'),
+        {
+            keyboard: false
+        }).show()
+}
+
+function rasterTaskDelete(idx) {
+    document.getElementById("rasterTasksId").value = idx
+    document.getElementById("mode").value = 1
+    new bootstrap.Modal(document.getElementById('MessageModal'),
         {
             keyboard: false
         }).show()

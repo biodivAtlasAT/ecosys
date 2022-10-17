@@ -45,8 +45,8 @@
                                     ${prop.dimension}
                                 <#else>
                                 </#if>
-                            <td><a href="./${prop.id}" class="btn btn-sm btn-secondary" role="button">&nbsp;&nbsp;Edit&nbsp;&nbsp;</a>
-                                <a href="./${prop.id}" class="btn btn-sm btn-danger" role="button">Löschen</a></td>
+                            <td><a href="./${prop.id}" class="btn btn-sm btn-outline-primary" role="button">&nbsp;&nbsp;Edit&nbsp;&nbsp;</a>
+                                <a href="./${prop.id}" class="btn btn-sm btn-outline-danger" role="button">Löschen</a></td>
                         </tr>
                     </#list>
                     </tbody>

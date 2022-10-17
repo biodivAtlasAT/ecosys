@@ -23,6 +23,8 @@ import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
 
 fun Route.rasterRouting(config: ApplicationConfig) {
+    val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
+
     route("/admin/raster") {
 
         get("/packages") {
@@ -62,7 +64,6 @@ fun Route.rasterRouting(config: ApplicationConfig) {
         }
 
         post("/uploadAction") {
-            val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
 
             val rasterDataFolder = File(dataCacheDirectory).resolve("rasterData")
             if (!File("$rasterDataFolder").exists()) File("$rasterDataFolder").mkdir()
@@ -122,14 +123,10 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
                 val res = complexJoin.selectAll().orderBy(TableRasterTasks.start, SortOrder.DESC).limit(100)
                 res.forEach {
-                    val ende = it[TableRasterTasks.end]
-                    var endeStr: String? = null
-                    endeStr = ende.format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss"))
-
                     result.add(RasterTask(it[TableRasterTasks.id].value,
                         it[TableRasterTasks.pid],
                         it[TableRasterTasks.start].format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss")),
-                        endeStr,
+                        it[TableRasterTasks.end]?.format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss")),
                         it[TableRasterTasks.uploadedRasterDataId],
                         it[TableUploadedRasterData.name],
                         it[TableRasterTasks.rc],
@@ -141,14 +138,16 @@ fun Route.rasterRouting(config: ApplicationConfig) {
         }
 
         get("/tasksAction") {
-            val rasterTasksId = call.request.queryParameters["rasterTasksId"]
-            var rasterDataId = -1
-            rasterTasksId?.toInt()?.let { it1 -> rasterDataId = RasterServices.importIntoRasterData(it1) }
-            if (rasterDataId > -1) {
-                // val res = TableRasterData.select { TableRasterData.id eq rasterDataId }.first()
-                call.respondRedirect("./$rasterDataId")
+            val rasterTasksId = call.request.queryParameters["rasterTasksId"]?.toIntOrNull()?:-1
+            val mode = call.request.queryParameters["mode"]?.toIntOrNull()?:-1
+            if (mode == 0 && rasterTasksId > -1) {
+                call.respondRedirect("./${RasterServices.importIntoRasterData(rasterTasksId)}")
+                return@get
             }
+            if (mode == 1 && rasterTasksId > -1)
+                RasterServices.removeFromRasterData(rasterTasksId, dataCacheDirectory)
 
+            call.respondRedirect("./tasks")
         }
 
 

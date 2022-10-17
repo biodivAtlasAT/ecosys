@@ -30,14 +30,6 @@
         </div>
         <div class="row">
             <div class="col-md-2 m-2">
-                Name:
-            </div>
-            <div class="col-md-6 m-2">
-                <input type="text" size="40" maxlength="128" name="name_" value="${name_}">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-2 m-2">
                 Package:
             </div>
             <div class="col-md-6 m-2">
@@ -47,14 +39,6 @@
                         <option value="${package.id}" <#if "${package.id}" == "${packageId}">selected<#else></#if>>${package.name}</option>
                     </#list>
                 </select>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-2 m-2">
-                Dimension:
-            </div>
-            <div class="col-md-6 m-2">
-                <input type="text" size="40" maxlength="128" name="dimension" value="<#if dimension?has_content>${dimension}<#else></#if>">
             </div>
         </div>
         <div class="row">
@@ -72,7 +56,23 @@
         </div>
         <div class="row">
             <div class="col-md-2 m-2">
-                <input type="submit" value="Speichern">
+                Name:
+            </div>
+            <div class="col-md-6 m-2">
+                <input type="text" size="40" maxlength="128" name="name_" value="${name_}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 m-2">
+                Dimension:
+            </div>
+            <div class="col-md-6 m-2">
+                <input type="text" size="40" maxlength="128" name="dimension" value="<#if dimension?has_content>${dimension}<#else></#if>">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 m-2">
+                <input type="submit" class="btn btn-sm btn-outline-primary" value="Speichern">
             </div>
         </div>
     </div>
