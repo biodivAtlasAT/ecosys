@@ -4,7 +4,9 @@ function submit06(id, mode) {
     document.forms.form06submit.submit();
 }
 
-function submit08check() {
+function submit08check(combinations) {
+    const combi = combinations.split(",");
+
     let pIdSel = document.getElementById('packageId');
     let pId = pIdSel.options[pIdSel.selectedIndex].value;
 
@@ -13,6 +15,20 @@ function submit08check() {
 
     if (pId === "-1" || sId === "-1") {
         new bootstrap.Modal(document.getElementById('MessageModal'),
+            {
+                keyboard: false
+            }).show()
+        return false;
+    }
+
+    let newCombi = "" + pId + "_" +sId;
+    let ok = true;
+    for (let i = 0; i< combi.length; i++) {
+        if (combi[i].trim() === newCombi) ok = false
+    }
+
+    if(!ok) {
+        new bootstrap.Modal(document.getElementById('MessageCombiModal'),
             {
                 keyboard: false
             }).show()

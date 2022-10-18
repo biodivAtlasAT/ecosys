@@ -186,18 +186,19 @@ fun Route.rasterRouting(config: ApplicationConfig) {
         }
 
         get("/{id}") {
-            val model = emptyMap<String, Any>().toMutableMap()
-            val packageList = emptyList<Map<String, String>>().toMutableList()
-            val serviceList = emptyList<Map<String, String>>().toMutableList()
+            val model = mutableMapOf<String, Any>()
+            val packageList = mutableListOf<Map<String, String>>()
+            val serviceList = mutableListOf<Map<String, String>>()
             call.parameters["id"]?.toIntOrNull()?.let {
                 transaction {
+                    model["combinations"] = TableRasterData.select {TableRasterData.id neq it}.map {
+                        "${it[TableRasterData.packageId]}_${it[TableRasterData.serviceId]}"
+                    }.distinct().joinToString()
+
                     val res = TableRasterData.select { TableRasterData.id eq it }.first()
-                    model["id"] = res[TableRasterData.id].toString()
-                    model["fileName"] = res[TableRasterData.filename]
-                    model["name_"] = res[TableRasterData.name]
-                    model["dimension"] = res[TableRasterData.dimension]
-                    model["serviceId"] = res[TableRasterData.serviceId]?: -1
-                    model["packageId"] = res[TableRasterData.packageId]?: -1
+                    TableRasterData.columns.forEachIndexed { idx, it ->
+                        model[it.name] = res[it.table.columns[idx]] as Any
+                    }
 
                     TablePackages.select { TablePackages.deleted eq null }.orderBy(TablePackages.name, SortOrder.ASC).forEach {
                         packageList.add(mapOf("id" to it[TablePackages.id].toString(), "name" to it[TablePackages.name]))

@@ -25,7 +25,7 @@
                 Dateiname:
             </div>
             <div class="col-md-6 m-2">
-                <input type="text" size="40" disabled value="${fileName}">
+                <input type="text" size="40" disabled value="${filename}">
             </div>
         </div>
         <div class="row">
@@ -34,11 +34,11 @@
             </div>
             <div class="col-md-6 m-2">
                 <select name="packageId" id="packageId" required>
-                    <#if "${packageId}" == "-1">
+                    <#if "${package_id}" == "-1">
                         <option value="-1">------------------</option>
                     <#else></#if>
                     <#list packageList as package>
-                        <option value="${package.id}" <#if "${package.id}" == "${packageId}">selected<#else></#if>>${package.name}</option>
+                        <option value="${package.id}" <#if "${package.id}" == "${package_id}">selected<#else></#if>>${package.name}</option>
                     </#list>
                 </select>
             </div>
@@ -49,11 +49,11 @@
             </div>
             <div class="col-md-6 m-2">
                 <select name="serviceId" id="serviceId" required>
-                    <#if "${serviceId}" == "-1">
+                    <#if "${service_id}" == "-1">
                         <option value="-1">------------------</option>
                     <#else></#if>
                     <#list serviceList as service>
-                        <option value="${service.id}" <#if "${service.id}" == "${serviceId}">selected<#else></#if>>${service.name}</option>
+                        <option value="${service.id}" <#if "${service.id}" == "${service_id}">selected<#else></#if>>${service.name}</option>
                     </#list>
                 </select>
             </div>
@@ -63,7 +63,7 @@
                 Name:
             </div>
             <div class="col-md-6 m-2">
-                <input type="text" size="40" maxlength="128" name="name_" value="${name_}" required>
+                <input type="text" size="40" maxlength="128" name="name_" value="${name}" required>
             </div>
         </div>
         <div class="row">
@@ -76,7 +76,7 @@
         </div>
         <div class="row">
             <div class="col-md-2 m-2">
-                <input type="submit" class="btn btn-sm btn-outline-primary" value="Speichern" onclick="return submit08check();">
+                <input type="submit" class="btn btn-sm btn-outline-primary" value="Speichern" onclick="return submit08check('${combinations}');">
             </div>
         </div>
     </div>
@@ -87,7 +87,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Rückfrage</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Hinweis</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -99,6 +99,24 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="MessageCombiModal" tabindex="-1" aria-labelledby="MessageCombiModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Rückfrage</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Diese Package / Leistung - Kombination existiert bereits!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schlie&szlig;en</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 </body>
