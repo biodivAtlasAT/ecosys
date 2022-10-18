@@ -6,6 +6,8 @@ val hikaricp_version: String by project
 val postgresql_version: String by project
 val flyway_version: String by project
 val exposed_version: String by project
+val koodies_version: String by project
+val jackson_version: String by project
 
 plugins {
     application
@@ -65,8 +67,8 @@ dependencies {
     implementation ("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation ("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation ("org.jetbrains.exposed:exposed-java-time:$exposed_version")
-    implementation("com.bkahlert:koodies:1.6.2")
-    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.1")
+    implementation("com.bkahlert:koodies:$koodies_version")
+    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
 
 
 

@@ -145,7 +145,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                 return@get
             }
             if (mode == 1 && rasterTasksId > -1)
-                RasterServices.removeFromRasterData(rasterTasksId, dataCacheDirectory)
+                RasterServices.removeFromRasterTasks(rasterTasksId, dataCacheDirectory)
 
             call.respondRedirect("./tasks")
         }
@@ -160,7 +160,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                     "    ON d.service_id = s.id" +
                     "   LEFT JOIN public.packages p" +
                     "    ON d.package_id = p.id" +
-                    "   ORDER BY p.name, s.name, d.name DESC"
+                    "   ORDER BY p.name, s.name, d.name ASC"
 
                 transaction {
                     exec(sql) { rs ->
@@ -176,6 +176,13 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                     }
                 }
             call.respond(FreeMarkerContent("07_RasterList.ftl", mapOf("result" to liste)))
+        }
+
+        get("/rasterListAction") {
+            call.request.queryParameters["rasterId"]?.toIntOrNull()?.let{
+                RasterServices.removeFromRasterData(it, dataCacheDirectory)
+            }
+            call.respondRedirect("./list")
         }
 
         get("/{id}") {

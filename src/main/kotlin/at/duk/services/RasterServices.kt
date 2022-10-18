@@ -183,7 +183,18 @@ class RasterServices {
             return rasterDataId
         }
 
-        fun removeFromRasterData(rasterTasksId: Int, dataCacheDirectory: String) {
+         fun removeFromRasterData(it: Int, dataCacheDirectory: String){
+            var r = -2
+            transaction {
+                r = TableRasterData.select{ TableRasterData.id eq it }.first()[TableRasterData.rasterTaskId]?:-1
+                if (r > -1) {
+                    TableRasterData.deleteWhere { TableRasterData.id eq it }
+                    removeFromRasterTasks(r, dataCacheDirectory)
+                }
+            }
+        }
+
+        fun removeFromRasterTasks(rasterTasksId: Int, dataCacheDirectory: String) {
             val complexJoin = Join(
                 TableRasterTasks, TableUploadedRasterData,
                 onColumn = TableRasterTasks.uploadedRasterDataId, otherColumn = TableUploadedRasterData.id,

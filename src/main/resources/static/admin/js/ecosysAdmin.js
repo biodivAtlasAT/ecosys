@@ -4,6 +4,23 @@ function submit06(id, mode) {
     document.forms.form06submit.submit();
 }
 
+function submit08check() {
+    let pIdSel = document.getElementById('packageId');
+    let pId = pIdSel.options[pIdSel.selectedIndex].value;
+
+    let sIdSel = document.getElementById('serviceId');
+    let sId = sIdSel.options[sIdSel.selectedIndex].value;
+
+    if (pId === "-1" || sId === "-1") {
+        new bootstrap.Modal(document.getElementById('MessageModal'),
+            {
+                keyboard: false
+            }).show()
+        return false;
+    }
+    return true;
+}
+
 function categoryEdit(idx, maxCount, wordSave, wordEdit) {
     // if the "save" button is clicked, submit the form
     if (document.getElementById("bt_"+idx).classList.contains("funcSave")) {
@@ -214,6 +231,14 @@ function serviceSVGDelete(idx) {
 function rasterTaskDelete(idx) {
     document.getElementById("rasterTasksId").value = idx
     document.getElementById("mode").value = 1
+    new bootstrap.Modal(document.getElementById('MessageModal'),
+        {
+            keyboard: false
+        }).show()
+}
+
+function rasterDelete(idx) {
+    document.getElementById("rasterId").value = idx
     new bootstrap.Modal(document.getElementById('MessageModal'),
         {
             keyboard: false

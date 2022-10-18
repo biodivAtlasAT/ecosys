@@ -9,7 +9,7 @@
         <#include "common/navigation.ftl">
     </div>
     <div class="col-md-8 m-4">
-        <h1 class="text-primary">Raster Tasks</h1>
+        <h1 class="text-primary">Raster Tasks<a href="/admin/raster/tasks" style="margin-left: 8px; margin-bottom:6px" class="button btn btn-sn btn-outline-primary" >Refresh</a></h1>
         <div class="row">
             <div class="md-col-10">
                 <table class="table table-striped">
