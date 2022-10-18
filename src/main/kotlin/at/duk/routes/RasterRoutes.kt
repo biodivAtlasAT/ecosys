@@ -91,6 +91,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                 }
             }
 
+            /*
             lateinit var id: EntityID<Int>
             lateinit var rasterTasksId: EntityID<Int>
 
@@ -105,7 +106,8 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                     it[start] = CurrentDateTime
                     it[uploadedRasterDataId] = id.value
                 }
-            }
+            }*/
+            val rasterTasksId = RasterServices.insertDataAndTask(fileName, fileDescription, tmpName)
 
             launch(Dispatchers.Default) {
                 RasterServices.uploadIntoRasterTasks(fileName, config, tmpName, rasterTasksId)
@@ -187,31 +189,26 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
         get("/{id}") {
             val model = mutableMapOf<String, Any>()
-            val packageList = mutableListOf<Map<String, String>>()
-            val serviceList = mutableListOf<Map<String, String>>()
             call.parameters["id"]?.toIntOrNull()?.let {
                 transaction {
                     model["combinations"] = TableRasterData.select {TableRasterData.id neq it}.map {
                         "${it[TableRasterData.packageId]}_${it[TableRasterData.serviceId]}"
                     }.distinct().joinToString()
 
-                    val res = TableRasterData.select { TableRasterData.id eq it }.first()
-                    TableRasterData.columns.forEachIndexed { idx, it ->
-                        model[it.name] = res[it.table.columns[idx]] as Any
+                    TableRasterData.select { TableRasterData.id eq it }.first().apply {
+                        TableRasterData.columns.forEachIndexed { idx, ele ->
+                            this[ele.table.columns[idx]]?.let { model[ele.name] = this[ele.table.columns[idx]] as Any }
+                        }
                     }
 
-                    TablePackages.select { TablePackages.deleted eq null }.orderBy(TablePackages.name, SortOrder.ASC).forEach {
-                        packageList.add(mapOf("id" to it[TablePackages.id].toString(), "name" to it[TablePackages.name]))
+                    model["packageList"] = TablePackages.select { TablePackages.deleted eq null }.orderBy(TablePackages.name, SortOrder.ASC).map {
+                        mapOf("id" to it[TablePackages.id].toString(), "name" to it[TablePackages.name])
                     }
-                    model["packageList"] = packageList
-
-                    TableServices.select { TableServices.deleted eq null }.orderBy(TableServices.name, SortOrder.ASC).forEach {
-                        serviceList.add(mapOf("id" to it[TableServices.id].toString(), "name" to it[TableServices.name]))
+                    model["serviceList"] = TableServices.select { TableServices.deleted eq null }.orderBy(TableServices.name, SortOrder.ASC).map {
+                        mapOf("id" to it[TableServices.id].toString(), "name" to it[TableServices.name])
                     }
-                    model["serviceList"] = serviceList
                 }
             }
-
             call.respond(FreeMarkerContent("08_RasterData.ftl", model))
         }
 

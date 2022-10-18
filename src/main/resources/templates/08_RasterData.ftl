@@ -2,6 +2,8 @@
 <#include "common/header.ftl">
 <body>
 <#assign naviSel = "8">
+<#assign package_id_new = (package_id)!"-1">
+<#assign service_id_new = (service_id)!"-1">
 
 <#include "common/headline.ftl">
 <div class="row">
@@ -34,11 +36,11 @@
             </div>
             <div class="col-md-6 m-2">
                 <select name="packageId" id="packageId" required>
-                    <#if "${package_id}" == "-1">
+                    <#if "${package_id_new}" == "-1">
                         <option value="-1">------------------</option>
                     <#else></#if>
                     <#list packageList as package>
-                        <option value="${package.id}" <#if "${package.id}" == "${package_id}">selected<#else></#if>>${package.name}</option>
+                        <option value="${package.id}" <#if "${package.id}" == "${package_id_new}">selected<#else></#if>>${package.name}</option>
                     </#list>
                 </select>
             </div>
@@ -49,11 +51,11 @@
             </div>
             <div class="col-md-6 m-2">
                 <select name="serviceId" id="serviceId" required>
-                    <#if "${service_id}" == "-1">
+                    <#if "${service_id_new}" == "-1">
                         <option value="-1">------------------</option>
                     <#else></#if>
                     <#list serviceList as service>
-                        <option value="${service.id}" <#if "${service.id}" == "${service_id}">selected<#else></#if>>${service.name}</option>
+                        <option value="${service.id}" <#if "${service.id}" == "${service_id_new}">selected<#else></#if>>${service.name}</option>
                     </#list>
                 </select>
             </div>

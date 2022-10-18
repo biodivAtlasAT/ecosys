@@ -48,26 +48,25 @@ class RasterServices {
                 if (!osIsWin)
                     ShellScript("chmod 777 ${tmpFolder.resolve(scriptName).toString()}").exec()
 
-                ShellScript(tmpFolder.resolve(scriptName).toString()).exec.async().also {
-                    val pidV = it.pid
+                ShellScript(tmpFolder.resolve(scriptName).toString()).exec.async().also { proc ->
                     transaction {
                         TableRasterTasks.update({ TableRasterTasks.id eq rasterTasksId }) { stmt ->
-                            stmt[pid] = pidV.toInt()
+                            stmt[pid] = proc.pid.toInt()
                         }
                     }
-                    it.waitFor()
+                    proc.waitFor()
 
-                    if (it.state is Process.State.Exited.Failed) {
+                    if (proc.state is Process.State.Exited.Failed) {
                         transaction {
                             TableRasterTasks.update({ TableRasterTasks.id eq rasterTasksId }) { table ->
-                                table[rc] = it.exitCode
-                                table[message] = it.error
+                                table[rc] = proc.exitCode
+                                table[message] = proc.error
                                 table[end] = CurrentDateTime
                             }
                         }
                     } else {
                         val inpFile = tmpFolder.resolve("rasterImport.sql")
-                        var exitCode = it.exitCode
+                        var exitCode = proc.exitCode
                         var msg = "Terminated successfully"
 
                         if (!inpFile.exists() || inpFile.length() == 0L) {
@@ -184,9 +183,8 @@ class RasterServices {
         }
 
          fun removeFromRasterData(it: Int, dataCacheDirectory: String){
-            var r = -2
             transaction {
-                r = TableRasterData.select{ TableRasterData.id eq it }.first()[TableRasterData.rasterTaskId]?:-1
+                val r = TableRasterData.select{ TableRasterData.id eq it }.first()[TableRasterData.rasterTaskId]?:-1
                 if (r > -1) {
                     TableRasterData.deleteWhere { TableRasterData.id eq it }
                     removeFromRasterTasks(r, dataCacheDirectory)
@@ -258,6 +256,24 @@ class RasterServices {
                         }
                 }
             }
+        }
+
+        fun insertDataAndTask(fileName: String, fileDescription: String, tmpName: String ): EntityID<Int> {
+            lateinit var id: EntityID<Int>
+            lateinit var rasterTasksId: EntityID<Int>
+            transaction {
+                id = TableUploadedRasterData.insertAndGetId {
+                    it[filename] = fileName
+                    it[name] = fileDescription
+                    it[tmpTable] = "table_$tmpName"
+                }
+                rasterTasksId = TableRasterTasks.insertAndGetId {
+                    it[pid] = 0
+                    it[start] = CurrentDateTime
+                    it[uploadedRasterDataId] = id.value
+                }
+            }
+            return rasterTasksId
         }
 
     }
