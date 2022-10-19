@@ -16,6 +16,10 @@
             <div class="col-md-7 m-2"><input type="text" size="32" maxlength="128" name="description" required></div>
         </div>
         <div class="row">
+            <div class="col-md-2 m-2">EPSG-System (srid):</div>
+            <div class="col-md-7 m-2"><input type="text" size="4" maxlength="4" name="srid" required></div>
+        </div>
+        <div class="row">
             <div class="col-md-2 m-2">Datei (*.tiff):</div>
             <div class="col-md-7 m-2"><input type="file" size="32" maxlength="512" name="filename" accept=".tiff,.tif" required></div>
         </div>

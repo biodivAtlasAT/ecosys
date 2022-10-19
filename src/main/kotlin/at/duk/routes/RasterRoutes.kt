@@ -14,9 +14,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Paths
@@ -77,9 +75,13 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             val multipartData = call.receiveMultipart()
             var fileDescription = ""
             var fileName = ""
+            var srid = ""
             multipartData.forEachPart { part ->
                 when (part) {
-                    is PartData.FormItem -> { fileDescription = part.value }
+                    is PartData.FormItem -> {
+                        if (part.name == "fileDescription") fileDescription = part.value
+                        if (part.name == "srid") srid = part.value
+                    }
                     is PartData.FileItem -> {
                         fileName = part.originalFileName as String
                         val re = "[^A-Za-z0-9 ]".toRegex()
@@ -91,26 +93,10 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                 }
             }
 
-            /*
-            lateinit var id: EntityID<Int>
-            lateinit var rasterTasksId: EntityID<Int>
-
-            transaction {
-                id = TableUploadedRasterData.insertAndGetId {
-                    it[filename] = fileName
-                    it[name] = fileDescription
-                    it[tmpTable] = "table_$tmpName"
-                }
-                rasterTasksId = TableRasterTasks.insertAndGetId {
-                    it[pid] = 0
-                    it[start] = CurrentDateTime
-                    it[uploadedRasterDataId] = id.value
-                }
-            }*/
             val rasterTasksId = RasterServices.insertDataAndTask(fileName, fileDescription, tmpName)
 
             launch(Dispatchers.Default) {
-                RasterServices.uploadIntoRasterTasks(fileName, config, tmpName, rasterTasksId)
+                RasterServices.uploadIntoRasterTasks(fileName, config, tmpName, rasterTasksId, srid)
             }
             call.respondRedirect("./tasks")
         }

@@ -24,11 +24,11 @@ class RasterServices {
     companion object {
         private val charPool : List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
-        private const val windowsScript = "\"%postgresqlBinDirectory%\\raster2pgsql\" -b 1 -F -I -C -s 4326 " +
+        private const val windowsScript = "\"%postgresqlBinDirectory%\\raster2pgsql\" -b 1 -F -I -C -s %srid% " +
                 "\"%uploadDirectory%\\%tifFileName%\" public.%tableName% > %uploadDirectory%\\rasterImport.sql\n" +
                 "\"%postgresqlBinDirectory%\\psql\" -f %uploadDirectory%\\rasterImport.sql %connection%"
 
-        private const val unixScript = "%postgresqlBinDirectory%/raster2pgsql -b 1 -F -I -C -s 4326 " +
+        private const val unixScript = "%postgresqlBinDirectory%/raster2pgsql -b 1 -F -I -C -s %srid% " +
                 "%uploadDirectory%/%tifFileName% public.%tableName% > %uploadDirectory%/rasterImport.sql\n" +
                 "%postgresqlBinDirectory%/psql -f %uploadDirectory%/rasterImport.sql %connection%"
 
@@ -38,12 +38,13 @@ class RasterServices {
             fileName: String,
             config: ApplicationConfig,
             tmpName: String,
-            rasterTasksId: EntityID<Int>
+            rasterTasksId: EntityID<Int>,
+            srid: String
         ) {
             try {
                 val osIsWin = System.getProperty("os.name").lowercase().contains("win")
                 val scriptName = if (osIsWin) "import.bat" else "import.sh"
-                val tmpFolder = generateScripts(config, tmpName, fileName, rasterTasksId.value)
+                val tmpFolder = generateScripts(config, tmpName, fileName, rasterTasksId.value, srid)
 
                 if (!osIsWin)
                     ShellScript("chmod 777 ${tmpFolder.resolve(scriptName).toString()}").exec()
@@ -94,7 +95,7 @@ class RasterServices {
             }
         }
 
-        private fun generateScripts(config: ApplicationConfig, tmpName: String, fileName: String, id: Int): File {
+        private fun generateScripts(config: ApplicationConfig, tmpName: String, fileName: String, id: Int, srid: String): File {
             val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
             val jobsPath = File(dataCacheDirectory).resolve("rasterData").resolve("uploads").resolve(tmpName)
 
@@ -109,6 +110,7 @@ class RasterServices {
                 .replace("%tableName%", "table_$tmpName")
                 .replace ("%connection%", connStr)
                 .replace ("%id%", id.toString())
+                .replace ("%srid%", srid)
 
             jobsPath.resolve("import.bat").writeText(fileContentWin)
 
@@ -118,6 +120,7 @@ class RasterServices {
                 .replace("%tableName%", "table_$tmpName")
                 .replace ("%connection%", connStr)
                 .replace ("%id%", id.toString())
+                .replace ("%srid%", srid)
 
             jobsPath.resolve("import.sh").writeText(fileContentUnix)
 
@@ -258,7 +261,7 @@ class RasterServices {
             }
         }
 
-        fun insertDataAndTask(fileName: String, fileDescription: String, tmpName: String ): EntityID<Int> {
+        fun insertDataAndTask(fileName: String, fileDescription: String, tmpName: String): EntityID<Int> {
             lateinit var id: EntityID<Int>
             lateinit var rasterTasksId: EntityID<Int>
             transaction {
