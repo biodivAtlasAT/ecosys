@@ -108,7 +108,7 @@ object ApiServices {
 
                 TableServices.select { TableServices.deleted eq null }.forEach {
                     if (result.containsKey(it[TableServices.id].value)) {
-                        val l = result[it[TableServices.id]!!.value] ?: emptyList<RasterServiceVal>().toMutableList()
+                        val l = result[it[TableServices.id].value] ?: emptyList<RasterServiceVal>().toMutableList()
                         serviceList.add(
                             RasterServiceVals(
                                 it[TableServices.id].value, l, resolveSVGPath(it[TableServices.svgPath]),

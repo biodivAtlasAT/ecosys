@@ -222,7 +222,7 @@ object RasterServices {
             joinType = JoinType.INNER
         )
         var tmpTableName = ""
-        var tableUploadedRasterDataId = -1
+        var tableUploadedRasterDataId: Int
 
         transaction {
             complexJoin.select { TableRasterTasks.id eq rasterTasksId }.first().also {
