@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -8,6 +10,8 @@ val flyway_version: String by project
 val exposed_version: String by project
 val koodies_version: String by project
 val jackson_version: String by project
+val detektPluginVersion: String by project
+
 
 plugins {
     application
@@ -15,6 +19,7 @@ plugins {
     id("io.ktor.plugin") version "2.1.1"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
     id("org.flywaydb.flyway") version "9.4.0"
+    id("io.gitlab.arturbosch.detekt").version("1.21.0")
 }
 
 group = "at.duk"
@@ -38,12 +43,31 @@ flyway {
     password = "postgres"
     schemas = arrayOf("public")
     cleanDisabled = false
-//    schemas = ['schema1', 'schema2', 'schema3']
- //   placeholders = [
- //       'keyABC': 'valueXYZ',
- //   'otherplaceholder': 'value123'
- //   ]
 }
+
+apply(plugin = "io.gitlab.arturbosch.detekt")
+detekt {
+    // Align the detekt core and plugin versions.
+    toolVersion = detektPluginVersion
+
+    // Only configure differences to the default.
+    buildUponDefaultConfig = true
+    config = files("$rootDir/.detekt.yml")
+
+    source.from(fileTree(".") { include("*.gradle.kts") }, "src/funTest/kotlin")
+
+    basePath = rootProject.projectDir.path
+}
+
+tasks.withType<Detekt> detekt@{
+    reports {
+        html.required.set(false)
+        sarif.required.set(true)
+        txt.required.set(false)
+        xml.required.set(true)
+    }
+}
+
 
 dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
@@ -69,7 +93,7 @@ dependencies {
     implementation ("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.bkahlert:koodies:$koodies_version")
     implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
-
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
 
 
 
