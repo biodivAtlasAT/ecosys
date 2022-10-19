@@ -1,10 +1,32 @@
+/*
+ * Copyright (C) 2022 Danube University Krems
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * License-Filename: LICENSE
+ */
 package at.duk.routes
 
 import at.duk.models.PackageData
 import at.duk.models.RasterData
 import at.duk.models.RasterTask
 import at.duk.services.RasterServices
-import at.duk.tables.*
+import at.duk.tables.TableRasterTasks
+import at.duk.tables.TableUploadedRasterData
+import at.duk.tables.TablePackages
+import at.duk.tables.TableRasterData
+import at.duk.tables.TableServices
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
@@ -20,8 +42,10 @@ import java.io.File
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
 
+@Suppress("LongMethod", "ComplexMethod")
 fun Route.rasterRouting(config: ApplicationConfig) {
-    val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
+    val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
+        Paths.get("").toAbsolutePath().toString()
 
     route("/admin/raster") {
 
@@ -31,11 +55,11 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
             transaction {
                 packagesList.addAll(
-                    TablePackages.select { TablePackages.deleted eq null }.orderBy(TablePackages.name)
-                        .map { rs -> PackageData(rs[TablePackages.id].value, rs[TablePackages.name], rs[TablePackages.default]) }
+                    TablePackages.select { TablePackages.deleted eq null }.orderBy(TablePackages.name).map
+                    { rs -> PackageData(rs[TablePackages.id].value, rs[TablePackages.name], rs[TablePackages.default]) }
                 )
                 idsInUse.addAll(
-                    TableRasterData.selectAll().map { rs -> rs[TableRasterData.packageId]?:-1}
+                    TableRasterData.selectAll().map { rs -> rs[TableRasterData.packageId] ?: -1 }
                 )
             }
             call.respond(
@@ -47,15 +71,17 @@ fun Route.rasterRouting(config: ApplicationConfig) {
         }
         post("/packageUpdate") {
             val formParameters = call.receiveParameters()
-            when(formParameters["mode"]?.toIntOrNull()?:-1) {
+            when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "")
-                        RasterServices.packageInsertOrUpdate(formParameters,formParameters["default"]?.toBoolean() ?: false)
+                        RasterServices.packageInsertOrUpdate(
+                            formParameters,
+                            formParameters["default"]?.toBoolean() ?: false
+                        )
                 1 -> RasterServices.packageDelete(formParameters)
                 else -> { }
             }
             call.respondRedirect("./packages")
         }
-
 
         get("/upload") {
             call.respond(FreeMarkerContent("05_RasterUpload.ftl", null))
@@ -107,27 +133,32 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                 val complexJoin = Join(
                     TableRasterTasks, TableUploadedRasterData,
                     onColumn = TableRasterTasks.uploadedRasterDataId, otherColumn = TableUploadedRasterData.id,
-                    joinType = JoinType.INNER)
+                    joinType = JoinType.INNER
+                )
 
                 val res = complexJoin.selectAll().orderBy(TableRasterTasks.start, SortOrder.DESC).limit(100)
                 res.forEach {
-                    result.add(RasterTask(it[TableRasterTasks.id].value,
-                        it[TableRasterTasks.pid],
-                        it[TableRasterTasks.start].format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss")),
-                        it[TableRasterTasks.end]?.format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss")),
-                        it[TableRasterTasks.uploadedRasterDataId],
-                        it[TableUploadedRasterData.name],
-                        it[TableRasterTasks.rc],
-                        it[TableRasterTasks.message],
-                        it[TableRasterTasks.imported]))
+                    result.add(
+                        RasterTask(
+                            it[TableRasterTasks.id].value,
+                            it[TableRasterTasks.pid],
+                            it[TableRasterTasks.start].format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss")),
+                            it[TableRasterTasks.end]?.format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm:ss")),
+                            it[TableRasterTasks.uploadedRasterDataId],
+                            it[TableUploadedRasterData.name],
+                            it[TableRasterTasks.rc],
+                            it[TableRasterTasks.message],
+                            it[TableRasterTasks.imported]
+                        )
+                    )
                 }
             }
             call.respond(FreeMarkerContent("06_RasterTasks.ftl", mapOf("result" to result)))
         }
 
         get("/tasksAction") {
-            val rasterTasksId = call.request.queryParameters["rasterTasksId"]?.toIntOrNull()?:-1
-            val mode = call.request.queryParameters["mode"]?.toIntOrNull()?:-1
+            val rasterTasksId = call.request.queryParameters["rasterTasksId"]?.toIntOrNull() ?: -1
+            val mode = call.request.queryParameters["mode"]?.toIntOrNull() ?: -1
             if (mode == 0 && rasterTasksId > -1) {
                 call.respondRedirect("./${RasterServices.importIntoRasterData(rasterTasksId)}")
                 return@get
@@ -137,8 +168,6 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
             call.respondRedirect("./tasks")
         }
-
-
 
         get("/list") {
             val liste: MutableList<RasterData> = emptyList<RasterData>().toMutableList()
@@ -152,7 +181,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
                 transaction {
                     exec(sql) { rs ->
-                        while(rs.next()) {
+                        while (rs.next()) {
                             val id = rs.getInt("id")
                             val name = rs.getString("name")
                             val dimension = rs.getString("dimension") ?: ""
@@ -167,7 +196,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
         }
 
         get("/rasterListAction") {
-            call.request.queryParameters["rasterId"]?.toIntOrNull()?.let{
+            call.request.queryParameters["rasterId"]?.toIntOrNull()?.let {
                 RasterServices.removeFromRasterData(it, dataCacheDirectory)
             }
             call.respondRedirect("./list")
@@ -177,7 +206,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             val model = mutableMapOf<String, Any>()
             call.parameters["id"]?.toIntOrNull()?.let {
                 transaction {
-                    model["combinations"] = TableRasterData.select {TableRasterData.id neq it}.map {
+                    model["combinations"] = TableRasterData.select { TableRasterData.id neq it }.map {
                         "${it[TableRasterData.packageId]}_${it[TableRasterData.serviceId]}"
                     }.distinct().joinToString()
 
@@ -187,27 +216,27 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                         }
                     }
 
-                    model["packageList"] = TablePackages.select { TablePackages.deleted eq null }.orderBy(TablePackages.name, SortOrder.ASC).map {
-                        mapOf("id" to it[TablePackages.id].toString(), "name" to it[TablePackages.name])
-                    }
-                    model["serviceList"] = TableServices.select { TableServices.deleted eq null }.orderBy(TableServices.name, SortOrder.ASC).map {
-                        mapOf("id" to it[TableServices.id].toString(), "name" to it[TableServices.name])
-                    }
+                    model["packageList"] = TablePackages.select { TablePackages.deleted eq null }
+                        .orderBy(TablePackages.name, SortOrder.ASC)
+                        .map { mapOf("id" to it[TablePackages.id].toString(), "name" to it[TablePackages.name]) }
+                    model["serviceList"] = TableServices.select { TableServices.deleted eq null }
+                        .orderBy(TableServices.name, SortOrder.ASC)
+                        .map { mapOf("id" to it[TableServices.id].toString(), "name" to it[TableServices.name]) }
                 }
             }
             call.respond(FreeMarkerContent("08_RasterData.ftl", model))
         }
 
         get("/dataAction") {
-            val id = call.request.queryParameters["id"]?.toIntOrNull()?:-1
+            val id = call.request.queryParameters["id"]?.toIntOrNull() ?: -1
             val name = call.request.queryParameters["name_"].toString()
-            val packageId = call.request.queryParameters["packageId"]?.toIntOrNull()?:-1
-            val serviceId = call.request.queryParameters["serviceId"]?.toIntOrNull()?:-1
-            val dimension = call.request.queryParameters["dimension"]?:""
+            val packageId = call.request.queryParameters["packageId"]?.toIntOrNull() ?: -1
+            val serviceId = call.request.queryParameters["serviceId"]?.toIntOrNull() ?: -1
+            val dimension = call.request.queryParameters["dimension"] ?: ""
 
             if (id > -1 && packageId > -1 && serviceId > -1)
                 transaction {
-                    TableRasterData.update ({ TableRasterData.id eq id }) {
+                    TableRasterData.update({ TableRasterData.id eq id }) {
                         it[TableRasterData.name] = name
                         it[TableRasterData.packageId] = packageId
                         it[TableRasterData.serviceId] = serviceId
@@ -218,9 +247,5 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
             call.respondRedirect("./list")
         }
-
-
-
     }
 }
-

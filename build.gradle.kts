@@ -1,17 +1,34 @@
+/*
+ * Copyright (C) 2022 Danube University Krems
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * License-Filename: LICENSE
+ */
 import io.gitlab.arturbosch.detekt.Detekt
 
-val ktor_version: String by project
-val kotlin_version: String by project
-val logback_version: String by project
-val jsoup_version: String by project
-val hikaricp_version: String by project
-val postgresql_version: String by project
-val flyway_version: String by project
-val exposed_version: String by project
-val koodies_version: String by project
-val jackson_version: String by project
+val ktorVersion: String by project
+val kotlinVersion: String by project
+val logbackVersion: String by project
+val jsoupVersion: String by project
+val hikaricpVersion: String by project
+val postgresqlVersion: String by project
+val flywayVersion: String by project
+val exposedVersion: String by project
+val koodiesVersion: String by project
+val jacksonVersion: String by project
 val detektPluginVersion: String by project
-
 
 plugins {
     application
@@ -68,34 +85,30 @@ tasks.withType<Detekt> detekt@{
     }
 }
 
-
 dependencies {
-    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-host-common-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.0")
-    implementation("io.ktor:ktor-server-html-builder-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-html-builder-jvm:$ktorVersion")
     implementation("org.jetbrains:kotlin-css-jvm:1.0.0-pre.129-kotlin-1.4.20")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
-    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-    implementation("org.jsoup:jsoup:$jsoup_version")
-    implementation("io.ktor:ktor-client-cio:$ktor_version")
-    implementation("io.ktor:ktor-server-freemarker:$ktor_version")
-    implementation ("com.zaxxer:HikariCP:$hikaricp_version") // JDBC Connection Pool
-    implementation ("org.postgresql:postgresql:$postgresql_version") // JDBC Connector for PostgreSQL
-    implementation("org.flywaydb:flyway-core:$flyway_version")
-    implementation ("org.jetbrains.exposed:exposed-core:$exposed_version")
-    implementation ("org.jetbrains.exposed:exposed-dao:$exposed_version")
-    implementation ("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation ("org.jetbrains.exposed:exposed-java-time:$exposed_version")
-    implementation("com.bkahlert:koodies:$koodies_version")
-    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("org.jsoup:jsoup:$jsoupVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-server-freemarker:$ktorVersion")
+    implementation("com.zaxxer:HikariCP:$hikaricpVersion") // JDBC Connection Pool
+    implementation("org.postgresql:postgresql:$postgresqlVersion") // JDBC Connector for PostgreSQL
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+    implementation("com.bkahlert:koodies:$koodiesVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
 
-
-
-
+    testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }

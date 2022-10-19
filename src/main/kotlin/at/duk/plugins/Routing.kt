@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2022 Danube University Krems
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * License-Filename: LICENSE
+ */
 package at.duk.plugins
 
 import at.duk.routes.adminRouting
@@ -25,15 +43,18 @@ fun Application.configureRouting() {
         rasterRouting(config)
         layerRouting(config)
 
-        val dataCacheDirectory = environment?.config?.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
+        val dataCacheDirectory = environment?.config?.propertyOrNull("dataCache.directory")
+            ?.getString() ?: Paths.get("").toAbsolutePath().toString()
         val cachePath = File(dataCacheDirectory).resolve("AlaNavigation")
 
         get("/") {
             // get Biodiversity-Atlas navigation from data cache
             val co = File(cachePath.path).resolve("navigation.html").readText()
             // get ecosys.html.body.inc and ecosysHtmlHeaderInc from resources folder
-            val ecosysHtmlBodyInc = this.javaClass.classLoader.getResource("static/ecosys.html.body.inc")?.readText()
-            val ecosysHtmlHeaderInc = this.javaClass.classLoader.getResource("static/ecosys.html.header.inc")?.readText()
+            val ecosysHtmlBodyInc =
+                this.javaClass.classLoader.getResource("static/ecosys.html.body.inc")?.readText()
+            val ecosysHtmlHeaderInc =
+                this.javaClass.classLoader.getResource("static/ecosys.html.header.inc")?.readText()
             // fetch the tag where the html should be placed
             val doc = Jsoup.parse(co)
             if (ecosysHtmlHeaderInc != null) {
@@ -50,8 +71,8 @@ fun Application.configureRouting() {
 
         get("/assets/svg/{showSVG}") {
             val svgDataFolder = File(dataCacheDirectory).resolve("svg")
-            val fileName = call.parameters["showSVG"]?.toString()?:""
-            if(fileName == "")
+            val fileName = call.parameters["showSVG"]?.toString() ?: ""
+            if (fileName == "")
                 call.respond(HttpStatusCode.NotFound)
 
             val file = File("$svgDataFolder/$fileName")
@@ -62,6 +83,5 @@ fun Application.configureRouting() {
             )
             call.respondFile(file)
         }
-
     }
 }

@@ -62,8 +62,27 @@ style:
   UnusedImports:
     active: true
   WildcardImport:
-    excludes: ''
+    excludes: 'build.gradle.kts'
     excludeImports: '
       kotlinx.html.*,
-      kotlinx.html.dom.*
+      kotlinx.html.dom.*,
+      io.ktor.http.*,
+      io.ktor.client.request.*,
+      io.ktor.client.statement.*,
+      kotlin.test.*,
+      io.ktor.server.testing.*,
+      org.jetbrains.exposed.sql.*,
+      io.ktor.server.config.*,
+      io.ktor.server.routing.*,
+      io.ktor.server.response.*,
+      io.ktor.server.request.*,
+      io.ktor.server.freemarker.*,
+      io.ktor.server.application.*,
+      io.ktor.server.html.*,
+      kotlinx.html.*,
+      kotlinx.css.*,
+      io.ktor.server.plugins.contentnegotiation.*,
+      io.ktor.serialization.kotlinx.json.*,
+      io.ktor.server.http.content.*,
+      io.ktor.*,
       '

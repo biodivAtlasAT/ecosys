@@ -1,13 +1,29 @@
+/*
+ * Copyright (C) 2022 Danube University Krems
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * License-Filename: LICENSE
+ */
 package at.duk.routes
 
-import at.duk.DUMMY_SVG_PATH
 import at.duk.models.CategoryData
 import at.duk.models.ServiceData
 import at.duk.services.AdminServices
-import at.duk.services.AdminServices.Companion.getSVGDataFolder
-import at.duk.services.AdminServices.Companion.getUniqueSVGName
-import at.duk.services.AdminServices.Companion.resolveSVGPath
-import at.duk.services.RasterServices
+import at.duk.services.AdminServices.getSVGDataFolder
+import at.duk.services.AdminServices.getUniqueSVGName
+import at.duk.services.AdminServices.resolveSVGPath
 import at.duk.tables.TableCategories
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
@@ -23,8 +39,6 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Paths
-import java.time.LocalDateTime
-
 
 fun Route.adminRouting(config: ApplicationConfig) {
     val dataCacheDirectory =
@@ -55,14 +69,16 @@ fun Route.adminRouting(config: ApplicationConfig) {
             call.respond(
                 FreeMarkerContent(
                     "02_Categories.ftl",
-                    mapOf("result" to categoriesList, "maxCount" to categoriesList.size, "idsInUse" to idsInUse.distinct())
+                    mapOf(
+                        "result" to categoriesList, "maxCount" to categoriesList.size, "idsInUse" to idsInUse.distinct()
+                    )
                 )
             )
         }
 
         post("/categoryUpdate") {
             val formParameters = call.receiveParameters()
-            when(formParameters["mode"]?.toIntOrNull()?:-1) {
+            when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "")
                         AdminServices.categoryInsertOrUpdate(formParameters)
                 1 -> AdminServices.categoryDelete(formParameters)
@@ -79,11 +95,16 @@ fun Route.adminRouting(config: ApplicationConfig) {
             transaction {
                 servicesList.addAll(
                     TableServices.select { TableServices.deleted eq null }.orderBy(TableServices.name)
-                        .map { rs -> ServiceData(rs[TableServices.id].value, rs[TableServices.name], null,rs[TableServices.categoryId],
-                            resolveSVGPath(rs[TableServices.svgPath]), rs[TableServices.originalSvgName]?:"dummy.svg" ) }
-                )
+                        .map { rs ->
+                            ServiceData(
+                                rs[TableServices.id].value, rs[TableServices.name], null,
+                                rs[TableServices.categoryId], resolveSVGPath(rs[TableServices.svgPath]),
+                                rs[TableServices.originalSvgName] ?: "dummy.svg"
+                            )
+                        }
+                    )
                 idsInUse.addAll(
-                    TableRasterData.selectAll().map { rs -> rs[TableRasterData.serviceId]?:-1}
+                    TableRasterData.selectAll().map { rs -> rs[TableRasterData.serviceId] ?: -1 }
                 )
                 categoriesList.addAll(
                     TableCategories.select { TableCategories.deleted eq null }.orderBy(TableCategories.name)
@@ -94,14 +115,17 @@ fun Route.adminRouting(config: ApplicationConfig) {
             call.respond(
                 FreeMarkerContent(
                     "03_Services.ftl",
-                    mapOf("result" to servicesList, "maxCount" to servicesList.size, "idsInUse" to idsInUse.distinct(), "categoriesList" to categoriesList)
+                    mapOf(
+                        "result" to servicesList, "maxCount" to servicesList.size,
+                        "idsInUse" to idsInUse.distinct(), "categoriesList" to categoriesList
+                    )
                 )
             )
         }
 
         post("/serviceUpdate") {
             val formParameters = call.receiveParameters()
-            when(formParameters["mode"]?.toIntOrNull()?:-1) {
+            when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "" && (formParameters["categoryId"]?.toIntOrNull() ?: -1) != -1)
                     AdminServices.serviceInsertOrUpdate(formParameters)
                 1 -> AdminServices.serviceDelete(formParameters)
@@ -148,11 +172,8 @@ fun Route.adminRouting(config: ApplicationConfig) {
             call.respondRedirect("./services")
         }
 
-
         get("/cache/delete") {
             call.respond(FreeMarkerContent("14_CacheDelete.ftl", null))
         }
-
     }
 }
-
