@@ -18,13 +18,24 @@
  */
 package at.duk.routes
 
+import at.duk.models.Feature
+import at.duk.models.FeatureCollection
+import at.duk.models.Geometry
+import at.duk.models.Properties
+import at.duk.models.spatial.SpatialLayerPart
+import at.duk.services.LayerServices.fetchLayerFromSpatial
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Route.layerRouting(config: ApplicationConfig) {
+    val mapper = jacksonObjectMapper()
+
     route("/admin/layer") {
 
         get("/upload") {
@@ -45,7 +56,38 @@ fun Route.layerRouting(config: ApplicationConfig) {
         }
 
         get("/sync") {
+            fetchLayerFromSpatial(config)
             call.respond(FreeMarkerContent("13_SpatialSync.ftl", null))
+        }
+
+        // for testing only
+        get("/geoJson/{layerId}"){
+            call.parameters["layerId"]?.toIntOrNull()?.let {
+
+                val sql = "select properties, ST_AsGeoJSON(geom) as geom from layer_details where layer_id=$it"
+                val features = mutableListOf<Feature>()
+                val featureCollection = FeatureCollection("FeatureCollection", features)
+                transaction {
+                    exec(sql) { rs ->
+                        var index = 0
+                        while (rs.next() && index <300) {
+                            index++
+                            val x = rs.getString("properties")?.toString()?:""
+                            val properties: Properties = mapper.readValue(x)
+                            val jsonCoordinates: SpatialLayerPart = mapper.readValue(rs.getString("geom"))
+                            features.add(Feature("Feature", properties, jsonCoordinates))
+
+                            println("----------------------")
+                            println(properties)
+                        }
+                    }
+                }
+
+
+                call.respondText(mapper.writeValueAsString(featureCollection))
+
+            }
+
         }
     }
 }
