@@ -65,6 +65,7 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
             showResults = L.Util.bind(this.showGetFeatureInfo, this);
         $.ajax({
             url: url,
+            headers: { 'Host': 'spatial.biodiversityatlas.at' },
             success: function (data, status, xhr) {
                 var err = typeof data === 'string' ? null : data;
                 console.log(data);
@@ -118,11 +119,13 @@ L.tileLayer.betterWms = function (url, options) {
     return new L.TileLayer.BetterWMS(url, options);
 };
 
-var states = L.tileLayer.betterWms('https://spatial.biodiversityatlas.at/geoserver/gwc/service',
+//var states = L.tileLayer.betterWms('https://spatial.biodiversityatlas.at/geoserver/gwc/service',
+var states = L.tileLayer.betterWms('http://localhost:8081/geoserver/wms',
     {
         format: 'image/png',
         transparent: true,
-        layers: "ALA:bezirk_wgs84_iso"
+        //layers: "ALA:bezirk_wgs84_iso"
+        layers: "bezirk_wgs84_iso"
     });
 states.addTo(map);
 </script>
