@@ -22,8 +22,10 @@ import at.duk.plugins.configureRouting
 import at.duk.plugins.configureTemplating
 import at.duk.plugins.configureSerialization
 import freemarker.cache.ClassTemplateLoader
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
+import io.ktor.server.plugins.cors.routing.*
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import java.io.File
@@ -37,7 +39,10 @@ fun main(args: Array<String>): Unit =
 fun Application.module() {
     val database = AppDataBase(environment.config)
     database.init()
-
+    install(CORS) {
+        anyHost()
+        allowHeader(HttpHeaders.AccessControlAllowOrigin)
+    }
     install(FreeMarker) {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
     }

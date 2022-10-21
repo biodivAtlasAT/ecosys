@@ -60,6 +60,10 @@ fun Route.layerRouting(config: ApplicationConfig) {
             call.respond(FreeMarkerContent("13_SpatialSync.ftl", null))
         }
 
+        get("/show") {
+            call.respond(FreeMarkerContent("99_Development.ftl", null))
+        }
+
         // for testing only
         get("/geoJson/{layerId}"){
             call.parameters["layerId"]?.toIntOrNull()?.let {

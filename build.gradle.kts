@@ -108,7 +108,7 @@ dependencies {
     implementation("com.bkahlert:koodies:$koodiesVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
-
+    implementation("io.ktor:ktor-server-cors:$ktorVersion")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
