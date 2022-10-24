@@ -18,21 +18,14 @@
  */
 package at.duk.services
 
-import at.duk.models.PackageData
-import at.duk.models.EcosysPackageDataResponse
-import at.duk.models.ResponseError
-import at.duk.models.CategoryData
-import at.duk.models.ServiceData
-import at.duk.models.EcosysServiceDataResponse
-import at.duk.models.RasterDataRequest
-import at.duk.models.RasterServiceVal
-import at.duk.models.RasterServiceVals
-import at.duk.models.EcosysRasterDataResponse
+import at.duk.models.*
 import at.duk.services.AdminServices.resolveSVGPath
+import at.duk.tables.TableLayers
 import at.duk.tables.TablePackages
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -49,6 +42,25 @@ object ApiServices {
                 }
             }
             return mapper.writeValueAsString(EcosysPackageDataResponse(ResponseError(0, ""), packageList))
+        }
+
+        fun generateLayersResponse(): String {
+            val layerList = mutableListOf<LayerData>()
+            transaction {
+                layerList.addAll(
+                    TableLayers.select { TableLayers.enabled eq true }.orderBy(TableLayers.name)
+                        .map { rs -> LayerData(rs[TableLayers.id].value, rs[TableLayers.name], true, rs[TableLayers.key] ) }
+                )
+            }
+            return mapper.writeValueAsString(EcosysLayerDataResponse(ResponseError(0, ""), layerList))
+        }
+
+        fun generateRasterDataResponseIntersect(): String {
+
+
+            val dummy = "{\"error\": {\"no\": 0,\"msg\": \"\"},\"data\": [{\"id\": 1,\"vals\": {\"val\": \"13.234\",\"quantil\": \"2\"},\"svg\": \"./svg/empty.svg\",\"dim\": \"km\"},	{\"id\": 4, \"vals\": {\"val\": \"3.22\",\"quantil\": \"4\"},\"svg\": \"./svg/empty.svg\",\"dim\": \"kg\"},]}"
+            return dummy
+
         }
 
         fun generateServiceResponse(packageId: Int): String {

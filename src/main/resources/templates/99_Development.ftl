@@ -95,7 +95,8 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
                 width: size.x,
                 layers: this.wmsParams.layers,
                 query_layers: this.wmsParams.layers,
-                info_format: 'text/html'
+                //info_format: 'text/html'
+                info_format: 'application/json'
             };
 
         params[params.version === '1.3.0' ? 'i' : 'x'] = point.x;
@@ -124,8 +125,10 @@ var states = L.tileLayer.betterWms('http://localhost:8081/geoserver/wms',
     {
         format: 'image/png',
         transparent: true,
-        //layers: "ALA:bezirk_wgs84_iso"
-        layers: "bezirk_wgs84_iso"
+        //for spatial portal -  layers: "ALA:bezirk_wgs84_iso"
+        layers: "gemeinde_wgs84_iso",
+        //layers: "bezirk_wgs84_iso"
+        //layers: "kleinregnoe_iso_wgs84"
     });
 states.addTo(map);
 </script>

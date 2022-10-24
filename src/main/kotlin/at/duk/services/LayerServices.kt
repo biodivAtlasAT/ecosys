@@ -7,6 +7,7 @@ import at.duk.models.spatial.SpatialLayerPart
 import at.duk.models.spatial.SpatialLayers
 import at.duk.models.spatial.SpatialObjects
 import at.duk.tables.TableLayers
+import at.duk.tables.TableRasterTasks
 import at.duk.tables.TableUploadedRasterData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -16,8 +17,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.config.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import java.io.File
 
 object LayerServices {
@@ -30,7 +33,7 @@ object LayerServices {
             val spatialLayers: SpatialLayers = mapper.readValue(java.net.URL(urlShapes))
             spatialLayers.forEach { sl ->
                 println("ID: ${sl.id} Name: ${sl.name}")
-                if (sl.id == 10033) {
+                if (sl.id == 10033 || sl.id == 10034 || sl.id == 10053) {
                     var layerId: Int = -1
                     transaction {
                         layerId = TableLayers.insertAndGetId {
@@ -43,6 +46,13 @@ object LayerServices {
                     val urlFields = config.getString() + "/field/cl"+sl.id
                     val spatialFields: SpatialFields = mapper.readValue(java.net.URL(urlFields))
 
+                    transaction {
+                        TableLayers.update ({ TableLayers.id eq layerId }){ table ->
+                            table[key] = spatialFields.sid
+                            table[spatialLayerId] = "cl"+sl.id
+                        }
+                    }
+
                     spatialObjects.forEach {  obj->
                         println("PID: " + obj.pid)
                         /*if(obj.pid.toInt() == 6915 || obj.pid.toInt() == 6916) {*/
@@ -50,19 +60,23 @@ object LayerServices {
                             val urlGeoJson = config.getString() + "/shape/geojson/${obj.pid}"
                             val spatialLayerPart: SpatialLayerPart = mapper.readValue(java.net.URL(urlGeoJson))
                          //   println(spatialLayerPart)
-                            val properties = mutableListOf<Properties>()
+                            //val properties = mutableListOf<Properties>()
+
+
+                            var key = ""
                             spatialFields.objects.forEach { fieldObj ->
                                 if(fieldObj.pid == obj.pid) {
-                                    println("Name ${fieldObj.id} - ${fieldObj.name} - ${fieldObj.description} - ${fieldObj.fieldname}")
+                            //        println("Name ${fieldObj.id} - ${fieldObj.name} - ${fieldObj.description} - ${fieldObj.fieldname}")
 
                                     //properties = "{ \"id\":\"${fieldObj.id}\",  \"name\":\"${fieldObj.name}\",  \"fieldname\":\"${fieldObj.fieldname}\", \"description\":\"${fieldObj.description}\"}"
 
-                                    properties.add(Properties(obj.pid, fieldObj.id, fieldObj.name, fieldObj.fieldname, fieldObj.description))
+                                    //properties.add(Properties(obj.pid, fieldObj.id, fieldObj.name, fieldObj.fieldname, fieldObj.description))
+                                    key = fieldObj.id
                                 }
                             }
                             val geomJson = mapper.writeValueAsString(spatialLayerPart)
-                            val sql = "insert into layer_details (layer_id, sequence, properties, geom) values " +
-                                    "($layerId, ${obj.pid}, '${mapper.writeValueAsString(properties.first())}', ST_GeomFromGeoJSON('$geomJson'))"
+                            val sql = "insert into layer_details (layer_id, sequence, key_id, geom) values " +
+                                    "($layerId, ${obj.pid}, '${key}', ST_GeomFromGeoJSON('$geomJson'))"
 //                            println("SQL: $sql")
                             transaction {
                                 exec(sql)

@@ -18,18 +18,42 @@
  */
 package at.duk.routes
 
+import at.duk.models.CategoryData
+import at.duk.models.LayerData
 import at.duk.models.RasterDataRequest
 import at.duk.services.ApiServices
+import at.duk.services.RasterServices
+import at.duk.tables.TableCategories
+import at.duk.tables.TableLayers
+import at.duk.tables.TableRasterData
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Route.apiRouting() {
 
     val badRequestData = "{'error':{'no':2,'msg':'Parameters not valid!'}}"
 
     route("/api") {
+        get("/layers") {
+            call.respondText(ApiServices.generateLayersResponse(),
+                ContentType.parse("application/json"), HttpStatusCode.OK)
+        }
+
+        get("/layerData") {
+            val layerID = call.request.queryParameters["layerID"]?.toIntOrNull()?:-1
+            if (layerID > -1)
+                call.respondText(ApiServices.generateRasterDataResponseIntersect(),
+                    ContentType.parse("application/json"), HttpStatusCode.OK)
+            else
+                call.respondText(badRequestData, ContentType.parse("application/json"), HttpStatusCode.OK)
+        }
+
         get("/packages") {
             call.respondText(
                 ApiServices.generatePackageResponse(), ContentType.parse("application/json"),

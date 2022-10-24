@@ -68,3 +68,9 @@ data class EcosysServiceDataResponse(val error: ResponseError, val services: Lis
 
 @Serializable
 data class EcosysPackageDataResponse(val error: ResponseError, val packages: List<PackageData>)
+
+@Serializable
+data class EcosysLayerDataResponse(val error: ResponseError, val layers: List<LayerData>)
+
+@Serializable
+data class EcosysRasterDataResponseSingle(val error: ResponseError, val data: List<RasterServiceVal>)
