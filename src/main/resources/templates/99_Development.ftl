@@ -34,6 +34,27 @@
 </html>
 <script>
 var map = L.map('map').setView([48.210033, 16.363449], 7);
+var key_id = "PG" // depending on layer
+
+function callEcosys(key_id) {
+    let layer_id = 2;
+    var url = "http://127.0.0.1:8080/api/check"
+    $.ajax({
+        url: url,
+        data: {
+            "layerId": layer_id,
+            "keyId": key_id,
+        },
+        success: function (data, status, xhr) {
+            console.log(data)
+        },
+        error: function (xhr, status, error) {
+            console.log("error" + error)
+        }
+    });
+
+}
+
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -68,7 +89,11 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
             headers: { 'Host': 'spatial.biodiversityatlas.at' },
             success: function (data, status, xhr) {
                 var err = typeof data === 'string' ? null : data;
-                console.log(data);
+                //console.log(data);
+                //var details = JSON.parse(data)
+                console.log(data.features[0].properties)
+                console.log(eval("data.features[0].properties."+key_id))
+                callEcosys(eval("data.features[0].properties."+key_id))
                 showResults(err, evt.latlng, data);
             },
             error: function (xhr, status, error) {

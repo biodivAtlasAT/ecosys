@@ -40,6 +40,27 @@ fun Route.apiRouting() {
     val badRequestData = "{'error':{'no':2,'msg':'Parameters not valid!'}}"
 
     route("/api") {
+        get ("/check") {
+            // todo: for testing reasons only, can be removed in production
+            println(call.request.queryParameters["keyId"])
+            val keyId = call.request.queryParameters["keyId"]?:"empty"
+            val layerId = call.request.queryParameters["layerId"]?.toIntOrNull()?:-1
+
+            val sql = "select id from layer_details where layer_id = $layerId and key_id = '$keyId' limit 1"
+            var layerDetailsId = -1
+            transaction {
+                exec(sql) { res ->
+                    while (res.next()) {
+                        layerDetailsId = res.getInt("id")
+                    }
+                }
+            }
+
+            call.respondText(
+                "{\"id\": \"$layerDetailsId\" }",
+                ContentType.parse("application/json"), HttpStatusCode.OK)
+        }
+
         get("/layers") {
             call.respondText(ApiServices.generateLayersResponse(),
                 ContentType.parse("application/json"), HttpStatusCode.OK)
