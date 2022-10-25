@@ -34,10 +34,12 @@
 </html>
 <script>
 var map = L.map('map').setView([48.210033, 16.363449], 7);
-var key_id = "PG" // depending on layer
+//var key_id = "PG" // Gemeinde - depending on layer
+var key_id = "PB" // Gemeinde - depending on layer
 
 function callEcosys(key_id) {
-    let layer_id = 2;
+    //let layer_id = 2; // Gemeinde
+    let layer_id = 3; // Bezirke
     var url = "http://127.0.0.1:8080/api/check"
     $.ajax({
         url: url,
@@ -151,8 +153,8 @@ var states = L.tileLayer.betterWms('http://localhost:8081/geoserver/wms',
         format: 'image/png',
         transparent: true,
         //for spatial portal -  layers: "ALA:bezirk_wgs84_iso"
-        layers: "gemeinde_wgs84_iso",
-        //layers: "bezirk_wgs84_iso"
+        //layers: "gemeinde_wgs84_iso",
+        layers: "bezirk_wgs84_iso"
         //layers: "kleinregnoe_iso_wgs84"
     });
 states.addTo(map);

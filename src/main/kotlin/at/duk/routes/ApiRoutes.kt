@@ -67,9 +67,12 @@ fun Route.apiRouting() {
         }
 
         get("/layerData") {
-            val layerID = call.request.queryParameters["layerID"]?.toIntOrNull()?:-1
-            if (layerID > -1)
-                call.respondText(ApiServices.generateRasterDataResponseIntersect(),
+            val packageId = call.request.queryParameters["packageID"]?.toIntOrNull()?:-1
+            val layerId = call.request.queryParameters["layerID"]?.toIntOrNull()?:-1
+            val layerKey = call.request.queryParameters["layerKey"]?:""
+
+            if (layerId > -1 && packageId > -1 && layerKey != "")
+                call.respondText(ApiServices.generateRasterDataResponseIntersect(packageId, layerId, layerKey),
                     ContentType.parse("application/json"), HttpStatusCode.OK)
             else
                 call.respondText(badRequestData, ContentType.parse("application/json"), HttpStatusCode.OK)

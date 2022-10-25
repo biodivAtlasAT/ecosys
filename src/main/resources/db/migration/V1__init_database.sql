@@ -201,5 +201,6 @@ ALTER TABLE IF EXISTS public.layer_details
         ON DELETE NO ACTION
         NOT VALID;
 
+create type raster_values as (r_value float(20), r_count int);
 
 END;

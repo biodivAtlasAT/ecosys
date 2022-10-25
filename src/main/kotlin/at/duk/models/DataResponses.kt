@@ -31,6 +31,9 @@ data class RasterDataResponse(val data: MutableList<RasterServiceVals>)
 data class RasterServiceVals(val id: Int, val vals: MutableList<RasterServiceVal>, val svg: String, val dim: String)
 
 @Serializable
+data class RasterServiceValsSingle(val id: Int, val vals:RasterServiceVal, val svg: String, val dim: String)
+
+@Serializable
 @Suppress("ConstructorParameterNaming")
 data class RasterServiceVal(
     @JsonProperty val `val`: Double?, @JsonIgnore val statistics: String, @JsonIgnore val dimension: String
@@ -73,4 +76,4 @@ data class EcosysPackageDataResponse(val error: ResponseError, val packages: Lis
 data class EcosysLayerDataResponse(val error: ResponseError, val layers: List<LayerData>)
 
 @Serializable
-data class EcosysRasterDataResponseSingle(val error: ResponseError, val data: List<RasterServiceVal>)
+data class EcosysRasterDataResponseSingle(val error: ResponseError, val data: List<RasterServiceValsSingle>)
