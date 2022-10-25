@@ -171,7 +171,7 @@ object RasterServices {
             }.value
 
             val sql = "UPDATE raster_data " +
-                "SET rast = $tmpTableName.rast " +
+                "SET rast = $tmpTableName.rast, srid = ST_SRID($tmpTableName.rast) " +
                     " FROM $tmpTableName " +
                     " WHERE raster_data.id = $rasterDataId " +
                     " AND $tmpTableName.rid = 1"

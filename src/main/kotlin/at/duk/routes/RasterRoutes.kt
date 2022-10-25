@@ -105,7 +105,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             multipartData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
-                        if (part.name == "fileDescription") fileDescription = part.value
+                        if (part.name == "description") fileDescription = part.value
                         if (part.name == "srid") srid = part.value
                     }
                     is PartData.FileItem -> {

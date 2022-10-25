@@ -32,4 +32,5 @@ object TableRasterData : IntIdTable("raster_data") {
         val rasterTaskId: Column<Int?> = integer("raster_task_id").nullable()
         val uploadedRasterDataId: Column<Int?> = integer("uploaded_raster_data_id").nullable()
         val statistics: Column<String?> = varchar("statistics", 128).nullable()
+        val srid: Column<String> = varchar("srid", 128).default("")
 }

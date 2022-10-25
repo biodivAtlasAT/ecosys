@@ -30,6 +30,14 @@
                 <input type="text" size="40" disabled value="${filename}">
             </div>
         </div>
+            <div class="row">
+                <div class="col-md-2 m-2">
+                    Koordinatensystem (berechnet!):
+                </div>
+                <div class="col-md-6 m-2">
+                    <input type="text" size="10" disabled value="<#if srid?has_content>${srid}</#if>">
+                </div>
+            </div>
         <div class="row">
             <div class="col-md-2 m-2">
                 Package:

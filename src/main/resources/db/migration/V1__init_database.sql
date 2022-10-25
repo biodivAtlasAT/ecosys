@@ -92,6 +92,7 @@ CREATE TABLE IF NOT EXISTS public.raster_data
     uploaded_raster_data_id integer,
     data_complete boolean,
     statistics character varying(128),
+    srid character varying(128),
     PRIMARY KEY (id)
     );
 
