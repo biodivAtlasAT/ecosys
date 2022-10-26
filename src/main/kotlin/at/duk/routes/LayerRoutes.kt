@@ -20,10 +20,9 @@ package at.duk.routes
 
 import at.duk.models.Feature
 import at.duk.models.FeatureCollection
-import at.duk.models.Geometry
 import at.duk.models.Properties
 import at.duk.models.spatial.SpatialLayerPart
-import at.duk.services.LayerServices.fetchLayerFromSpatial
+import at.duk.services.LayerServices.fetchLayerFromSpatial2
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.server.application.*
@@ -31,7 +30,9 @@ import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.launch
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.slf4j.LoggerFactory
 
 fun Route.layerRouting(config: ApplicationConfig) {
     val mapper = jacksonObjectMapper()
@@ -56,7 +57,9 @@ fun Route.layerRouting(config: ApplicationConfig) {
         }
 
         get("/sync") {
-            fetchLayerFromSpatial(config)
+            launch {
+                fetchLayerFromSpatial2(config)
+            }
             call.respond(FreeMarkerContent("13_SpatialSync.ftl", null))
         }
 

@@ -9,6 +9,7 @@ import at.duk.models.spatial.SpatialObjects
 import at.duk.tables.TableLayers
 import at.duk.tables.TableRasterTasks
 import at.duk.tables.TableUploadedRasterData
+import ch.qos.logback.classic.Logger
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.*
@@ -21,10 +22,22 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import org.slf4j.LoggerFactory
 import java.io.File
+import java.nio.file.Paths
 
 object LayerServices {
+    val logger: ch.qos.logback.classic.Logger = LoggerFactory.getLogger(at.duk.services.LayerServices::class.java) as ch.qos.logback.classic.Logger
+
+    suspend fun fetchLayerFromSpatial2(config: ApplicationConfig) {
+        logger.info("läuft?2222")
+
+    }
+
     suspend fun fetchLayerFromSpatial(config: ApplicationConfig) {
+        val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
+            Paths.get("").toAbsolutePath().toString()
+
 
         // 1. Get a list with all contextual layers --> JSON Array with "id" e.g. "10033" and "enabled=true"
         config.propertyOrNull("dataCache.spatialPortalWS")?.let { config ->

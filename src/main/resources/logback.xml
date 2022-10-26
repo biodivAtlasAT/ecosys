@@ -1,4 +1,4 @@
-<configuration>
+<configuration scan="true">
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -7,6 +7,16 @@
     <root level="trace">
         <appender-ref ref="STDOUT"/>
     </root>
+    <appender name="import_appender" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_DIR}/sync.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="at.duk.services.LayerServices" level="INFO">
+        <appender-ref ref="import_appender"/>
+    </logger>
     <logger name="org.eclipse.jetty" level="INFO"/>
     <logger name="io.netty" level="INFO"/>
 </configuration>
