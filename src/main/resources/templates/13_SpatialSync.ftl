@@ -37,7 +37,9 @@
                 Gestartet:
             </div>
             <div class="col-md-4">
-                ${started}
+                <#if started?has_content>
+                    ${started}
+                </#if>
             </div>
         </div>
         <div class="row">
