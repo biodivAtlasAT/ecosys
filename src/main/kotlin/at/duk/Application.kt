@@ -21,6 +21,8 @@ package at.duk
 import at.duk.plugins.configureRouting
 import at.duk.plugins.configureTemplating
 import at.duk.plugins.configureSerialization
+import at.duk.services.LayerServices
+import at.duk.services.LayerServices.getDataCacheSyncDirectory
 import freemarker.cache.ClassTemplateLoader
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -50,6 +52,10 @@ fun Application.module() {
     configureRouting()
     configureTemplating()
     configureSerialization()
+    if (LayerServices.checkIfSyncAlreadyRunning(environment.config)) {
+        getDataCacheSyncDirectory(environment.config).resolve("sync.started").delete()
+    }
+
     launch {
         DataCache.loadNavigation(environment.config)
         val dataCacheDirectory = environment.config.propertyOrNull("dataCache.directory")?.getString()

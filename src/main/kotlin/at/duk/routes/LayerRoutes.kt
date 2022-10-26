@@ -22,7 +22,11 @@ import at.duk.models.Feature
 import at.duk.models.FeatureCollection
 import at.duk.models.Properties
 import at.duk.models.spatial.SpatialLayerPart
+import at.duk.services.LayerServices.checkIfSyncAlreadyRunning
 import at.duk.services.LayerServices.fetchLayerFromSpatial2
+import at.duk.services.LayerServices.getFileTimeStamp
+import at.duk.services.LayerServices.getSyncLogFile
+import at.duk.services.LayerServices.syncStartUp
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.server.application.*
@@ -30,6 +34,7 @@ import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
@@ -57,11 +62,26 @@ fun Route.layerRouting(config: ApplicationConfig) {
         }
 
         get("/sync") {
-            launch {
-                fetchLayerFromSpatial2(config)
-            }
-            call.respond(FreeMarkerContent("13_SpatialSync.ftl", null))
+
+            val model = mutableMapOf<String, Any?>()
+            model["isNotRunning"] = !checkIfSyncAlreadyRunning(config)
+            model["logFile"] = getSyncLogFile(config)
+            model["started"] = getFileTimeStamp(config, "sync.started")
+            model["finished"] = getFileTimeStamp(config, "sync.finished")
+
+            call.respond(FreeMarkerContent("13_SpatialSync.ftl", model))
+
         }
+
+        get ("/syncAction") {
+            if(!checkIfSyncAlreadyRunning(config))
+                launch(Dispatchers.Default) {
+                    fetchLayerFromSpatial2(config)
+                }
+            // to ensure that the coroutine has already created the marker files!
+            Thread.sleep(2000)
+            call.respondRedirect("./sync")
+       }
 
         get("/show") {
             call.respond(FreeMarkerContent("99_Development.ftl", null))

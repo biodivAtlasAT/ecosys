@@ -1,37 +1,91 @@
 package at.duk.services
 
-import at.duk.DataCache
-import at.duk.models.Properties
 import at.duk.models.spatial.SpatialFields
 import at.duk.models.spatial.SpatialLayerPart
 import at.duk.models.spatial.SpatialLayers
 import at.duk.models.spatial.SpatialObjects
 import at.duk.tables.TableLayers
-import at.duk.tables.TableRasterTasks
-import at.duk.tables.TableUploadedRasterData
-import ch.qos.logback.classic.Logger
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import io.ktor.server.config.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Paths
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.log
 
 object LayerServices {
     val logger: ch.qos.logback.classic.Logger = LoggerFactory.getLogger(at.duk.services.LayerServices::class.java) as ch.qos.logback.classic.Logger
 
     suspend fun fetchLayerFromSpatial2(config: ApplicationConfig) {
-        logger.info("läuft?2222")
+        if (checkIfSyncAlreadyRunning(config)) {
+            logger.info("Synchronization is already running --> terminated!")
+            return
+        }
+        logger.info("Synchronization started!")
+        syncStartUp(config)
+Thread.sleep(10000L)
 
+
+        syncFinished(config)
+        logger.info("Synchronization finished!")
+
+    }
+
+    fun getFileTimeStamp(config: ApplicationConfig, fileName: String): String? {
+        val file = File(getDataCacheSyncDirectory(config).resolve(fileName).toString())
+        if (file.exists())
+            return SimpleDateFormat("dd-MM-yyyy HH-mm-ss").format(Date(file.lastModified())).toString()
+        else
+            return null
+    }
+
+
+    fun syncStartUp(config: ApplicationConfig) {
+        File(getDataCacheSyncDirectory(config).resolve("sync.finished").toString()).also {
+            if (it.exists()) it.delete()
+        }
+        File(getDataCacheSyncDirectory(config).resolve("sync.started").toString()).also {
+            if (it.exists()) it.delete()
+        }
+        File(getDataCacheSyncDirectory(config).resolve("sync.started").toString()).createNewFile()
+    }
+
+    private fun syncFinished(config: ApplicationConfig) {
+        File(getDataCacheSyncDirectory(config).resolve("sync.finished").toString()).createNewFile()
+    }
+
+    fun checkIfSyncAlreadyRunning(config: ApplicationConfig) =
+        (File(getDataCacheSyncDirectory(config).resolve("sync.started").toString()).exists() &&
+            !File(getDataCacheSyncDirectory(config).resolve("sync.finished").toString()).exists())
+
+    fun getDataCacheSyncDirectory(config: ApplicationConfig): File {
+        val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("")
+            .toAbsolutePath().toString()
+        val dataCacheDirectorySync = File(dataCacheDirectory).resolve("sync")
+        if (!dataCacheDirectorySync.exists())
+            dataCacheDirectorySync.mkdir()
+        return dataCacheDirectorySync
+    }
+
+    fun getSyncLogFile(config: ApplicationConfig): String? {
+        val logDirectory = config.propertyOrNull("logDirectory")?.getString() ?: Paths.get("")
+            .toAbsolutePath().toString()
+        return if (File(logDirectory).exists()) {
+            val logFile = File(logDirectory).resolve("sync.log")
+            //logFile.readText().replace("\n", "<br>")
+            val lines = logFile.readLines()
+            return if (lines.size > 100)
+                lines.slice(lines.size - 100 until lines.size).joinToString(separator = "<br>")
+            else
+                lines.joinToString(separator = "<br>")
+        } else {
+            null
+        }
     }
 
     suspend fun fetchLayerFromSpatial(config: ApplicationConfig) {
