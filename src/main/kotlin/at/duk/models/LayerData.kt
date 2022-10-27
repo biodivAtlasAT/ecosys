@@ -8,5 +8,6 @@ data class LayerData(
     val id: Int,
     val name: String,
     @JsonIgnore val enabled: Boolean,
+    @JsonIgnore val spatialLayerId: String,
     val key: String
 )

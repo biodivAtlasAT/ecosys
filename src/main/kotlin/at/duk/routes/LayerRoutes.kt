@@ -18,24 +18,30 @@
  */
 package at.duk.routes
 
-import at.duk.models.Feature
-import at.duk.models.FeatureCollection
-import at.duk.models.Properties
+import at.duk.models.*
 import at.duk.models.spatial.SpatialLayerPart
 import at.duk.services.LayerServices.checkIfSyncAlreadyRunning
 import at.duk.services.LayerServices.fetchLayerFromSpatial
 import at.duk.services.LayerServices.getFileTimeStamp
 import at.duk.services.LayerServices.getSyncLogFile
+import at.duk.tables.TableLayers
+import at.duk.tables.TablePackages
+import at.duk.tables.TableRasterData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 fun Route.layerRouting(config: ApplicationConfig) {
     val mapper = jacksonObjectMapper()
@@ -51,9 +57,31 @@ fun Route.layerRouting(config: ApplicationConfig) {
         }
 
         get("/list") {
-            println(config.keys())
-            call.respond(FreeMarkerContent("11_LayerList.ftl", null))
+            val layersList = mutableListOf<LayerData>()
+
+            transaction {
+                layersList.addAll(
+                    TableLayers.selectAll().orderBy(TableLayers.name).map
+                    { rs -> LayerData(rs[TableLayers.id].value, rs[TableLayers.name], rs[TableLayers.enabled],
+                        rs[TableLayers.spatialLayerId], rs[TableLayers.key]) }
+                )
+            }
+
+            call.respond(FreeMarkerContent("11_LayerList.ftl", mapOf("result" to layersList)))
         }
+
+        get("/listUpdate") {
+            val id = call.parameters["chkId"]?.toIntOrNull()?:-1
+            transaction {
+                // toggle enabled
+                val checked = TableLayers.select { TableLayers.id eq id }.first()[TableLayers.enabled]
+                TableLayers.update ({ TableLayers.id eq id }) {
+                    it[TableLayers.enabled] = !checked
+                }
+            }
+            call.respondRedirect("./list")
+        }
+
 
         get("/data") {
             call.respond(FreeMarkerContent("12_LayerData.ftl", null))

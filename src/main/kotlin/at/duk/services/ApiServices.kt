@@ -63,7 +63,7 @@ object ApiServices {
         transaction {
             layerList.addAll(
                 TableLayers.select { TableLayers.enabled eq true }.orderBy(TableLayers.name)
-                    .map { rs -> LayerData(rs[TableLayers.id].value, rs[TableLayers.name], true, rs[TableLayers.key] ) }
+                    .map { rs -> LayerData(rs[TableLayers.id].value, rs[TableLayers.name], rs[TableLayers.enabled], rs[TableLayers.spatialLayerId], rs[TableLayers.key] ) }
             )
         }
         return mapper.writeValueAsString(EcosysLayerDataResponse(ResponseError(0, ""), layerList))

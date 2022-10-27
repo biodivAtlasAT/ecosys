@@ -37,6 +37,11 @@ function submit08check(combinations) {
     return true;
 }
 
+function submit11(id) {
+    document.getElementById("chkId").value = id;
+    document.getElementById("form11").submit();
+}
+
 function categoryEdit(idx, maxCount, wordSave, wordEdit) {
     // if the "save" button is clicked, submit the form
     if (document.getElementById("bt_"+idx).classList.contains("funcSave")) {
