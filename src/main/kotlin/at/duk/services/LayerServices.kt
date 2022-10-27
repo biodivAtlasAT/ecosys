@@ -21,20 +21,17 @@ object LayerServices {
     val logger: ch.qos.logback.classic.Logger = LoggerFactory.getLogger(at.duk.services.LayerServices::class.java) as ch.qos.logback.classic.Logger
     private val mapper = jacksonObjectMapper()
 
-    suspend fun fetchLayerFromSpatial2(config: ApplicationConfig) {
+    suspend fun fetchLayerFromSpatial(config: ApplicationConfig) {
         if (!preSyncChecks(config)) return
         val spatialUrl = config.propertyOrNull("dataCache.spatialPortalWS")!!
         val layersToSync = prepareDatabase(config)
-
-        // todo
-        if(layersToSync.isEmpty()) return
-        //if(layersToSync.isNotEmpty()) return
+        if (layersToSync.isEmpty()) return
 
         logger.info("Synchronization started!")
         syncStartUp(config)
 
         val spatialLayers = loadShapes(spatialUrl.getString())
-        logger.info("${spatialLayers.size} Layers(s) are available in spatial Portal")
+        logger.info("${spatialLayers.size} Layers(s) are available in Spatial Portal")
         logger.info("${layersToSync.size} Layers(s) will be synchroized due to configuration \"dataCache.layersToSync\"")
 
         spatialLayers.filter { it.id in layersToSync }.forEach { spatialLayer ->
@@ -152,8 +149,6 @@ object LayerServices {
             null
         }
 
-
-
     fun getFileTimeStamp(config: ApplicationConfig, fileName: String): String? {
         val file = File(getDataCacheSyncDirectory(config).resolve(fileName).toString())
         if (file.exists())
@@ -161,7 +156,6 @@ object LayerServices {
         else
             return null
     }
-
 
     fun syncStartUp(config: ApplicationConfig) {
         File(getDataCacheSyncDirectory(config).resolve("sync.finished").toString()).also {
@@ -204,78 +198,5 @@ object LayerServices {
         } else {
             null
         }
-    }
-
-    suspend fun fetchLayerFromSpatial(config: ApplicationConfig) {
-        val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
-            Paths.get("").toAbsolutePath().toString()
-
-
-        // 1. Get a list with all contextual layers --> JSON Array with "id" e.g. "10033" and "enabled=true"
-        config.propertyOrNull("dataCache.spatialPortalWS")?.let { config ->
-            val urlShapes = config.getString() + "/layers/shapes"
-            val mapper = jacksonObjectMapper()
-            val spatialLayers: SpatialLayers = mapper.readValue(java.net.URL(urlShapes))
-            spatialLayers.forEach { sl ->
-                println("ID: ${sl.id} Name: ${sl.name}")
-                if (sl.id == 10033 || sl.id == 10034 || sl.id == 10053) {
-                    var layerId: Int = -1
-                    transaction {
-                        layerId = TableLayers.insertAndGetId {
-                            it[TableLayers.name] = sl.name
-                        }.value
-                    }
-
-                    val urlObjects = config.getString() + "/objects/cl"+sl.id
-                    val spatialObjects: SpatialObjects = mapper.readValue(java.net.URL(urlObjects))
-                    val urlFields = config.getString() + "/field/cl"+sl.id
-                    val spatialFields: SpatialFields = mapper.readValue(java.net.URL(urlFields))
-
-                    transaction {
-                        TableLayers.update ({ TableLayers.id eq layerId }){ table ->
-                            table[key] = spatialFields.sid
-                            table[spatialLayerId] = "cl"+sl.id
-                        }
-                    }
-
-                    spatialObjects.forEach {  obj->
-                        println("PID: " + obj.pid)
-                        /*if(obj.pid.toInt() == 6915 || obj.pid.toInt() == 6916) {*/
-                        if(obj.pid.toInt() > 0) {
-                            val urlGeoJson = config.getString() + "/shape/geojson/${obj.pid}"
-                            val spatialLayerPart: SpatialLayerPart = mapper.readValue(java.net.URL(urlGeoJson))
-                         //   println(spatialLayerPart)
-                            //val properties = mutableListOf<Properties>()
-
-
-                            var key = ""
-                            spatialFields.objects.forEach { fieldObj ->
-                                if(fieldObj.pid == obj.pid) {
-                            //        println("Name ${fieldObj.id} - ${fieldObj.name} - ${fieldObj.description} - ${fieldObj.fieldname}")
-
-                                    //properties = "{ \"id\":\"${fieldObj.id}\",  \"name\":\"${fieldObj.name}\",  \"fieldname\":\"${fieldObj.fieldname}\", \"description\":\"${fieldObj.description}\"}"
-
-                                    //properties.add(Properties(obj.pid, fieldObj.id, fieldObj.name, fieldObj.fieldname, fieldObj.description))
-                                    key = fieldObj.id
-                                }
-                            }
-                            val geomJson = mapper.writeValueAsString(spatialLayerPart)
-                            val sql = "insert into layer_details (layer_id, sequence, key_id, geom) values " +
-                                    "($layerId, ${obj.pid}, '${key}', ST_GeomFromGeoJSON('$geomJson'))"
-//                            println("SQL: $sql")
-                            transaction {
-                                exec(sql)
-                            }
-
-                        }
-                    }
-
-
-                }
-            }
-        }
-
-
-
     }
 }
