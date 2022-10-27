@@ -24,25 +24,31 @@ object LayerServices {
     suspend fun fetchLayerFromSpatial2(config: ApplicationConfig) {
         if (!preSyncChecks(config)) return
         val spatialUrl = config.propertyOrNull("dataCache.spatialPortalWS")!!
+        val layersToSync = prepareDatabase(config)
+
+        // todo
+        if(layersToSync.isEmpty()) return
+        //if(layersToSync.isNotEmpty()) return
 
         logger.info("Synchronization started!")
         syncStartUp(config)
 
         val spatialLayers = loadShapes(spatialUrl.getString())
-        logger.info("${spatialLayers.size} Layers(s) will be synchronized")
+        logger.info("${spatialLayers.size} Layers(s) are available in spatial Portal")
+        logger.info("${layersToSync.size} Layers(s) will be synchroized due to configuration \"dataCache.layersToSync\"")
 
-        spatialLayers.forEach { spatialLayer ->
-            if (spatialLayer.id == 10057)
-                return@forEach
+        spatialLayers.filter { it.id in layersToSync }.forEach { spatialLayer ->
             logger.info("Synchronize layer \"cl${spatialLayer.id}\" - \"cl${spatialLayer.name}\"")
             try {
                 val spatialFields = loadSpatialFields(spatialUrl.getString(), spatialLayer.id) ?: return@forEach
-                val layerId = insertOrUpdateTableLayers(spatialLayer, spatialFields.id)
+                val layerId = insertOrUpdateTableLayers(spatialLayer, spatialFields.sid)
 
                 transaction {
                     TableLayerDetails.deleteWhere { TableLayerDetails.layerId eq layerId }
                     loadSpatialObjects(spatialUrl.getString(), spatialLayer.id).forEach { spatialObject ->
+                        Thread.sleep(1000)
                         loadSpatialLayerPart(spatialUrl.getString(), spatialObject.pid)?.let { spatialLayerPart ->
+                            Thread.sleep(1000)
                             val key = spatialFields.objects.first { it.pid == spatialObject.pid }.id
                             val geomJson = mapper.writeValueAsString(spatialLayerPart)
                             exec("insert into layer_details (layer_id, sequence, key_id, geom) values " +
@@ -61,6 +67,24 @@ object LayerServices {
 
     }
 
+    private fun prepareDatabase(config: ApplicationConfig) : List<Int> {
+        val layersToSync = config.propertyOrNull("dataCache.layersToSync")?.getString()?.replace(" ", "")?.
+            split(",")?.filter { it.toIntOrNull() != null }?.map { it.toInt() }?: emptyList()
+
+        if (layersToSync.isEmpty()) {
+            logger.info("No layers to sync - due to configuration!")
+            logger.info("Database tables remain unchanged!")
+            return emptyList()
+        }
+        transaction {
+            val idsToDelete = TableLayers.select { TableLayers.spatialLayerId notInList(layersToSync.toMutableList()
+                .map { "cl$it" }) }.map { it[TableLayers.id].value }
+            TableLayerDetails.deleteWhere { TableLayerDetails.layerId inList(idsToDelete) }
+            TableLayers.deleteWhere { TableLayers.id inList(idsToDelete) }
+        }
+        return layersToSync
+    }
+
     private fun preSyncChecks(config: ApplicationConfig) : Boolean {
         if (checkIfSyncAlreadyRunning(config)) {
             logger.info("Synchronization is already running --> terminated!")
@@ -77,7 +101,7 @@ object LayerServices {
     private fun insertOrUpdateTableLayers(spatialLayerItem: SpatialLayersItem, spatialFieldsId: String): Int {
         var layerId: Int = -1
         transaction {
-            TableLayers.select {TableLayers.spatialLayerId eq "cl$spatialLayerItem.id"}.forEach {
+            TableLayers.select {TableLayers.spatialLayerId eq "cl${spatialLayerItem.id}"}.forEach {
                 layerId = it[TableLayers.id].value
             }
             if (layerId == -1) {
@@ -133,7 +157,7 @@ object LayerServices {
     fun getFileTimeStamp(config: ApplicationConfig, fileName: String): String? {
         val file = File(getDataCacheSyncDirectory(config).resolve(fileName).toString())
         if (file.exists())
-            return SimpleDateFormat("dd-MM-yyyy HH-mm-ss").format(Date(file.lastModified())).toString()
+            return SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Date(file.lastModified())).toString()
         else
             return null
     }
