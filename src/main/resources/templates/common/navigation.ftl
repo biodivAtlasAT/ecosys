@@ -13,13 +13,8 @@
                 <!--ul><a href="/admin/raster/data" class="<#if naviSel == "8">naviSelected</#if>">Daten</a></ul-->
             </li>
             <li>Layerdaten
-                <ul><a href="/admin/layer/upload" class="<#if naviSel == "9">naviSelected</#if>">Upload</a></ul>
-                <ul><a href="/admin/layer/tasks" class="<#if naviSel == "10">naviSelected</#if>">Tasks</a></ul>
                 <ul><a href="/admin/layer/list" class="<#if naviSel == "11">naviSelected</#if>">Liste</a></ul>
-                <ul><a href="/admin/layer/data" class="<#if naviSel == "12">naviSelected</#if>">Daten</a></ul>
-            </li>
-            <li>Synchronisation
-                <ul><a href="/admin/layer/sync" class="<#if naviSel == "13">naviSelected</#if>">Spatial - Portal</a></ul>
+                <ul><a href="/admin/layer/sync" class="<#if naviSel == "13">naviSelected</#if>">Sync Spatial-Portal</a></ul>
             </li>
             <li>Konfiguration
                 <ul><a href="/admin/cache/delete" class="<#if naviSel == "14">naviSelected</#if>">Cache Löschen</a></ul>

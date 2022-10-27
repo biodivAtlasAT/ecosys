@@ -48,14 +48,6 @@ fun Route.layerRouting(config: ApplicationConfig) {
 
     route("/admin/layer") {
 
-        get("/upload") {
-            call.respond(FreeMarkerContent("09_LayerUpload.ftl", null))
-        }
-
-        get("/tasks") {
-            call.respond(FreeMarkerContent("10_LayerTasks.ftl", null))
-        }
-
         get("/list") {
             val layersList = mutableListOf<LayerData>()
 
@@ -80,11 +72,6 @@ fun Route.layerRouting(config: ApplicationConfig) {
                 }
             }
             call.respondRedirect("./list")
-        }
-
-
-        get("/data") {
-            call.respond(FreeMarkerContent("12_LayerData.ftl", null))
         }
 
         get("/sync") {
