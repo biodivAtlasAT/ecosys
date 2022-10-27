@@ -9,7 +9,7 @@
         <#include "common/navigation.ftl">
     </div>
     <div class="col-md-8 m-4">
-        <h1 class="text-primary">Layer List</h1>
+        <h1 class="text-primary">Liste der synchronisierten Vektor-Layer</h1>
         <div class="row">
             <div class="md-col-10">
                 <table class="table table-striped">
