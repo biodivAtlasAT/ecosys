@@ -18,25 +18,38 @@
  */
 package at.duk.services
 
-import at.duk.models.*
+import at.duk.models.PackageData
+import at.duk.models.EcosysPackageDataResponse
+import at.duk.models.ResponseError
+import at.duk.models.LayerData
+import at.duk.models.EcosysLayerDataResponse
+import at.duk.models.RasterServiceValsSingle
+import at.duk.models.EcosysRasterDataResponseSingle
+import at.duk.models.RasterServiceVal
+import at.duk.models.ServiceData
+import at.duk.models.CategoryData
+import at.duk.models.EcosysServiceDataResponse
+import at.duk.models.RasterDataRequest
+import at.duk.models.RasterServiceVals
+import at.duk.models.EcosysRasterDataResponse
 import at.duk.services.AdminServices.resolveSVGPath
-import at.duk.tables.*
+import at.duk.tables.TablePackages
+import at.duk.tables.TableLayers
+import at.duk.tables.TableLayerDetails
+import at.duk.tables.TableRasterData
+import at.duk.tables.TableServices
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
 import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.StatementType
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.ResultSet
 
 object ApiServices {
     private val mapper = jacksonObjectMapper()
 
-    private fun <T:Any> String.execAndMap(transaction: Transaction, transform : (ResultSet) -> T) : List<T> {
+    private fun <T : Any> String.execAndMap(transaction: Transaction, transform: (ResultSet) -> T): List<T> {
         val result = arrayListOf<T>()
         transaction.exec(this, emptyList(), StatementType.SELECT) { rs ->
             while (rs.next()) {
@@ -63,7 +76,12 @@ object ApiServices {
         transaction {
             layerList.addAll(
                 TableLayers.select { TableLayers.enabled eq true }.orderBy(TableLayers.name)
-                    .map { rs -> LayerData(rs[TableLayers.id].value, rs[TableLayers.name], rs[TableLayers.enabled], rs[TableLayers.spatialLayerId], rs[TableLayers.key] ) }
+                    .map { rs ->
+                        LayerData(
+                            rs[TableLayers.id].value, rs[TableLayers.name], rs[TableLayers.enabled],
+                            rs[TableLayers.spatialLayerId], rs[TableLayers.key]
+                        )
+                    }
             )
         }
         return mapper.writeValueAsString(EcosysLayerDataResponse(ResponseError(0, ""), layerList))
@@ -74,22 +92,27 @@ object ApiServices {
         transaction {
             var layerDetailsId = -1
             TableLayerDetails.select {
-                TableLayerDetails.layerId eq layerId }.andWhere {
-                TableLayerDetails.keyId eq layerKey }.also {
+                TableLayerDetails.layerId eq layerId
+                }.andWhere {
+                    TableLayerDetails.keyId eq layerKey
+                }.also {
                     if (!it.empty())
                         layerDetailsId = it.first()[TableLayerDetails.id].value
             }
             if (layerDetailsId > -1)
                 fillRasterServiceValsSingleList(packageId, layerDetailsId, rasterServiceValsSingle)
         }
-        return mapper.writeValueAsString(EcosysRasterDataResponseSingle(ResponseError(0, ""),
-            rasterServiceValsSingle))
+        return mapper.writeValueAsString(
+            EcosysRasterDataResponseSingle(ResponseError(0, ""), rasterServiceValsSingle)
+        )
     }
 
-    private fun fillRasterServiceValsSingleList(packageId: Int, layerDetailsId: Int, rasterServiceValsSingle: MutableList<RasterServiceValsSingle>) {
-        var statistics = ""
-        var dimension = ""
-        var rasterId = -1
+    private fun fillRasterServiceValsSingleList(
+        packageId: Int, layerDetailsId: Int, rasterServiceValsSingle: MutableList<RasterServiceValsSingle>
+    ) {
+        var statistics: String
+        var dimension: String
+        var rasterId: Int
 
         // for each service in the named package
         transaction {
@@ -101,9 +124,12 @@ object ApiServices {
                     dimension = row[TableRasterData.dimension].toString()
                     statistics = row[TableRasterData.statistics].toString()
                 }
-                val avg = rasterId?.let { it1 -> getAveragePerRaster(layerDetailsId, it1) }
+                val avg = getAveragePerRaster(layerDetailsId, rasterId)
+                // val avg = rasterId?.let { it1 -> getAveragePerRaster(layerDetailsId, it1) }
                 rasterServiceValsSingle.add(
-                    RasterServiceValsSingle(it.id, RasterServiceVal(avg, statistics?:"", dimension?:""), it.svgPath?:"", dimension?:"")
+                    RasterServiceValsSingle(
+                        it.id, RasterServiceVal(avg, statistics, dimension), it.svgPath ?: "", dimension
+                    )
                 )
             }
         }
@@ -111,12 +137,13 @@ object ApiServices {
 
     private fun getAveragePerRaster(layerId: Int, rasterId: Int): Double? {
         val sql = "with resultRecords as (" +
-                " select ST_ValueCount(gleich) result from ( " +
-                " select st_intersection(subRaster.rast, subLayer.rast) as gleich from " +
-                " (select ST_AsRaster(layer_details.geom, raster_data.rast) rast from layer_details, raster_data " +
-                " where layer_details.id = $layerId and raster_data.id = $rasterId) as subLayer," +
-                " (select raster_data.rast from raster_data where raster_data.id = $rasterId) as subRaster) as resultRecords) " +
-                " select sum((result::text::raster_values).r_value *(result::text::raster_values).r_count) / sum((result::text::raster_values).r_count) as average from resultRecords;"
+            " select ST_ValueCount(gleich) result from ( " +
+            " select st_intersection(subRaster.rast, subLayer.rast) as gleich from " +
+            " (select ST_AsRaster(layer_details.geom, raster_data.rast) rast from layer_details, raster_data " +
+            " where layer_details.id = $layerId and raster_data.id = $rasterId) as subLayer," +
+            " (select raster_data.rast from raster_data where raster_data.id = $rasterId) as subRaster) as " +
+            "resultRecords) select sum((result::text::raster_values).r_value *(result::text::raster_values).r_count)" +
+                " / sum((result::text::raster_values).r_count) as average from resultRecords;"
 
         var result: List<Pair<String, Double?>> = emptyList()
         transaction {
@@ -126,7 +153,6 @@ object ApiServices {
         }
         return result.first().second
     }
-
 
     private fun getServicesForPackage(packageId: Int): MutableList<ServiceData> {
         val sql = "select s.original_svg_name as original_svg_name, s.svg_path as svg_path, s.id as service_id, " +
@@ -158,8 +184,9 @@ object ApiServices {
     }
 
     fun generateServiceResponse(packageId: Int): String =
-         mapper.writeValueAsString(EcosysServiceDataResponse(ResponseError(0, ""),
-             getServicesForPackage(packageId)))
+         mapper.writeValueAsString(
+             EcosysServiceDataResponse(ResponseError(0, ""), getServicesForPackage(packageId))
+         )
 
     fun generateRasterDataResponseResponse(rasterDataRequest: RasterDataRequest): String {
 

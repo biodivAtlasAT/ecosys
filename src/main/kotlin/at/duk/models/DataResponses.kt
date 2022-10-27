@@ -31,7 +31,7 @@ data class RasterDataResponse(val data: MutableList<RasterServiceVals>)
 data class RasterServiceVals(val id: Int, val vals: MutableList<RasterServiceVal>, val svg: String, val dim: String)
 
 @Serializable
-data class RasterServiceValsSingle(val id: Int, val vals:RasterServiceVal, val svg: String, val dim: String)
+data class RasterServiceValsSingle(val id: Int, val vals: RasterServiceVal, val svg: String, val dim: String)
 
 @Serializable
 @Suppress("ConstructorParameterNaming")

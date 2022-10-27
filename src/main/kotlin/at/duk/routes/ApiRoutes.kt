@@ -18,21 +18,12 @@
  */
 package at.duk.routes
 
-import at.duk.models.CategoryData
-import at.duk.models.LayerData
 import at.duk.models.RasterDataRequest
 import at.duk.services.ApiServices
-import at.duk.services.RasterServices
-import at.duk.tables.TableCategories
-import at.duk.tables.TableLayers
-import at.duk.tables.TableRasterData
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Route.apiRouting() {
@@ -40,11 +31,11 @@ fun Route.apiRouting() {
     val badRequestData = "{'error':{'no':2,'msg':'Parameters not valid!'}}"
 
     route("/api") {
-        get ("/check") {
+        get("/check") {
             // todo: for testing reasons only, can be removed in production
             println(call.request.queryParameters["keyId"])
-            val keyId = call.request.queryParameters["keyId"]?:"empty"
-            val layerId = call.request.queryParameters["layerId"]?.toIntOrNull()?:-1
+            val keyId = call.request.queryParameters["keyId"] ?: "empty"
+            val layerId = call.request.queryParameters["layerId"]?.toIntOrNull() ?: -1
 
             val sql = "select id from layer_details where layer_id = $layerId and key_id = '$keyId' limit 1"
             var layerDetailsId = -1
@@ -58,22 +49,26 @@ fun Route.apiRouting() {
 
             call.respondText(
                 "{\"id\": \"$layerDetailsId\" }",
-                ContentType.parse("application/json"), HttpStatusCode.OK)
+                ContentType.parse("application/json"), HttpStatusCode.OK
+            )
         }
 
         get("/layers") {
-            call.respondText(ApiServices.generateLayersResponse(),
-                ContentType.parse("application/json"), HttpStatusCode.OK)
+            call.respondText(
+                ApiServices.generateLayersResponse(), ContentType.parse("application/json"), HttpStatusCode.OK
+            )
         }
 
         get("/layerData") {
-            val packageId = call.request.queryParameters["packageID"]?.toIntOrNull()?:-1
-            val layerId = call.request.queryParameters["layerID"]?.toIntOrNull()?:-1
-            val layerKey = call.request.queryParameters["layerKey"]?:""
+            val packageId = call.request.queryParameters["packageID"]?.toIntOrNull() ?: -1
+            val layerId = call.request.queryParameters["layerID"]?.toIntOrNull() ?: -1
+            val layerKey = call.request.queryParameters["layerKey"] ?: ""
 
             if (layerId > -1 && packageId > -1 && layerKey != "")
-                call.respondText(ApiServices.generateRasterDataResponseIntersect(packageId, layerId, layerKey),
-                    ContentType.parse("application/json"), HttpStatusCode.OK)
+                call.respondText(
+                    ApiServices.generateRasterDataResponseIntersect(packageId, layerId, layerKey),
+                    ContentType.parse("application/json"), HttpStatusCode.OK
+                )
             else
                 call.respondText(badRequestData, ContentType.parse("application/json"), HttpStatusCode.OK)
         }

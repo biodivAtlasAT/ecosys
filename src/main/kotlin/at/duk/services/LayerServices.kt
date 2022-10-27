@@ -1,6 +1,28 @@
+/*
+ * Copyright (C) 2022 Danube University Krems
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * License-Filename: LICENSE
+ */
 package at.duk.services
 
-import at.duk.models.spatial.*
+import at.duk.models.spatial.SpatialLayersItem
+import at.duk.models.spatial.SpatialLayers
+import at.duk.models.spatial.SpatialObjects
+import at.duk.models.spatial.SpatialFields
+import at.duk.models.spatial.SpatialLayerPart
 import at.duk.tables.TableLayerDetails
 import at.duk.tables.TableLayers
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -15,12 +37,15 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
+@Suppress("TooManyFunctions")
 object LayerServices {
-    val logger: ch.qos.logback.classic.Logger = LoggerFactory.getLogger(at.duk.services.LayerServices::class.java) as ch.qos.logback.classic.Logger
+    val logger: ch.qos.logback.classic.Logger = LoggerFactory.getLogger(at.duk.services.LayerServices::class.java)
+            as ch.qos.logback.classic.Logger
     private val mapper = jacksonObjectMapper()
 
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
     suspend fun fetchLayerFromSpatial(config: ApplicationConfig) {
         if (!preSyncChecks(config)) return
         val spatialUrl = config.propertyOrNull("dataCache.spatialPortalWS")!!
@@ -32,7 +57,9 @@ object LayerServices {
 
         val spatialLayers = loadShapes(spatialUrl.getString())
         logger.info("${spatialLayers.size} Layers(s) are available in Spatial Portal")
-        logger.info("${layersToSync.size} Layers(s) will be synchroized due to configuration \"dataCache.layersToSync\"")
+        logger.info(
+            "${layersToSync.size} Layers(s) will be synchroized due to configuration \"dataCache.layersToSync\""
+        )
 
         spatialLayers.filter { it.id in layersToSync }.forEach { spatialLayer ->
             logger.info("Synchronize layer \"cl${spatialLayer.id}\" - \"cl${spatialLayer.name}\"")
@@ -48,8 +75,10 @@ object LayerServices {
                             Thread.sleep(1000)
                             val key = spatialFields.objects.first { it.pid == spatialObject.pid }.id
                             val geomJson = mapper.writeValueAsString(spatialLayerPart)
-                            exec("insert into layer_details (layer_id, sequence, key_id, geom) values " +
-                                   "($layerId, ${spatialObject.pid}, '${key}', ST_GeomFromGeoJSON('$geomJson'))")
+                            exec(
+                                "insert into layer_details (layer_id, sequence, key_id, geom) values " +
+                                   "($layerId, ${spatialObject.pid}, '$key', ST_GeomFromGeoJSON('$geomJson'))"
+                            )
                         }
                     }
                 }
@@ -61,12 +90,11 @@ object LayerServices {
 
         syncFinished(config)
         logger.info("Synchronization finished!")
-
     }
 
-    private fun prepareDatabase(config: ApplicationConfig) : List<Int> {
+    private fun prepareDatabase(config: ApplicationConfig): List<Int> {
         val layersToSync = config.propertyOrNull("dataCache.layersToSync")?.getString()?.replace(" ", "")?.
-            split(",")?.filter { it.toIntOrNull() != null }?.map { it.toInt() }?: emptyList()
+            split(",")?.filter { it.toIntOrNull() != null }?.map { it.toInt() } ?: emptyList()
 
         if (layersToSync.isEmpty()) {
             logger.info("No layers to sync - due to configuration!")
@@ -74,15 +102,16 @@ object LayerServices {
             return emptyList()
         }
         transaction {
-            val idsToDelete = TableLayers.select { TableLayers.spatialLayerId notInList(layersToSync.toMutableList()
-                .map { "cl$it" }) }.map { it[TableLayers.id].value }
+            val idsToDelete = TableLayers.select {
+                TableLayers.spatialLayerId notInList(layersToSync.toMutableList().map { "cl$it" })
+            }.map { it[TableLayers.id].value }
             TableLayerDetails.deleteWhere { TableLayerDetails.layerId inList(idsToDelete) }
             TableLayers.deleteWhere { TableLayers.id inList(idsToDelete) }
         }
         return layersToSync
     }
 
-    private fun preSyncChecks(config: ApplicationConfig) : Boolean {
+    private fun preSyncChecks(config: ApplicationConfig): Boolean {
         if (checkIfSyncAlreadyRunning(config)) {
             logger.info("Synchronization is already running --> terminated!")
             return false
@@ -98,7 +127,7 @@ object LayerServices {
     private fun insertOrUpdateTableLayers(spatialLayerItem: SpatialLayersItem, spatialFieldsId: String): Int {
         var layerId: Int = -1
         transaction {
-            TableLayers.select {TableLayers.spatialLayerId eq "cl${spatialLayerItem.id}"}.forEach {
+            TableLayers.select { TableLayers.spatialLayerId eq "cl${spatialLayerItem.id}" }.forEach {
                 layerId = it[TableLayers.id].value
             }
             if (layerId == -1) {
@@ -108,7 +137,7 @@ object LayerServices {
                     it[TableLayers.key] = spatialFieldsId
                 }.value
             } else {
-                TableLayers.update ({ TableLayers.id eq layerId }) {
+                TableLayers.update({ TableLayers.id eq layerId }) {
                     it[TableLayers.name] = spatialLayerItem.name
                     it[TableLayers.key] = spatialFieldsId
                 }
@@ -117,14 +146,16 @@ object LayerServices {
         return layerId
     }
 
+    @Suppress("SwallowedException")
     private fun loadShapes(spatialUrl: String): SpatialLayers =
         try {
             mapper.readValue(java.net.URL("$spatialUrl/layers/shapes"))
         } catch (ex: java.io.FileNotFoundException) {
-            logger.warn("${spatialUrl}/layers/shapes - URL not configured correctly)")
+            logger.warn("$spatialUrl/layers/shapes - URL not configured correctly)")
             SpatialLayers()
         }
 
+    @Suppress("SwallowedException")
     private fun loadSpatialObjects(spatialUrl: String, spatialLayerItemId: Int): SpatialObjects =
         try {
             mapper.readValue(java.net.URL("$spatialUrl/objects/cl$spatialLayerItemId"))
@@ -133,6 +164,7 @@ object LayerServices {
             SpatialObjects()
         }
 
+    @Suppress("SwallowedException")
     private fun loadSpatialFields(spatialUrl: String, spatialLayerItemId: Int): SpatialFields? =
         try {
             mapper.readValue(java.net.URL("$spatialUrl/field/cl$spatialLayerItemId"))
@@ -141,6 +173,7 @@ object LayerServices {
             null
         }
 
+    @Suppress("SwallowedException")
     private fun loadSpatialLayerPart(spatialUrl: String, spatialObjectId: String): SpatialLayerPart? =
         try {
             mapper.readValue(java.net.URL("$spatialUrl/shape/geojson/$spatialObjectId"))
@@ -172,8 +205,8 @@ object LayerServices {
     }
 
     fun checkIfSyncAlreadyRunning(config: ApplicationConfig) =
-        (File(getDataCacheSyncDirectory(config).resolve("sync.started").toString()).exists() &&
-            !File(getDataCacheSyncDirectory(config).resolve("sync.finished").toString()).exists())
+            File(getDataCacheSyncDirectory(config).resolve("sync.started").toString()).exists() &&
+            !File(getDataCacheSyncDirectory(config).resolve("sync.finished").toString()).exists()
 
     fun getDataCacheSyncDirectory(config: ApplicationConfig): File {
         val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("")
@@ -189,7 +222,6 @@ object LayerServices {
             .toAbsolutePath().toString()
         return if (File(logDirectory).exists()) {
             val logFile = File(logDirectory).resolve("sync.log")
-            //logFile.readText().replace("\n", "<br>")
             val lines = logFile.readLines()
             return if (lines.size > 100)
                 lines.slice(lines.size - 100 until lines.size).joinToString(separator = "<br>")

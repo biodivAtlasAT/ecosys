@@ -18,26 +18,25 @@
  */
 package at.duk.routes
 
-import at.duk.models.*
+import at.duk.models.LayerData
+import at.duk.models.Feature
+import at.duk.models.FeatureCollection
+import at.duk.models.Properties
 import at.duk.models.spatial.SpatialLayerPart
 import at.duk.services.LayerServices.checkIfSyncAlreadyRunning
 import at.duk.services.LayerServices.fetchLayerFromSpatial
 import at.duk.services.LayerServices.getFileTimeStamp
 import at.duk.services.LayerServices.getSyncLogFile
 import at.duk.tables.TableLayers
-import at.duk.tables.TablePackages
-import at.duk.tables.TableRasterData
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -54,8 +53,12 @@ fun Route.layerRouting(config: ApplicationConfig) {
             transaction {
                 layersList.addAll(
                     TableLayers.selectAll().orderBy(TableLayers.name).map
-                    { rs -> LayerData(rs[TableLayers.id].value, rs[TableLayers.name], rs[TableLayers.enabled],
-                        rs[TableLayers.spatialLayerId], rs[TableLayers.key]) }
+                    { rs ->
+                        LayerData(
+                            rs[TableLayers.id].value, rs[TableLayers.name], rs[TableLayers.enabled],
+                            rs[TableLayers.spatialLayerId], rs[TableLayers.key]
+                        )
+                    }
                 )
             }
 
@@ -63,11 +66,11 @@ fun Route.layerRouting(config: ApplicationConfig) {
         }
 
         get("/listUpdate") {
-            val id = call.parameters["chkId"]?.toIntOrNull()?:-1
+            val id = call.parameters["chkId"]?.toIntOrNull() ?: -1
             transaction {
                 // toggle enabled
                 val checked = TableLayers.select { TableLayers.id eq id }.first()[TableLayers.enabled]
-                TableLayers.update ({ TableLayers.id eq id }) {
+                TableLayers.update({ TableLayers.id eq id }) {
                     it[TableLayers.enabled] = !checked
                 }
             }
@@ -83,11 +86,10 @@ fun Route.layerRouting(config: ApplicationConfig) {
             model["finished"] = getFileTimeStamp(config, "sync.finished")
 
             call.respond(FreeMarkerContent("13_SpatialSync.ftl", model))
-
         }
 
-        get ("/syncAction") {
-            if(!checkIfSyncAlreadyRunning(config))
+        get("/syncAction") {
+            if (!checkIfSyncAlreadyRunning(config))
                 launch(Dispatchers.Default) {
                     fetchLayerFromSpatial(config)
                 }
@@ -100,8 +102,8 @@ fun Route.layerRouting(config: ApplicationConfig) {
             call.respond(FreeMarkerContent("99_Development.ftl", null))
         }
 
-        // for testing only
-        get("/geoJson/{layerId}"){
+        // todo: for testing only
+        get("/geoJson/{layerId}") {
             call.parameters["layerId"]?.toIntOrNull()?.let {
 
                 val sql = "select properties, ST_AsGeoJSON(geom) as geom from layer_details where layer_id=$it"
@@ -110,9 +112,9 @@ fun Route.layerRouting(config: ApplicationConfig) {
                 transaction {
                     exec(sql) { rs ->
                         var index = 0
-                        while (rs.next() && index <300) {
+                        while (rs.next() && index < 300) {
                             index++
-                            val x = rs.getString("properties")?.toString()?:""
+                            val x = rs.getString("properties")?.toString() ?: ""
                             val properties: Properties = mapper.readValue(x)
                             val jsonCoordinates: SpatialLayerPart = mapper.readValue(rs.getString("geom"))
                             features.add(Feature("Feature", properties, jsonCoordinates))
@@ -122,12 +124,8 @@ fun Route.layerRouting(config: ApplicationConfig) {
                         }
                     }
                 }
-
-
                 call.respondText(mapper.writeValueAsString(featureCollection))
-
             }
-
         }
     }
 }
