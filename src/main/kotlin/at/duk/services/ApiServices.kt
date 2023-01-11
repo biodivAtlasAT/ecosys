@@ -68,6 +68,7 @@ object ApiServices {
                     )
                 }
             }
+        println("Hugo!")
             return mapper.writeValueAsString(EcosysPackageDataResponse(ResponseError(0, ""), packageList))
         }
 
