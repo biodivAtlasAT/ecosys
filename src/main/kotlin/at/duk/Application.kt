@@ -44,6 +44,7 @@ fun Application.module() {
     install(CORS) {
         anyHost()
         allowHeader(HttpHeaders.AccessControlAllowOrigin)
+        allowHeader(HttpHeaders.ContentType)
     }
     install(FreeMarker) {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")

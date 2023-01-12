@@ -89,6 +89,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-host-common-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-swagger:$ktorVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.8.0")
     implementation("io.ktor:ktor-server-html-builder-jvm:$ktorVersion")
     implementation("org.jetbrains:kotlin-css-jvm:1.0.0-pre.129-kotlin-1.4.20")

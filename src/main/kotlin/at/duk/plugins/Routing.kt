@@ -33,6 +33,7 @@ import io.ktor.server.response.*
 import org.jsoup.Jsoup
 import java.io.File
 import java.nio.file.Paths
+import io.ktor.server.plugins.swagger.*
 
 fun Application.configureRouting() {
     val config = environment.config
@@ -46,6 +47,8 @@ fun Application.configureRouting() {
         val dataCacheDirectory = environment?.config?.propertyOrNull("dataCache.directory")
             ?.getString() ?: Paths.get("").toAbsolutePath().toString()
         val cachePath = File(dataCacheDirectory).resolve("AlaNavigation")
+
+        swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
 
         get("/") {
             // get Biodiversity-Atlas navigation from data cache

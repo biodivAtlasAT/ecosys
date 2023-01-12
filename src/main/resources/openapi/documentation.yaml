@@ -1,0 +1,113 @@
+openapi: "3.0.3"
+info:
+  title: "ECOSYS (OeKOLEITA-Project) - API"
+  description: "This API is currently used by the frontend tool of the KTOR project (<a target=\"_blank\" 
+  href=\"https://github.com/biodivAtlasAT/ecosys\">https://github.com/biodivAtlasAT/ecosys)</a>.<br>The parameter
+  values contains default values which should work when the system is newly installed"
+  version: "0.1.0"
+servers:
+- url: "https://ecosys.biodiversityatlas.at"
+- url: "https://ecosys.biodivdev.at"
+- url: "http://127.0.0.1:8080"
+paths:
+  /api/layerData:
+    get:
+      description: "Returns ecosystem services based on the given parameters."
+      parameters:
+      - name: "packageID"
+        in: "query"
+        required: true
+        schema:
+          type: "integer"
+          default: 1
+      - name: "layerID"
+        in: "query"
+        required: true
+        schema:
+          type: "integer"
+          default: 2
+      - name: "layerKey"
+        in: "query"
+        required: true
+        description: "Value of the \"key\" of the call to route: \"./api/layers\""
+        schema:
+          type: "string"
+          default: "Waldviertel"
+      responses:
+        "200":
+          description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
+          and a <i>data</i> block. If the error number ist set to 0, then the response is valid.<br>
+          The <i>data</i> block contains a list of service objects, containing the service-id, the service-value and 
+           its statistic quartile, the path to the symbol of the service and the dimension of the service."
+          content:
+            "application/json": {
+            }
+  /api/layers:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+  /api/packages:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+  /api/rasterData:
+    post:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+  /api/services:
+    get:
+      description: ""
+      parameters:
+      - name: "packageID"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+  /assets/svg/{showSVG}:
+    get:
+      description: ""
+      parameters:
+      - name: "showSVG"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "200":
+          description: "OK <br> A file response"
+          content:
+            application/*:
+              schema:
+                type: "object"
+                format: "binary"
