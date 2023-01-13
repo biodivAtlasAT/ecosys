@@ -3,7 +3,7 @@ info:
   title: "ECOSYS (OeKOLEITA-Project) - API"
   description: "This API is currently used by the frontend tool of the KTOR project (<a target=\"_blank\" 
   href=\"https://github.com/biodivAtlasAT/ecosys\">https://github.com/biodivAtlasAT/ecosys)</a>.<br>The parameter
-  values contains default values which should work when the system is newly installed"
+  values contain default values which correctly work after first system installation."
   version: "0.1.0"
 servers:
 - url: "https://ecosys.biodiversityatlas.at"
@@ -12,7 +12,7 @@ servers:
 paths:
   /api/layerData:
     get:
-      description: "Returns ecosystem services based on the given parameters."
+      description: "Returns ecosystem services included in a specific package for a given layer."
       parameters:
       - name: "packageID"
         in: "query"
@@ -44,27 +44,51 @@ paths:
             }
   /api/layers:
     get:
-      description: ""
+      description: "Returns the <i>enabled</i> layers which were synchronized with the spatial portal as configured."
       responses:
         "200":
-          description: "OK"
+          description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
+          and a <i>data</i> block. If the error number ist set to 0, then the response is valid.<br><br>
+          The <i>data</i> block contains a list of layers containing the id, the name and the key. The latter is used 
+          to access the geoserver directly from the frontend tool."
           content:
-            text/plain:
-              schema:
-                type: "string"
+            "application/json": {
+            }
   /api/packages:
     get:
-      description: ""
+      description: "Returns the available packages and its default setting."
       responses:
         "200":
-          description: "OK"
+          description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
+          and a <i>data</i> block. If the error number ist set to 0, then the response is valid.<br><br>
+          The <i>data</i> block contains a list of selectable packages. One of them is set as default package."
           content:
-            text/plain:
-              schema:
-                type: "string"
+            "application/json": {
+            }
   /api/rasterData:
     post:
-      description: ""
+      description: "Returns the service value for the requested services for the given longitude/latitude coordinates."
+      parameters:
+        - name: "packageID"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            default: 1
+        - name: "services"
+          description: "List of services to investigate."
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            default: "[1,4,5]"
+        - name: "coords"
+          description: "List of pairs of longitude/latitude coordinates."
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            default: "[(12.22/34.45),(45.12/13.998)]"
       responses:
         "200":
           description: "OK"
@@ -74,40 +98,38 @@ paths:
                 type: "string"
   /api/services:
     get:
-      description: ""
+      description: "Returns all defined services for the given package."
       parameters:
-      - name: "packageID"
-        in: "query"
-        required: false
-        schema:
-          type: "integer"
+        - name: "packageID"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            default: 1
       responses:
         "200":
-          description: "OK"
+          description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
+          and a <i>data</i> block. If the error number ist set to 0, then the response is valid.<br><br>
+          The <i>data</i> block contains a list of defined services with its attributes: id, name, category (to which 
+          the service belongs to), the path to the svg-symbol and its original filename."
           content:
-            text/plain:
-              schema:
-                type: "string"
+            "application/json": {
+            }
   /assets/svg/{showSVG}:
     get:
-      description: ""
+      description: "Returns the SVG file with the given name (no path information is needed)."
       parameters:
       - name: "showSVG"
         in: "path"
         required: true
+        description: "Name of the uploaded SVG file - can be found in result of API call to /api/services but without
+              the path name."
         schema:
           type: "string"
       responses:
         "404":
-          description: "Not Found"
-          content:
-            '*/*':
-              schema:
-                type: "object"
+          description: "File Not Found - the requested SVG file could not be found!"
         "200":
-          description: "OK <br> A file response"
+          description: "Requested SVG file."
           content:
-            application/*:
-              schema:
-                type: "object"
-                format: "binary"
+            "image/svg+xml": { }

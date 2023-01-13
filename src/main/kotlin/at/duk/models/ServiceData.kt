@@ -18,6 +18,7 @@
  */
 package at.duk.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -25,7 +26,7 @@ data class ServiceData(
     val id: Int,
     val name: String,
     val category: CategoryData?,
-    val categoryId: Int,
+    @JsonIgnore val categoryId: Int,
     val svgPath: String?,
     val originalSvgName: String?
 )

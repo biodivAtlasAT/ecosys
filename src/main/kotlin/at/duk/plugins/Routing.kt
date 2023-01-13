@@ -75,8 +75,10 @@ fun Application.configureRouting() {
         get("/assets/svg/{showSVG}") {
             val svgDataFolder = File(dataCacheDirectory).resolve("svg")
             val fileName = call.parameters["showSVG"]?.toString() ?: ""
-            if (fileName == "")
+            if (fileName == "" || !File("$svgDataFolder/$fileName").exists()) {
                 call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
 
             val file = File("$svgDataFolder/$fileName")
             call.response.header(
