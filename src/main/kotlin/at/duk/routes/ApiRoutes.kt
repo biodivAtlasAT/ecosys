@@ -28,7 +28,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Route.apiRouting() {
 
-    val badRequestData = "{'error':{'no':2,'msg':'Parameters not valid!'}}"
+    val badRequestData = "{\"error\":{\"no\":2,\"msg\":\"Parameters not valid!\"}}"
 
     route("/api") {
         get("/check") {

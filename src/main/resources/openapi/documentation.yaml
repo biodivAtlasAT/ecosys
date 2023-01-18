@@ -3,16 +3,22 @@ info:
   title: "ECOSYS (OeKOLEITA-Project) - API"
   description: "This API is currently used by the frontend tool of the KTOR project (<a target=\"_blank\" 
   href=\"https://github.com/biodivAtlasAT/ecosys\">https://github.com/biodivAtlasAT/ecosys)</a>.<br>The parameter
-  values contain default values which correctly work after first system installation."
+  values contain default values after an initial system installation.<br><br>
+  <b>Choose the appropriate server from the list to run the requests!</b>"
   version: "0.1.0"
 servers:
 - url: "https://ecosys.biodiversityatlas.at"
+  description: "Live - Service"
 - url: "https://ecosys.biodivdev.at"
+  description: "Development System"
 - url: "http://127.0.0.1:8080"
+  description: "Local Development System"
 paths:
   /api/layerData:
     get:
-      description: "Returns ecosystem services included in a specific package for a given layer."
+      tags: ["Frontend Routes"]
+      description: "Returns ecosystem services included in a specific package for a given vector layer (synchronized 
+      with Spatial Portal)."
       parameters:
       - name: "packageID"
         in: "query"
@@ -44,7 +50,9 @@ paths:
             }
   /api/layers:
     get:
-      description: "Returns the <i>enabled</i> layers which were synchronized with the spatial portal as configured."
+      tags: [ "Frontend Routes" ]
+      description: "Returns the <i>enabled</i> vector layers which were synchronized with the spatial portal as 
+      configured."
       responses:
         "200":
           description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
@@ -56,6 +64,7 @@ paths:
             }
   /api/packages:
     get:
+      tags: [ "Frontend Routes" ]
       description: "Returns the available packages and its default setting."
       responses:
         "200":
@@ -67,6 +76,7 @@ paths:
             }
   /api/rasterData:
     post:
+      tags: [ "Frontend Routes" ]
       description: "Returns the service value for the requested services for the given longitude/latitude coordinates."
       parameters:
         - name: "packageID"
@@ -81,23 +91,27 @@ paths:
           required: true
           schema:
             type: "string"
-            default: "[1,4,5]"
+            default: "[4,5,6]"
         - name: "coords"
           description: "List of pairs of longitude/latitude coordinates."
           in: "query"
           required: true
           schema:
             type: "string"
-            default: "[(12.22/34.45),(45.12/13.998)]"
+            default: "[(15.9558588/48.3805228)]"
       responses:
         "200":
-          description: "OK"
+          description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
+          and a <i>data</i> block. If the error number ist set to 0, then the response is valid.<br><br>
+          The <i>data</i> block shows a list of services and their values depending on the given coordinates - 
+          containing the service-id, the service-value and its statistic quartile, the path to the symbol of the 
+          service and the dimension of the service."
           content:
-            text/plain:
-              schema:
-                type: "string"
+            "application/json": {
+            }
   /api/services:
     get:
+      tags: [ "Frontend Routes" ]
       description: "Returns all defined services for the given package."
       parameters:
         - name: "packageID"
@@ -117,6 +131,7 @@ paths:
             }
   /assets/svg/{showSVG}:
     get:
+      tags: ["Frontend Routes"]
       description: "Returns the SVG file with the given name (no path information is needed)."
       parameters:
       - name: "showSVG"
