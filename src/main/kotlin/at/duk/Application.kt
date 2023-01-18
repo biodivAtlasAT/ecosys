@@ -23,6 +23,7 @@ import at.duk.plugins.configureTemplating
 import at.duk.plugins.configureSerialization
 import at.duk.services.LayerServices
 import at.duk.services.LayerServices.getDataCacheSyncDirectory
+import at.duk.services.LayerServices.logger
 import freemarker.cache.ClassTemplateLoader
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -31,6 +32,8 @@ import io.ktor.server.plugins.cors.routing.*
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.IOException
+import java.nio.file.Files
 import java.nio.file.Paths
 
 const val DUMMY_SVG_PATH = "static/svg/dummy.svg"
@@ -39,6 +42,21 @@ fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.module() {
+    val dataCacheDirectory = environment.config.propertyOrNull("dataCache.directory")?.getString()
+    if (dataCacheDirectory == null) {
+        log.error("----------------- dataCache.directory configuration is missing! ---------------")
+        return
+    } else {
+        if(!File(dataCacheDirectory).exists()) {
+            try {
+                Files.createDirectories(Paths.get(dataCacheDirectory))
+            } catch (ex: IOException) {
+                log.error("Directory for datache.directory could not be created!")
+                return
+            }
+        }
+    }
+
     val database = AppDataBase(environment.config)
     database.init()
     install(CORS) {
@@ -49,7 +67,6 @@ fun Application.module() {
     install(FreeMarker) {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
     }
-
     configureRouting()
     configureTemplating()
     configureSerialization()
@@ -59,8 +76,6 @@ fun Application.module() {
 
     launch {
         DataCache.loadNavigation(environment.config)
-        val dataCacheDirectory = environment.config.propertyOrNull("dataCache.directory")?.getString()
-            ?: Paths.get("").toAbsolutePath().toString()
         val filePath = File(dataCacheDirectory).resolve("AlaNavigation").resolve("navigation.html")
 
         // Wait until the file is saved - to prevent responses before the navigation is cached!

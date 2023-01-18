@@ -37,6 +37,7 @@ import io.ktor.server.plugins.swagger.*
 
 fun Application.configureRouting() {
     val config = environment.config
+    val rtLogger = log
 
     routing {
         apiRouting()
@@ -52,6 +53,11 @@ fun Application.configureRouting() {
 
         get("/") {
             // get Biodiversity-Atlas navigation from data cache
+            if (!File(cachePath.path).resolve("navigation.html").exists()) {
+                rtLogger.error("Header file navigation.html does nit exist in dataCache/AlaNavigation directory!")
+                call.respondText("Configuration Error for Navigation Header!", ContentType.Text.Html)
+                return@get
+            }
             val co = File(cachePath.path).resolve("navigation.html").readText()
             // get ecosys.html.body.inc and ecosysHtmlHeaderInc from resources folder
             val ecosysHtmlBodyInc =
@@ -67,6 +73,7 @@ fun Application.configureRouting() {
             // respond to request
             call.respondText(doc.toString(), ContentType.Text.Html)
         }
+
         // Static plugin. Try to access `/static/index.html`
         static("/static") {
             resources("static")
