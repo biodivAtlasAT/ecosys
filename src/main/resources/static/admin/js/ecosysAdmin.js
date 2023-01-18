@@ -265,3 +265,11 @@ function rasterDelete(idx) {
             keyboard: false
         }).show()
 }
+
+function addRefreshToHead() {
+    console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
+    const meta = document.createElement('meta');
+    meta.httpEquiv = "refresh";
+    meta.content = "2";
+    document.getElementsByTagName('head')[0].appendChild(meta);
+}

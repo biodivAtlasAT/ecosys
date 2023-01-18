@@ -58,7 +58,7 @@ object LayerServices {
         val spatialLayers = loadShapes(spatialUrl.getString())
         logger.info("${spatialLayers.size} Layers(s) are available in Spatial Portal")
         logger.info(
-            "${layersToSync.size} Layers(s) will be synchroized due to configuration \"dataCache.layersToSync\""
+            "${layersToSync.size} Layers(s) will be synchronized due to configuration \"dataCache.layersToSync\""
         )
 
         spatialLayers.filter { it.id in layersToSync }.forEach { spatialLayer ->

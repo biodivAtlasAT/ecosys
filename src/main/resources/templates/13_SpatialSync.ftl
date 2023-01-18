@@ -19,13 +19,14 @@
                     Starten des Synchronisationsvorganges
                 </div>
                 <div class="col-md-4">
-                    <a href="/admin/layer/syncAction" class="btn btn-primary" >Start</a>
+                    <a href="/admin/layer/syncAction" class="btn btn-primary" onClick="addRefreshToHead(); return true;">Start</a>
                 </div>
             </div>
             <div class="row col-md-10 pt-3">
                 <hr>
             </div>
         <#else>
+            <script>addRefreshToHead()</script>
             <div class="row">
                 <div class="col-md-10 alert alert-primary" role="alert">
                     Der Synchronisationsvorgang läuft!
