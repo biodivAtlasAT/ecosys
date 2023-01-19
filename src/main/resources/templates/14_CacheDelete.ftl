@@ -9,8 +9,12 @@
         <#include "common/navigation.ftl">
     </div>
     <div class="col-md-8 m-4">
-        <h1 class="text-primary">Delete Cache</h1>
+        <h1 class="text-primary">Cache löschen</h1>
+        <p>
+            Der Navigations-Cache wurde gelöscht und neu aufgebaut!
+        </p>
     </div>
+
 </div>
 
 </body>

@@ -17,7 +17,7 @@
                 <ul><a href="/admin/layer/sync" class="<#if naviSel == "13">naviSelected</#if>">Sync Spatial-Portal</a></ul>
             </li>
             <li>Konfiguration
-                <ul><a href="/admin/cache/delete" class="<#if naviSel == "14">naviSelected</#if>">Cache Löschen</a></ul>
+                <ul><a href="/admin/cache/delete" class="<#if naviSel == "14">naviSelected</#if>">Navi-Cache Löschen</a></ul>
             </li>
             <li><a href="/admin">Logout</a></li>
         </ul>

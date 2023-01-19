@@ -18,6 +18,7 @@
  */
 package at.duk.routes
 
+import at.duk.DataCache
 import at.duk.models.CategoryData
 import at.duk.models.ServiceData
 import at.duk.services.AdminServices
@@ -35,6 +36,8 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -173,6 +176,14 @@ fun Route.adminRouting(config: ApplicationConfig) {
         }
 
         get("/cache/delete") {
+            launch {
+                val filePath = File(dataCacheDirectory).resolve("AlaNavigation").resolve("navigation.html")
+                if (File("$filePath").exists()) File("$filePath").delete()
+                DataCache.loadNavigation(config)
+                // Wait until the file is saved - to prevent responses before the navigation is cached!
+                if (!File("$filePath").exists())
+                    this.coroutineContext.job.join()
+            }
             call.respond(FreeMarkerContent("14_CacheDelete.ftl", null))
         }
     }
