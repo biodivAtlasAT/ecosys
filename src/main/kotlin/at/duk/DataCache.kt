@@ -23,7 +23,10 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.config.*
+import io.ktor.server.response.*
+import koodies.text.toLowerCase
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import java.io.File
@@ -43,9 +46,62 @@ object DataCache {
                 cookie("lang", "de-AT")
             }
             if (response.status == HttpStatusCode.OK)
-                File(cachePath.resolve("navigation.html").toString()).writeText(generateNewBody(response.bodyAsText()))
+                File(cachePath.resolve("navigation.html").toString()).writeText(generateBody(response.bodyAsText(), it.getString()))
         }
         // todo: log if any problem exists
+    }
+
+    private fun generateBody(brand: String, navigationUrl: String): String {
+        val ecosys = Jsoup.parse(this.javaClass.classLoader.getResource("static/frontend/index.html")?.readText())
+
+        val brand = Jsoup.parse(brand)
+        // 1. Prepend href with navigationUrl when relative: <link rel="stylesheet" href="./..." >
+        brand.head().getElementsByTag("link").forEach {ele ->
+            if(ele.attr("href").startsWith("./") && ele.attr("rel") == "stylesheet") {
+                ele.attr("href", ele.attr("href").replace("./", "$navigationUrl/"))
+            }
+        }
+        // 2. Remove META tags in head and replace by ecosys tags
+        brand.getElementsByTag("meta").forEach { it.remove() }
+        ecosys.getElementsByTag("meta").reversed().forEach {
+            brand.head().prepend(it.toString())
+        }
+        // 3. Insert "css" and "js" links if not already included; if not included, set path to "/static..."
+        ecosys.head().getElementsByTag("script").forEach {
+            if (it.attr("src").split("/").last().toLowerCase() != "jquery.js")
+                brand.head().append(it.toString().replace("src=\"scripts", "src=\"static/frontend/scripts"))
+            }
+        ecosys.head().getElementsByTag("link").forEach {
+            if (it.attr("rel") == "stylesheet")
+                brand.head().append(it.toString().replace("href=\"styles", "href=\"static/frontend/styles"))
+        }
+        // 4. find ecosys.body, get "onload" attribute and add it to navigation.body tag
+        ecosys.getElementsByTag("body").first()?.attr("onload")?.let {
+            brand.getElementsByTag("body").first()?.attr("onload", "func_initMap();")
+        }
+        // 5. find tag with id == "id_content" and replace content with ecosys.body and put scripts from body to head
+  /*      ecosys.body().getElementsByTag("script").forEach {
+            if (it.hasAttr("src")) {
+                it.attr("src", it.attr("src").toString().replace("scripts/", "static/frontend/scripts/"))
+                val dup = it.toString()
+                it.remove()
+                brand.head().append(dup)
+            }
+        }*/
+        ecosys.body().getElementsByTag("script").forEach {
+          if (it.hasAttr("src")) {
+              it.attr("src", it.attr("src").toString().replace("scripts/", "static/frontend/scripts/"))
+          }
+      }
+        brand.getElementById("id_content")?.append(ecosys.body().toString())
+
+        // 6. replace title with ecosys.title
+
+        // check relative links zB "Kontakt" etc. Georg --> hrefs sind leer
+
+
+
+        return brand.toString()
     }
 
     private fun generateNewBody(content: String): String {

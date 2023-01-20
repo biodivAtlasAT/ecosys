@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv='cache-control' content='no-cache'>
+
+    <meta http-equiv='expires' content='0'>
+
+    <meta http-equiv='pragma' content='no-cache'>
+    <title>Ökosysteme und Lebensraumtypen</title>
+
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" type="text/css" href="styles/leaflet.css" />
+    <link rel="profile" href="https://gmpg.org/xfn/11">
+    <title>Biodiversitäts-Atlas Österreich &#8211; Frei zugängliches Onlineportal zur Entdeckung der Vielfalt an Organismen und Lebensräumen in Österreich</title>
+    <meta name="robots" content="noindex,nofollow">
+    <!--<link rel='dns-prefetch' href='//fonts.googleapis.com' />-->
+    <link rel='dns-prefetch' href='//use.fontawesome.com' />
+    <link rel='dns-prefetch' href='//s.w.org' />
+    <link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+    <link rel="alternate" type="application/rss+xml" title="Biodiversitäts-Atlas Österreich &raquo; Feed" href="https://biodiversityatlas.at/feed/" />
+    <link rel="alternate" type="application/rss+xml" title="Biodiversitäts-Atlas Österreich &raquo; Kommentar-Feed" href="https://biodiversityatlas.at/comments/feed/" />
+    <script type="text/javascript" src="scripts/jQuery.js"></script>
+    <script type="text/javascript" src="scripts/attrchange.js"></script>
+    <script type="text/javascript" src="scripts/jquery.i18n.js"></script>
+    <script src="scripts/CLDRPluralRuleParser.js"></script>
+    <script src="scripts/jquery.i18n.messagestore.js"></script>
+    <script src="scripts/jquery.i18n.fallbacks.js"></script>
+    <script src="scripts/jquery.i18n.language.js"></script>
+    <script src="scripts/jquery.i18n.parser.js"></script>
+    <script src="scripts/jquery.i18n.emitter.js"></script>
+    <script src="scripts/jquery.i18n.emitter.bidi.js"></script>
+    <script type="text/javascript" src="scripts/d3.js"></script>
+    <script type="text/javascript" src="scripts/leaflet.js"></script>
+    <script type="text/javascript" src="scripts/proj4.js"></script>
+    <script type="text/javascript" src="scripts/proj4leaflet.js"></script>
+    <script type="text/javascript" src="scripts/GeoUtils.js"></script>
+</head>
+<body onload="func_initMap();">
+<!-- Container ecosys servcies -->
+<script type="text/javascript">
+    var url_ecosys = "http://127.0.0.1:8080/";
+</script>
+
+<div id="cnt_id">
+    <div id="id_mainNav">
+        <input class="cl_button" type="button" id="id_btnLayer" data-i18n="[value]Layermodus auswählen"/>
+        <input class="cl_button" type="button" id="id_btnecosys" data-i18n="[value]Ökosystemleistungen auswählen"/>
+        <div id="id_mod_1">
+            <input class="cl_button" type="button" id="id_btnNewMark" data-i18n="[value]Marker setzen"/>
+            <input class="cl_button" type="button" id="id_btnMarkConn" data-i18n="[value]Verbindung setzen"/>
+        </div>
+        <div  id="id_mod_2">
+            <select class="cl_select" id="id_addLayer">
+            </select>
+        </div>
+        <select class="cl_select" id="id_packageID">
+        </select>
+        <select class="cl_select" id="id_mapLayer">
+            <option class="cl_option" data-i18n="Karte auswählen" selected='true' disabled>Karte auswählen</option>
+            <option class="cl_option" data-i18n="Straßenkarte" value="0">Straßenkarte</option>
+            <option class="cl_option" data-i18n="Topographiekarte" value="1">Topographiekarte</option>
+            <option class="cl_option" data-i18n="Satelitenkarte" value="2">Satelitenkarte</option>
+        </select>
+        <div class="cl_ecosys">
+        </div>
+    </div>
+    <div id="cnt_main">
+        <div id="info_icon"></div>
+        <div id="cnt_map">
+            <div id="map"></div>
+        </div>
+        <div id="cnt_info">
+            <input type="button" class="cl_button" id="bt_close_mark" data-i18n="[value]Minimaps schließen"></input>
+            <div id="info">
+            </div>
+        </div>
+    </div>
+    <div id="cnt_nav">
+        <div id="id_nav" class="cl_nav">
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="scripts/script.js"></script>
+</body>
+</html>

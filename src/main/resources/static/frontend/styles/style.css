@@ -1,0 +1,507 @@
+html, body, #map {
+    height: 100%;
+}
+body {
+    padding: 0;
+    margin: 0;
+}
+#id_welcome {
+    color: #cccccc;
+}
+.minimapNr {
+    position: absolute;
+    margin-top: 0.7em;
+    height: 2em;
+    color: red;
+}
+.markers {
+    float: left;
+    margin: 1.2em 0.8em 0.2em 0.8em;
+}
+.leaflet-popup {
+    position: relative;
+    width: 77em;
+    height: 32em;
+    z-index: 1200;
+}
+.cl_popup {
+    position: relative;
+    width: 67em;
+    height: 32em;
+    /* overflow-y: scroll; */
+}
+.cl_descr {
+    position: relative;
+    margin-top: 3.4em;
+    width: 13em;
+}
+.cl_dimension {
+    position: relative;
+    margin-top: 3.4em;
+    width: 4em;
+}
+.cl_value {
+    position: relative;
+    margin-top: 3.4em;
+    width: 4em;
+}
+.cl_qtArr {
+    position: relative;
+    margin-left: 1.2em;
+    margin-top: 1.75em;
+}
+.cl_column {
+    position: relative;
+    float: left;
+    height: 10em;
+    margin-left: 1.2em;
+}
+.cl_ecosys {
+    position: relative;
+    visibility: hidden;
+    background-color: rgba(255, 255, 255, 255);
+    top: 3em;
+    left: 8em;
+    width: 70em;
+    height: 50em;
+    z-index: 1000;
+    overflow-y: scroll;
+}
+.cl_minimap {
+    position: relative;
+    top: -3em;
+    height: 17em;
+    width: 17em;
+    margin-left: 2.4em;
+    margin-right: 2.4em;
+}
+.cl_mark {
+    position: relative;
+    top: -3em;
+}
+.cl_delMark {
+    position: absolute;
+    margin-top: 0.7em;
+    margin-left: 16em;
+    height: 2em;
+    background-image: url("/images/img_003_close.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.cl_footer {
+    position: relative;
+    width: 100%;
+}
+.cl_esysInf {
+    position: relative;
+    width: 100%;
+    height: 30em;
+    overflow-y: scroll;
+}
+.cl_headID {
+    position: relative;
+    margin-top: 0.7em;
+    height: 2em;
+    color: rgba(0, 0, 0, 1);
+}
+.cl_row {
+    position: relative;
+    width: 100%;
+    height: 10em;
+}
+.cl_fixedW {
+    position: relative;
+    width: 38em;
+    height: 10em;
+}
+.cl_quint {
+    position: relative;
+    float: left;
+    height: 7em;
+    width: 7em;
+}
+#id_mainNav {
+    position: relative;
+    height: 4.5em;
+    margin-top: 2em;
+    width: 100%;
+}
+#id_mod_1 {
+    position: relative;
+    float: left;
+    display: block;
+}
+#id_mod_2 {
+    position: relative;
+    float: left;
+    display: none;
+}
+#info {
+    height: 100%;
+    width: 100%;
+}
+#bt_close_mark {
+    position: relative;
+    top: -3.6em;
+    z-index: 1000;
+    display: none;
+}
+#bt_close {
+    float: right;
+    height: 3em;
+    z-index: 1000;
+}
+#cnt_id {
+    position: relative;
+    height: 80%;
+    width: 100%;
+}
+#cnt_main {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    float: left;
+}
+#cnt_info {
+    position: relative;
+    height: 0%;
+    width: 100%;
+}
+#cnt_map {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+#info_icon {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    padding: 1em;
+    width: 3em;
+    height: 3em;
+    z-index: 1000;
+}
+#cnt_nav {
+    position: relative;
+    float: left;
+    padding-bottom: 3em;
+    width: 0%;
+    height: 100%;
+    overflow-y: scroll;
+}
+#id_nav {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    margin-left: 1em;
+    margin-top: 1em;
+}
+.cl_button {
+    position: relative;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    background-color: #3f3f3f;
+    color: #cccccc;
+    height: 3em;
+}
+.cl_select {
+    position: relative;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+.line {
+    fill: none;
+    stroke: green;
+    stroke-width: 1px;
+}
+.leaflet-control-attribution {
+    visibility: hidden;
+}
+#id_addLayer {
+    position: relative;
+    float: left;
+}
+#id_mapLayer {
+    position: relative;
+    float: left;
+}
+.hide {
+    display: none !important;
+}
+.text-schmal {
+    max-width: 1000px
+}
+
+.page-id-506 .entry-content,
+.page-id-507 .entry-content,
+.page-id-508 .entry-content {
+    max-width: 1000px;
+}
+
+/* MAIN NAV */
+
+#site-navigation {
+    margin-top: 12px;
+}
+
+/* TOP BAR NAV */
+
+#menu-item-240 a,
+#menu-item-241 a {
+    font-size: 20px !important;
+}
+
+#menu-item-240 a {
+    color: #2eacf1;
+}
+
+#menu-item-241 a {
+    color: #4563a5;
+}
+#menu-item-243 {
+    margin-top: 4px;
+}
+#menu-item-244,
+#menu-item-245,
+#menu-item-289{
+    margin-top: 4px;
+}
+
+/* HOME HEADER */
+
+#home-header {
+    min-height: 500px;
+}
+
+#home-header-block {
+    max-width: 600px;
+    margin: 0 auto;
+    height: 100%;
+    background-color: rgba(255,255,255,0.8);
+    padding: 50px 3%;
+    margin-top: 100px;
+}
+
+#home-header-block p {
+    font-weight: 600;
+}
+
+/* HOME 5 BOXEN */
+
+#home-5-boxen h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+#home-5-boxen p {
+    margin-bottom: 15px;
+}
+
+#home-5-boxen .inside-grid-column {
+    margin-top: -20px;
+}
+
+.home5boxdiv {
+    background-color: #f7f7f7;
+    min-height: 450px;
+}
+
+.home5boxdiv p:last-child {
+    padding: 0px 15px 15px 15px;
+}
+
+/* 1 */
+
+#home-5-boxen .box1 .home5boxdiv {
+    border-top: 20px solid #ef932a;
+}
+
+/* 2 */
+
+#home-5-boxen .box2 .home5boxdiv {
+    border-top: 20px solid #49754a;
+}
+
+/* 3 */
+
+#home-5-boxen .box3 .home5boxdiv {
+    border-top: 20px solid #3ebfd1;
+}
+
+/* 4 */
+
+#home-5-boxen .box4 .home5boxdiv {
+    border-top: 20px solid #d4da2d;
+}
+
+/* 5 */
+
+#home-5-boxen .box5 .home5boxdiv {
+    border-top: 20px solid #ea5a42;
+}
+
+/* HOME Suchformular */
+
+#suchformular {
+    display: block;
+    text-align: center;
+}
+
+#suchfeld {
+    margin-bottom: 20px;
+    width: 300px;
+}
+
+/* HOME News */
+
+.home .wp-show-posts-read-more {
+    display: none;
+}
+
+#home-aktuelle-infos {
+    box-sizing: border-box;
+    border-left: 100px solid #ef7709;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+#home-aktuelle-infos .grid-container {
+    margin-left: 150px;
+    max-width: 800px;
+}
+
+/* HOME Dein Feedback */
+
+#home-dein-feedback {
+    box-sizing: border-box;
+    border-left: 100px solid #dadf40;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+#home-dein-feedback .grid-container {
+    margin-left: 150px;
+    max-width: 800px;
+}
+
+/* HOME Ueber */
+
+#home-ueber {
+    box-sizing: border-box;
+    border-left: 100px solid #11acc6;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+#home-ueber .grid-container {
+    margin-left: 150px;
+    max-width: 800px;
+}
+
+/* HOME Datenpartner */
+
+#home-datenpartner {
+    box-sizing: border-box;
+    border-left: 100px solid #ed7560;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+#home-datenpartner .lgc-column {
+    border: 1px solid red;
+    padding: 20px;
+    margin-right: 10px;
+}
+
+.wp-image-302 {
+    margin-top: 35px
+}
+
+
+/* FOOTER */
+
+.site-info {
+    display: none;
+}
+
+/* TOP FOOTER */
+
+.top-footer {
+    padding: 20px;
+    background-color: #f6f6f6;
+}
+
+.top-footer .widgettitle  {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.top-footer .gallery-item {
+    text-align: left;
+}
+
+.top-footer a  {
+    color: black;
+}
+
+/* SUB FOOTER */
+
+.sub-footer {
+    padding:3px;
+    font-size: 14px;
+}
+
+#menu-sub-footer {
+    text-align: right;
+    margin-top: 1.3em;
+}
+
+#menu-sub-footer li  {
+    display: inline !important;
+}
+
+#menu-sub-footer a  {
+    padding: 10px;
+    color: black;
+}
+
+/* RESPONSIVE */
+
+@media only screen and (max-width: 1210px) {
+    #site-navigation {
+        margin-top: 0;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .home5boxdiv {
+        margin-bottom: 50px !important;
+    }
+
+    #home-aktuelle-infos {
+        border-left: 30px solid #ef7709;
+    }
+
+    #home-dein-feedback {
+        border-left: 30px solid #dadf40;
+    }
+
+    #home-ueber {
+        border-left: 30px solid #11acc6;
+    }
+
+    #home-datenpartner {
+        border-left: 30px solid #ed7560;
+    }
+
+    #home-dein-feedback .grid-container,
+    #home-ueber .grid-container,
+    #home-datenpartner .grid-container,
+    #home-aktuelle-infos .grid-container {
+        margin-left: 10px;
+        max-width: 800px;
+    }
+}
