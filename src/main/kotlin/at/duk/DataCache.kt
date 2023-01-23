@@ -23,9 +23,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.config.*
-import io.ktor.server.response.*
 import koodies.text.toLowerCase
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
@@ -46,12 +44,13 @@ object DataCache {
                 cookie("lang", "de-AT")
             }
             if (response.status == HttpStatusCode.OK)
-                File(cachePath.resolve("navigation.html").toString()).writeText(generateBody(response.bodyAsText(), it.getString()))
+                File(cachePath.resolve("navigation.html").toString())
+                    .writeText(generateBody(response.bodyAsText(), it.getString(),
+                        config.propertyOrNull("ktor.api.url")))
         }
-        // todo: log if any problem exists
     }
 
-    private fun generateBody(brand: String, navigationUrl: String): String {
+    private fun generateBody(brand: String, navigationUrl: String, apiServer: ApplicationConfigValue?): String {
         val ecosys = Jsoup.parse(this.javaClass.classLoader.getResource("static/frontend/index.html")?.readText())
 
         val brand = Jsoup.parse(brand)
@@ -80,23 +79,29 @@ object DataCache {
             brand.getElementsByTag("body").first()?.attr("onload", "func_initMap();")
         }
         // 5. find tag with id == "id_content" and replace content with ecosys.body and put scripts from body to head
-  /*      ecosys.body().getElementsByTag("script").forEach {
-            if (it.hasAttr("src")) {
-                it.attr("src", it.attr("src").toString().replace("scripts/", "static/frontend/scripts/"))
-                val dup = it.toString()
-                it.remove()
-                brand.head().append(dup)
-            }
-        }*/
         ecosys.body().getElementsByTag("script").forEach {
           if (it.hasAttr("src")) {
               it.attr("src", it.attr("src").toString().replace("scripts/", "static/frontend/scripts/"))
           }
-      }
+        }
         brand.getElementById("id_content")?.append(ecosys.body().toString())
 
         // 6. replace title with ecosys.title
 
+        // 7. replace service api url with configuration
+        apiServer?.let { conf ->
+            brand.getElementById("id_content")?.children()?.forEach {
+                if (it.tagName() == "script" && it.data().contains("url_ecosys")) {
+                    val preChild = it.data()
+                    val startPos = preChild.indexOf("url_ecosys")
+                    val endPos = preChild.indexOf(";", startPos)
+                    val server = preChild.substring(startPos, endPos)
+                    val serverUrl = server.split("\"", "'")[1]
+                    val postChild = preChild.replace(serverUrl, conf.getString())
+                    it.text(postChild)
+                }
+            }
+        }
         // check relative links zB "Kontakt" etc. Georg --> hrefs sind leer
 
 
