@@ -50,10 +50,11 @@ object DataCache {
         }
     }
 
-    private fun generateBody(brand: String, navigationUrl: String, apiServer: ApplicationConfigValue?): String {
-        val ecosys = Jsoup.parse(this.javaClass.classLoader.getResource("static/frontend/index.html")?.readText())
+    private fun generateBody(branded: String, navigationUrl: String, apiServer: ApplicationConfigValue?): String {
+        val ecosys = this.javaClass.classLoader.getResource("static/frontend/index.html")?.readText()
+            ?.let { Jsoup.parse(it) }
 
-        val brand = Jsoup.parse(brand)
+        val brand = Jsoup.parse(branded)
         // 1. Prepend href with navigationUrl when relative: <link rel="stylesheet" href="./..." >
         brand.head().getElementsByTag("link").forEach {ele ->
             if(ele.attr("href").startsWith("./") && ele.attr("rel") == "stylesheet") {
@@ -62,29 +63,29 @@ object DataCache {
         }
         // 2. Remove META tags in head and replace by ecosys tags
         brand.getElementsByTag("meta").forEach { it.remove() }
-        ecosys.getElementsByTag("meta").reversed().forEach {
+        ecosys?.getElementsByTag("meta")?.reversed()?.forEach {
             brand.head().prepend(it.toString())
         }
         // 3. Insert "css" and "js" links if not already included; if not included, set path to "/static..."
-        ecosys.head().getElementsByTag("script").forEach {
+        ecosys?.head()?.getElementsByTag("script")?.forEach {
             if (it.attr("src").split("/").last().toLowerCase() != "jquery.js")
                 brand.head().append(it.toString().replace("src=\"scripts", "src=\"static/frontend/scripts"))
             }
-        ecosys.head().getElementsByTag("link").forEach {
+        ecosys?.head()?.getElementsByTag("link")?.forEach {
             if (it.attr("rel") == "stylesheet")
                 brand.head().append(it.toString().replace("href=\"styles", "href=\"static/frontend/styles"))
         }
         // 4. find ecosys.body, get "onload" attribute and add it to navigation.body tag
-        ecosys.getElementsByTag("body").first()?.attr("onload")?.let {
+        ecosys?.getElementsByTag("body")?.first()?.attr("onload")?.let {
             brand.getElementsByTag("body").first()?.attr("onload", "func_initMap();")
         }
         // 5. find tag with id == "id_content" and replace content with ecosys.body and put scripts from body to head
-        ecosys.body().getElementsByTag("script").forEach {
+        ecosys?.body()?.getElementsByTag("script")?.forEach {
           if (it.hasAttr("src")) {
               it.attr("src", it.attr("src").toString().replace("scripts/", "static/frontend/scripts/"))
           }
         }
-        brand.getElementById("id_content")?.append(ecosys.body().toString())
+        brand.getElementById("id_content")?.append(ecosys?.body().toString())
 
         // 6. replace title with ecosys.title
 
