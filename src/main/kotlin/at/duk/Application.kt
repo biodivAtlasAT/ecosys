@@ -23,7 +23,6 @@ import at.duk.plugins.configureTemplating
 import at.duk.plugins.configureSerialization
 import at.duk.services.LayerServices
 import at.duk.services.LayerServices.getDataCacheSyncDirectory
-import at.duk.services.LayerServices.logger
 import freemarker.cache.ClassTemplateLoader
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -41,13 +40,14 @@ const val DUMMY_SVG_PATH = "static/svg/dummy.svg"
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
 
+@Suppress("SwallowedException")
 fun Application.module() {
     val dataCacheDirectory = environment.config.propertyOrNull("dataCache.directory")?.getString()
     if (dataCacheDirectory == null) {
         log.error("----------------- dataCache.directory configuration is missing! ---------------")
         return
     } else {
-        if(!File(dataCacheDirectory).exists()) {
+        if (!File(dataCacheDirectory).exists()) {
             try {
                 Files.createDirectories(Paths.get(dataCacheDirectory))
             } catch (ex: IOException) {

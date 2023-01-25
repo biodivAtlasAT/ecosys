@@ -26,7 +26,6 @@ import io.ktor.http.*
 import io.ktor.server.config.*
 import koodies.text.toLowerCase
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
 import java.io.File
 import java.nio.file.Paths
 
@@ -45,50 +44,51 @@ object DataCache {
             }
             if (response.status == HttpStatusCode.OK)
                 File(cachePath.resolve("navigation.html").toString())
-                    .writeText(generateBody(response.bodyAsText(), it.getString(),
-                        config.propertyOrNull("ktor.api.url")))
+                    .writeText(
+                        generateBody(response.bodyAsText(), it.getString(), config.propertyOrNull("ktor.api.url"))
+                    )
         }
     }
 
     private fun generateBody(branded: String, navigationUrl: String, apiServer: ApplicationConfigValue?): String {
         val ecosys = this.javaClass.classLoader.getResource("static/frontend/index.html")?.readText()
-            ?.let { Jsoup.parse(it) }
+            ?.let { Jsoup.parse(it) } ?: return "Error in server application: cannot read index.html for merging!"
 
         val brand = Jsoup.parse(branded)
         // 1. Prepend href with navigationUrl when relative: <link rel="stylesheet" href="./..." >
-        brand.head().getElementsByTag("link").forEach {ele ->
-            if(ele.attr("href").startsWith("./") && ele.attr("rel") == "stylesheet") {
+        brand.head().getElementsByTag("link").forEach { ele ->
+            if (ele.attr("href").startsWith("./") && ele.attr("rel") == "stylesheet") {
                 ele.attr("href", ele.attr("href").replace("./", "$navigationUrl/"))
             }
         }
         // 2. Remove META tags in head and replace by ecosys tags
         brand.getElementsByTag("meta").forEach { it.remove() }
-        ecosys?.getElementsByTag("meta")?.reversed()?.forEach {
+        ecosys.getElementsByTag("meta").reversed().forEach {
             brand.head().prepend(it.toString())
         }
         // 3. Insert "css" and "js" links if not already included; if not included, set path to "/static..."
-        ecosys?.head()?.getElementsByTag("script")?.forEach {
+        ecosys.head().getElementsByTag("script").forEach {
             if (it.attr("src").split("/").last().toLowerCase() != "jquery.js")
                 brand.head().append(it.toString().replace("src=\"scripts", "src=\"static/frontend/scripts"))
-            }
-        ecosys?.head()?.getElementsByTag("link")?.forEach {
+        }
+        ecosys.head().getElementsByTag("link").forEach {
             if (it.attr("rel") == "stylesheet")
                 brand.head().append(it.toString().replace("href=\"styles", "href=\"static/frontend/styles"))
         }
         // 4. find ecosys.body, get "onload" attribute and add it to navigation.body tag
-        ecosys?.getElementsByTag("body")?.first()?.attr("onload")?.let {
+        ecosys.getElementsByTag("body").first()?.attr("onload")?.let {
             brand.getElementsByTag("body").first()?.attr("onload", "func_initMap();")
         }
         // 5. find tag with id == "id_content" and replace content with ecosys.body and put scripts from body to head
-        ecosys?.body()?.getElementsByTag("script")?.forEach {
-          if (it.hasAttr("src")) {
-              it.attr("src", it.attr("src").toString().replace("scripts/", "static/frontend/scripts/"))
-          }
+        ecosys.body().getElementsByTag("script").forEach {
+            if (it.hasAttr("src")) {
+                it.attr("src", it.attr("src").toString().replace("scripts/", "static/frontend/scripts/"))
+            }
         }
-        brand.getElementById("id_content")?.append(ecosys?.body().toString())
+        brand.getElementById("id_content")?.append(ecosys.body().toString())
 
         // 6. replace title with ecosys.title
-        ecosys?.title()?.let { brand.title(it) }
+        ecosys.title().let { brand.title(it) }
 
         // 7. replace service api url with configuration
         apiServer?.let { conf ->
@@ -105,74 +105,22 @@ object DataCache {
             }
         }
 
-        // Troubles:
-        // 1. call zu http://127.0.0.1:8080/i18n/messages.json - link wird anscheinend von einer jquery library generiert?!
-        // 2. call zu http://127.0.0.1:8080/i18n/messages_de_AT.json ebenfalls
-        // see. https://stackoverflow.com/questions/22908913/correct-way-to-specify-path-in-jquery-i18n-plugin
-        //
-        // --> Problem in Script.js line 72, 73: Pfad müsste prepended werden --> static/frontend
-        // eventuell Variable in html auslagern!?!
-
-        // 3. CORS policy am branding server zulassen
-        // https://branding.biodivdev.at/brand-2022/wp-content/themes/generatepress/fonts/generatepress.woff2
-        // schlägt derzeit fehl!
-
-        // check relative links zB "Kontakt" etc. Georg --> hrefs sind leer
-        // Georg: zweimal title!!!
-
-
-        return brand.toString()
-    }
-
-    private fun generateNewBody(content: String): String {
-        val startPos = content.indexOf("<div class=\"container-fluid\" id=\"main\">")
-        val endPos = content.indexOf("<div id=\"footer\"")
-        val sb: StringBuilder = StringBuilder(content.substring(0, startPos))
-        sb.append("<div class=\"container-fluid\" id=\"main\">")
-        sb.append("<div class=\"container-fluid\" id=\"main-content\"></div>")
-        sb.append("</div>")
-        sb.append(content.substring(endPos))
-        val doc = Jsoup.parse(sb.toString())
-        // add jquery - in live system it is included elsewhere?
-        doc.head().prepend(
-            "<script type=\"text/javascript\" " +
-                "src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js\"></script>"
-        )
-
-        val elements = emptyList<Element>().toMutableList()
-        doc.head().children().forEach {
-            if (it.attr("rel") == "stylesheet") {
-                if (it.attr("href").startsWith("/asset")) {
-                    elements.add(it)
-                    it.remove()
-                }
-                if (it.attr("href").startsWith(
-                        "https://core.biodiversityatlas.at/brand-2022/css/autocomplete-extra.min.css"
-                    )
-                ) it.remove()
-            }
-            if (it.attr("type") == "text/javascript") {
-                if (it.attr("src").startsWith("/asset") && it.attr("src")
-                        .indexOf("jquery") == -1
-                ) {
-                    elements.add(it)
-                    it.remove()
+        // 8. prepend path to i18n/messages.json
+        apiServer?.let {
+            brand.getElementById("id_content")?.children()?.forEach {
+                if (it.tagName() == "script" && it.data().contains("i18n_path_to_messages")) {
+                    val lines = it.data().lines()
+                    val newLines = mutableListOf<String>()
+                    lines.forEach { line ->
+                        if (line.contains("i18n_path_to_messages"))
+                            newLines.add(line.replace("\"\"", "\"static/frontend/\""))
+                        else
+                            newLines.add(line)
+                    }
+                    it.text(newLines.joinToString("\n"))
                 }
             }
         }
-
-        doc.title("ECOSYS")
-        doc.head().append("<script type=\"text/javascript\" charset=\"UTF-8\" src=\"./static/ecosys.js\"></script>")
-        doc.head().append("<link rel=\"stylesheet\" href=\"./static/ecosys.css\">")
-
-        var co = doc.toString().replace("Occurrence records", "ECOSYS")
-            .replace("en-AU", "de-AT")
-        co = co.replace("de_AT", "de")
-        co = co.replace("de-AT", "de")
-        co = co.replace("'lang'", "'language'")
-        co = co.replace("lang=", "language=")
-        co = co.replace("domain=biodivdev.at", "")
-
-        return co
+        return brand.toString()
     }
 }
