@@ -88,6 +88,7 @@ object DataCache {
         brand.getElementById("id_content")?.append(ecosys?.body().toString())
 
         // 6. replace title with ecosys.title
+        ecosys?.title()?.let { brand.title(it) }
 
         // 7. replace service api url with configuration
         apiServer?.let { conf ->
@@ -103,8 +104,21 @@ object DataCache {
                 }
             }
         }
-        // check relative links zB "Kontakt" etc. Georg --> hrefs sind leer
 
+        // Troubles:
+        // 1. call zu http://127.0.0.1:8080/i18n/messages.json - link wird anscheinend von einer jquery library generiert?!
+        // 2. call zu http://127.0.0.1:8080/i18n/messages_de_AT.json ebenfalls
+        // see. https://stackoverflow.com/questions/22908913/correct-way-to-specify-path-in-jquery-i18n-plugin
+        //
+        // --> Problem in Script.js line 72, 73: Pfad müsste prepended werden --> static/frontend
+        // eventuell Variable in html auslagern!?!
+
+        // 3. CORS policy am branding server zulassen
+        // https://branding.biodivdev.at/brand-2022/wp-content/themes/generatepress/fonts/generatepress.woff2
+        // schlägt derzeit fehl!
+
+        // check relative links zB "Kontakt" etc. Georg --> hrefs sind leer
+        // Georg: zweimal title!!!
 
 
         return brand.toString()
