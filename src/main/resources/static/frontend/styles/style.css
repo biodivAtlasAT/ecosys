@@ -8,6 +8,10 @@ body {
 #id_welcome {
     color: #cccccc;
 }
+.cl_wrapEsys {
+    position: relative;
+    height: 2em;
+}
 .minimapNr {
     position: absolute;
     margin-top: 0.7em;
@@ -123,7 +127,6 @@ body {
 #id_mainNav {
     position: relative;
     height: 4.5em;
-    margin-top: 2em;
     width: 100%;
 }
 #id_mod_1 {

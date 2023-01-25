@@ -113,7 +113,7 @@ object DataCache {
                     val newLines = mutableListOf<String>()
                     lines.forEach { line ->
                         if (line.contains("i18n_path_to_messages"))
-                            newLines.add(line.replace("\"\"", "\"static/frontend/\""))
+                            newLines.add(line.replace("\"i18n/\"", "\"static/frontend/i18n/\""))
                         else
                             newLines.add(line)
                     }

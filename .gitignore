@@ -35,3 +35,5 @@ out/
 ### VS Code ###
 .vscode/
 /LOG_DIR_IS_UNDEFINED/sync.log
+/src/main/resources/static/frontend/scripts/d3_old.js
+/src/main/resources/static/frontend/scripts/script_dupl.js
