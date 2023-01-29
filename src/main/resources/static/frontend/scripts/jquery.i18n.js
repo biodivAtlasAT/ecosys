@@ -167,7 +167,7 @@
 			// pass it to the parser.
 			this.parser.language = $.i18n.languages[ $.i18n().locale ] || $.i18n.languages[ 'default' ];
 			if ( message === '' ) {
-				message = key;
+				//message = key;
 			}
 			return this.parser.parse( message, parameters );
 		}
@@ -229,7 +229,6 @@
 			var $this = $( this ),
 				messageKey = $this.data( 'i18n' ),
 				lBracket, rBracket, type, key;
-
 			if ( messageKey ) {
 				lBracket = messageKey.indexOf( '[' );
 				rBracket = messageKey.indexOf( ']' );
@@ -242,7 +241,10 @@
 						$this.attr( type, i18n.parse( key ) );
 					}
 				} else {
-					$this.text( i18n.parse( messageKey ) );
+					const translatedText = i18n.parse( messageKey );
+					if ( '' !== translatedText ) {
+						$this.text( translatedText  );
+					}
 				}
 			} else {
 				$this.find( '[data-i18n]' ).i18n();
