@@ -108,11 +108,11 @@ object DataCache {
         // 8. prepend path to i18n/messages.json
         apiServer?.let {
             brand.getElementById("id_content")?.children()?.forEach {
-                if (it.tagName() == "script" && it.data().contains("i18n_path_to_messages")) {
+                if (it.tagName() == "script" && it.data().contains("url_i18n")) {
                     val lines = it.data().lines()
                     val newLines = mutableListOf<String>()
                     lines.forEach { line ->
-                        if (line.contains("i18n_path_to_messages"))
+                        if (line.contains("url_i18n"))
                             newLines.add(line.replace("\"i18n/\"", "\"static/frontend/i18n/\""))
                         else
                             newLines.add(line)

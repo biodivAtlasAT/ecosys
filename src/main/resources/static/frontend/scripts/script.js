@@ -63,8 +63,8 @@ var do_translate = function () {
 }
 func_init_i18n = function() {
     $.i18n().load({
-        'en': i18n_path_to_messages + 'messages.json',
-        'de_AT': i18n_path_to_messages + 'messages_de_AT.json'
+        'en': url_i18n + 'messages.json',
+        'de_AT': url_i18n + 'messages_de_AT.json'
     }).done(function () {
         console.log(location.href.split('lang=')[1]);
         $("html").attr("lang", location.href.split('lang=')[1]);
