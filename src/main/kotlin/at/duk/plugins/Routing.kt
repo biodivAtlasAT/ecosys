@@ -18,10 +18,7 @@
  */
 package at.duk.plugins
 
-import at.duk.routes.adminRouting
-import at.duk.routes.apiRouting
-import at.duk.routes.layerRouting
-import at.duk.routes.rasterRouting
+import at.duk.routes.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -40,6 +37,7 @@ fun Application.configureRouting() {
         adminRouting(config)
         rasterRouting(config)
         layerRouting(config)
+        biotopRouting(config)
 
         val dataCacheDirectory = environment?.config?.propertyOrNull("dataCache.directory")
             ?.getString() ?: Paths.get("").toAbsolutePath().toString()

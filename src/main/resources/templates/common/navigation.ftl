@@ -16,6 +16,10 @@
                 <ul><a href="/admin/layer/list" class="<#if naviSel == "11">naviSelected</#if>">Liste</a></ul>
                 <ul><a href="/admin/layer/sync" class="<#if naviSel == "13">naviSelected</#if>">Sync Spatial-Portal</a></ul>
             </li>
+            <li>Biotoptypen
+                <ul><a href="/admin/biotop/projects" class="<#if naviSel == "15">naviSelected</#if>">Projekte</a></ul>
+                <ul><a href="/admin/biotop/classes" class="<#if naviSel == "19">naviSelected</#if>">Klassifizierungen</a></ul>
+            </li>
             <li>Konfiguration
                 <ul><a href="/admin/cache/delete" class="<#if naviSel == "14">naviSelected</#if>">Navi-Cache Löschen</a></ul>
             </li>

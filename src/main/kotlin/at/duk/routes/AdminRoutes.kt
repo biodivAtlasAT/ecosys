@@ -186,5 +186,6 @@ fun Route.adminRouting(config: ApplicationConfig) {
             }
             call.respond(FreeMarkerContent("14_CacheDelete.ftl", null))
         }
+
     }
 }
