@@ -20,7 +20,7 @@
                     </div>
                     <div class="col-md-3 m-2"><b>${project.geoserverLayer}</b></div>
                     <div class="col-md-3 m-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="btRemoveLayer('${urlRedirect}'); return false;">Zuordnung löschen</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('btRemoveLayer').submit();">Zuordnung löschen</button>
                     </div>
                 </div>
             </div>
@@ -95,6 +95,6 @@
     </div>
 
 </div>
-
+<form id="btRemoveLayer" name="btRemoveLayer" action="./removeGeoserverData" method="POST"></form>
 </body>
 </html>

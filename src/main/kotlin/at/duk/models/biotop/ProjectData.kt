@@ -19,8 +19,13 @@
 package at.duk.models.biotop
 
 import at.duk.tables.biotop.TableProjects
+import koodies.docker.Docker
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.IntegerColumnType
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 
 @Serializable
 data class ProjectData(
@@ -40,6 +45,15 @@ data class ProjectData(
                 rs[TableProjects.geoserverLayer],
                 rs[TableProjects.colTypesCode]
             )
+        }
+        fun getById(id: Int): ProjectData? {
+            var project: ProjectData? = null
+            transaction {
+                TableProjects.select { TableProjects.id eq id }.limit(1).map { rs ->
+                    project = mapRSToProjectData(rs)
+                }
+            }
+            return project
         }
     }
 }

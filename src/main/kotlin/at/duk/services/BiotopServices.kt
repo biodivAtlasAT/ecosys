@@ -24,7 +24,12 @@ import at.duk.tables.TableRasterData
 import at.duk.tables.TablePackages
 import at.duk.tables.biotop.TableProjects
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.config.*
 import koodies.exec.Process
 import koodies.exec.error
@@ -49,6 +54,58 @@ object BiotopServices {
                 }
             }
         }
+    }
+
+    suspend fun getListOfLayers(geoserverUrl: String, geoserverWorkspace: String): List<String> {
+        val listOfLayers = mutableListOf<String>()
+        val client = HttpClient(CIO)
+        val url = "$geoserverUrl/rest/workspaces/$geoserverWorkspace/layers.json"
+        val response: HttpResponse = client.request(url) {
+            method = HttpMethod.Get
+        }
+        if (response.status == HttpStatusCode.OK) {
+            response.bodyAsText().split("\"").forEach {
+                if (it.startsWith("http"))
+                    listOfLayers.add(it.split("/").last().replace(".json", ""))
+            }
+        }
+        return listOfLayers
+    }
+
+    suspend fun getListOfFeatures(layer: String?, geoserverUrl: String, geoserverWorkspace: String): List<String> {
+        layer?.let { name ->
+            val client = HttpClient(CIO)
+            val url = "$geoserverUrl/rest/workspaces/$geoserverWorkspace/layers/$name.json"
+            val response: HttpResponse = client.request(url) {
+                method = HttpMethod.Get
+            }
+            if (response.status == HttpStatusCode.OK) {
+                return getListOfFeaturesSub(response.bodyAsText(), geoserverUrl, geoserverWorkspace)
+            }
+        }
+        return emptyList<String>()
+    }
+    private suspend fun getListOfFeaturesSub(resp: String, geoserverUrl: String, geoserverWorkspace: String): List<String> {
+        val listOfFeatures = mutableListOf<String>()
+        val featureUrl = resp.split("@").first {
+            it.startsWith("class\":\"featureType\"")}.split("\"").first {
+            it.startsWith("http") }
+        val client2 = HttpClient(CIO)
+        val response2: HttpResponse = client2.request(featureUrl) {
+            method = HttpMethod.Get
+        }
+        if (response2.status == HttpStatusCode.OK) {
+            response2.bodyAsText().split("\"attribute\":").forEach {
+                if (it.startsWith("[")) {
+                    it.split("name\":\"").forEach {
+                        val s = it.split("\"").first()
+                        if (!s.startsWith("[") && !s.contains("the_geom"))
+                            listOfFeatures.add(s)
+                    }
+                }
+            }
+        }
+        return listOfFeatures
     }
 
     fun projectInsertOrUpdate(formParameters: Parameters) =

@@ -21,6 +21,8 @@ package at.duk.routes
 import at.duk.DataCache
 import at.duk.models.biotop.ProjectData
 import at.duk.services.BiotopServices
+import at.duk.services.BiotopServices.getListOfFeatures
+import at.duk.services.BiotopServices.getListOfLayers
 import at.duk.tables.TableRasterData
 import at.duk.tables.biotop.TableProjects
 import io.ktor.client.*
@@ -34,6 +36,8 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -42,10 +46,25 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 
 fun Route.biotopRouting(config: ApplicationConfig) {
-    val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
-        Paths.get("").toAbsolutePath().toString()
+    val geoserverWorkspace = config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
+    val geoserverUrl = config.propertyOrNull("geoserver.url")?.getString() ?: ""
 
     route("/admin/biotop") {
+        post("/{projectId}/removeGeoserverData") {
+            call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
+                transaction {
+                    TableProjects.update({ TableProjects.id eq projectId }) {
+                        it[TableProjects.geoserverLayer] = null
+                        it[TableProjects.geoserverWorkspace] = null
+                        it[TableProjects.colTypesCode] = null
+                        it[TableProjects.colSpeciesCode] = null
+                        it[TableProjects.updated] = LocalDateTime.now()
+                    }
+                }
+            }
+            call.respondRedirect("/admin/biotop/projects")
+        }
+
         get("/projects") {
             val projectsList = mutableListOf<ProjectData>()
 
@@ -82,75 +101,21 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         }
 
         get("/{projectId}/server") {
-
-            var project: ProjectData? = null
-            val workspace = "topp"
-
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
-                transaction {
-                    TableProjects.select { TableProjects.id eq projectId }.limit(1).map { rs ->
-                        project = ProjectData.mapRSToProjectData(rs)
-                    }
-                }
+                val project: ProjectData? = ProjectData.getById(projectId)
+                val listOfFeatures = call.request.queryParameters["layer"]?.let { layer ->
+                    getListOfFeatures(layer, geoserverUrl, geoserverWorkspace)
+                } ?: emptyList()
+                val listOfLayers = if (project?.geoserverLayer == null) {
+                    getListOfLayers(geoserverUrl, geoserverWorkspace)
+                } else emptyList()
 
-                // fetch layer data from selected layer
-                var temp1 = "LEER temp1"
-                var temp2 = "LEER temp2"
-                val listOfFeatures = mutableListOf<String>()
-                call.request.queryParameters["layer"]?.let { layer ->
-                    val client = HttpClient(CIO)
-                    //http://localhost:8081/geoserver/rest/workspaces/topp/datastores/taz_shapes/featuretypes/tasmania_state_boundaries.json
-                    val url = "http://localhost:8081/geoserver/rest/workspaces/topp/layers/$layer.json"
-                    val response: HttpResponse = client.request(url) {
-                        method = HttpMethod.Get
-                    }
-                    if (response.status == HttpStatusCode.OK) {
-                        temp1 = response.bodyAsText()
-                    }
-                    val featureUrl = temp1.split("@").first {
-                        it.startsWith("class\":\"featureType\"")}.split("\"").first {
-                            it.startsWith("http") }
-                    val client2 = HttpClient(CIO)
-                    val response2: HttpResponse = client.request(featureUrl) {
-                        method = HttpMethod.Get
-                    }
-                    if (response2.status == HttpStatusCode.OK) {
-                        temp2 = response2.bodyAsText()
-                    }
-
-                    temp2.split("\"attribute\":").forEach {
-                        if (it.startsWith("[")) {
-                            it.split("name\":\"").forEach {
-                                val s = it.split("\"").first()
-                                if (!s.startsWith("[") && !s.contains("the_geom"))
-                                    listOfFeatures.add(s)
-                            }
-                        }
-                    }
-                }
-                // fetch list of available layers
-                var temp = "LEER"
-                val listOfLayers = mutableListOf<String>()
-                if (project?.geoserverLayer == null) {
-                    val client = HttpClient(CIO)
-                    val url = "http://localhost:8081/geoserver/rest/workspaces/topp/layers.json"
-                    val response: HttpResponse = client.request(url) {
-                        method = HttpMethod.Get
-                    }
-                    if (response.status == HttpStatusCode.OK) {
-                        response.bodyAsText().split("\"").forEach {
-                            if (it.startsWith("http"))
-                                listOfLayers.add(it.split("/").last().replace(".json", ""))
-                        }
-                    }
-
-                }
                 call.respond(FreeMarkerContent("17_BTGeoServer.ftl",
-                    mapOf("project" to project, "temp" to temp, "listOfLayers" to listOfLayers,
+                    mapOf("project" to project, "listOfLayers" to listOfLayers,
                         "urlRedirect" to this.context.request.path(),
                         "listOfFeatures" to listOfFeatures.sorted(),
                         "selectedLayer" to call.request.queryParameters["layer"],
-                        "workspace" to "ECO")
+                        "workspace" to geoserverWorkspace)
                 ))
             }
         }
