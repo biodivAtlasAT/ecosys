@@ -18,33 +18,28 @@
  */
 package at.duk.services
 
-import at.duk.models.PackageData
-import at.duk.models.EcosysPackageDataResponse
-import at.duk.models.ResponseError
-import at.duk.models.LayerData
-import at.duk.models.EcosysLayerDataResponse
-import at.duk.models.RasterServiceValsSingle
-import at.duk.models.EcosysRasterDataResponseSingle
-import at.duk.models.RasterServiceVal
-import at.duk.models.ServiceData
-import at.duk.models.CategoryData
-import at.duk.models.EcosysServiceDataResponse
-import at.duk.models.RasterDataRequest
-import at.duk.models.RasterServiceVals
-import at.duk.models.EcosysRasterDataResponse
+import at.duk.models.*
+import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices.resolveSVGPath
-import at.duk.tables.TablePackages
-import at.duk.tables.TableLayers
-import at.duk.tables.TableLayerDetails
-import at.duk.tables.TableRasterData
-import at.duk.tables.TableServices
+import at.duk.tables.*
+import at.duk.tables.biotop.TableProjects
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.config.*
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.StatementType
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.ResultSet
+
 
 object ApiServices {
     private val mapper = jacksonObjectMapper()
@@ -263,5 +258,57 @@ object ApiServices {
         }
 
         return selStmtList.joinToString(separator = " union all ", postfix = " order by service_id, pointId") { it }
+    }
+
+    fun generateProjectsResponse(): String {
+        @Serializable
+        data class ProjectTemp(val id: Int, val name: String)
+        @Serializable
+        data class EcosysProjectDataResponse(val error: ResponseError, val projects: List<ProjectTemp>)
+
+        val projectList = emptyList<ProjectTemp>().toMutableList()
+
+        transaction {
+            TableProjects.select { TableProjects.deleted eq null }.andWhere { TableProjects.enabled eq true } .forEach { rs ->
+                projectList.add(
+                    ProjectTemp(rs[TableProjects.id].value, rs[TableProjects.name])
+                )
+            }
+        }
+        return mapper.writeValueAsString(EcosysProjectDataResponse(ResponseError(0, ""), projectList))
+    }
+
+    suspend fun generateProjectResponse(projectId: Int, config: ApplicationConfig): String {
+        val collectoryUrl = config.propertyOrNull("atlas.collectory")?.getString() ?: ""
+        data class EcosysProjectDataResponse(val error: ResponseError, val projects: ProjectData?)
+
+        val project = ProjectData.getById(projectId)
+            ?: return mapper.writeValueAsString(EcosysProjectDataResponse(ResponseError(1, "No project found for this id"), null))
+
+        // merge project data with data from data resource from Atlas
+        var dataResource: JsonNode? = null
+        if(project.resource != "" && project.resource != null) {
+            val client = HttpClient(CIO)
+            val url = "$collectoryUrl/dataResource/${project.resource}"
+            val response: HttpResponse = client.request(url) {
+                method = HttpMethod.Get
+            }
+            if (response.status == HttpStatusCode.OK) {
+                dataResource = mapper.readTree(response.bodyAsText())
+                // add project metadata to Atlas metadata (for convenience only)
+                (dataResource as ObjectNode).put("area", project.area)
+                (dataResource as ObjectNode).put("epoch", project.epoch)
+            }
+        }
+
+        val projectDataJson = mapper.writeValueAsString(project)
+        val projectDataJsonTree = mapper.readTree(projectDataJson)
+        (projectDataJsonTree as ObjectNode).replace("dataResource", dataResource)
+
+        val node: JsonNode = mapper.createObjectNode()
+        (node as ObjectNode).replace("error", mapper.valueToTree(ResponseError(0, "")) as JsonNode)
+        node.replace("project", projectDataJsonTree)
+
+        return node.toString()
     }
 }

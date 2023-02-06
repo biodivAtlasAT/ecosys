@@ -48,7 +48,7 @@ data class ProjectData(
     val speciesFileName: String? = null,
     val speciesColCodeName: String? = null,
     val speciesColNameName: String? = null,
-    var hierarchyId: Int = -1
+    var hierarchyId: Int = -1,
 ) {
     constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,-1)
     companion object{

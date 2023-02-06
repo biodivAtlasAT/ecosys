@@ -22,11 +22,12 @@ import at.duk.models.RasterDataRequest
 import at.duk.services.ApiServices
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.config.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-fun Route.apiRouting() {
+fun Route.apiRouting(config: ApplicationConfig) {
 
     val badRequestData = "{\"error\":{\"no\":2,\"msg\":\"Parameters not valid!\"}}"
 
@@ -104,5 +105,23 @@ fun Route.apiRouting() {
                 ContentType.parse("application/json"), HttpStatusCode.OK
             )
         }
+
+        get("/bt/projects") {
+            call.respondText(
+                ApiServices.generateProjectsResponse(), ContentType.parse("application/json"),
+                HttpStatusCode.OK
+            )
+        }
+
+        get("/bt/projects/{projectId}") {
+            call.parameters["projectId"]?.toIntOrNull()?.let {
+                call.respondText(
+                    ApiServices.generateProjectResponse(it, config), ContentType.parse("application/json"),
+                    HttpStatusCode.OK
+                )
+            }
+        }
+
+
     }
 }

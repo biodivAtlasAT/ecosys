@@ -33,7 +33,7 @@ fun Application.configureRouting() {
     val rtLogger = log
 
     routing {
-        apiRouting()
+        apiRouting(config)
         adminRouting(config)
         rasterRouting(config)
         layerRouting(config)
