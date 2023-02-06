@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.BT_projects
     geoserver_workspace character varying(128),
     geoserver_layer character varying(128),
 	col_types_code character varying(64),
+    col_types_description character varying(128),
 	col_species_code character varying(64),
 	species_filename character varying(512),
 	species_col_code_name character varying(64),

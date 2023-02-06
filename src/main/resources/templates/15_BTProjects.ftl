@@ -29,7 +29,7 @@
                     <tbody>
                     <#list result as prop>
                         <tr>
-                            <td style="text-align:right">
+                            <td style="text-align:right; border-right-width: 3px; border-right-style: solid; border-right-color: <#if prop.enabled>green<#else>red</#if>">
                                 <span id="id_${prop.id}">${prop.id}</span>
                             </td>
                             <td>
@@ -37,7 +37,7 @@
                                 <button id="bt_${prop.id}" class="btn btn-sm btn-outline-primary" style="margin-top:-4px" role="button" onclick='projectEdit("${prop.id}", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordEdit}</button>
                             </td>
                             <td>
-                                <a href="" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a href="./${prop.id}/metadata" class="btn btn-sm btn-outline-secondary">Edit</a>
                                 <a href="" class="btn btn-sm btn-outline-secondary">Preview</a>
                             </td>
                             <td>
@@ -52,8 +52,6 @@
                         <td><span id="id_-1" style="visibility:hidden;">-1</span></td>
                         <td>
                             <input type="text" class="noClass" name="name_-1" id="name_-1" value="" size="50" maxlength="128"  style="background-color: #CEE3F6">
-                        </td>
-                        <td>
                             <button id="bt_-1" style="margin-top:-4px" class="btn btn-sm btn-primary funcSave" role="button" onclick='projectEdit("-1", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordSave}</button>
                         </td>
                         <td>&nbsp;

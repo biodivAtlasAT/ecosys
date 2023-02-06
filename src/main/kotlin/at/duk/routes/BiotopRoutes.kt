@@ -71,8 +71,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             transaction {
                 projectsList.addAll(
                     TableProjects.select { TableProjects.deleted eq null }.orderBy(TableProjects.name).map
-                    { rs -> ProjectData(rs[TableProjects.id].value, rs[TableProjects.name],null,null,null, null)
-                    }
+                    { rs -> ProjectData(rs[TableProjects.id].value, rs[TableProjects.name], rs[TableProjects.enabled]) }
                 )
             }
             call.respond(
@@ -134,6 +133,30 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
         get("/classes") {
             call.respond(FreeMarkerContent("19_BTClasses.ftl", null))
+        }
+
+        get("/{projectId}/metadata") {
+            call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
+                val project: ProjectData? = ProjectData.getById(projectId)
+
+                call.respond(FreeMarkerContent("16_BTMetaData.ftl",
+                    mapOf("project" to project)
+                ))
+            }
+        }
+        get("/{projectId}/saveMetaData") {
+            call.parameters["projectId"]?.toIntOrNull()?.let {
+                transaction {
+                    TableProjects.update({ TableProjects.id eq it }) {
+                        it[TableProjects.enabled] = call.request.queryParameters["enabled"] == "on"
+                        it[TableProjects.resource] = call.request.queryParameters["resource"]
+                        it[TableProjects.epoch] = call.request.queryParameters["epoch"]
+                        it[TableProjects.area] = call.request.queryParameters["area"]
+                        it[TableProjects.updated] = LocalDateTime.now()
+                    }
+                }
+            }
+            call.respondRedirect("/admin/biotop/projects")
         }
 
 

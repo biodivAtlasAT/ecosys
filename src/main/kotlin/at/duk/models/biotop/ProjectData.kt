@@ -19,8 +19,11 @@
 package at.duk.models.biotop
 
 import at.duk.tables.biotop.TableProjects
+import at.duk.tables.biotop.TableProjects.default
+import at.duk.tables.biotop.TableProjects.nullable
 import koodies.docker.Docker
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.IntegerColumnType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -31,19 +34,43 @@ import org.jetbrains.exposed.sql.transactions.transaction
 data class ProjectData(
     val id: Int,
     val name: String,
+    var enabled: Boolean = false,
+    var epoch: String? = null,
+    var area: String? = null,
+    var resource: String? = null,
+    var classId: Int = -1,
+    var classInfo: String? = null,
     val geoserverWorkspace: String? = null,
     val geoserverLayer: String? = null,
     val colTypesCode: String? = null,
-    val colSpeciesCode: String? = null
+    val colTypesDescription: String? = null,
+    val colSpeciesCode: String? = null,
+    val speciesFileName: String? = null,
+    val speciesColCodeName: String? = null,
+    val speciesColNameName: String? = null,
+    var hierarchyId: Int = -1
 ) {
+    constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,-1)
     companion object{
-        fun mapRSToProjectData(rs: ResultRow): ProjectData {
+        private fun mapRSToProjectData(rs: ResultRow): ProjectData {
             return ProjectData(
                 rs[TableProjects.id].value,
                 rs[TableProjects.name],
+                rs[TableProjects.enabled],
+                rs[TableProjects.epoch],
+                rs[TableProjects.area],
+                rs[TableProjects.resource],
+                rs[TableProjects.classId],
+                rs[TableProjects.classInfo],
                 rs[TableProjects.geoserverWorkspace],
                 rs[TableProjects.geoserverLayer],
-                rs[TableProjects.colTypesCode]
+                rs[TableProjects.colTypesCode],
+                rs[TableProjects.colTypesDescription],
+                rs[TableProjects.colSpeciesCode],
+                rs[TableProjects.speciesFileName],
+                rs[TableProjects.speciesColCodeName],
+                rs[TableProjects.speciesColNameName],
+                rs[TableProjects.hierarchyId],
             )
         }
         fun getById(id: Int): ProjectData? {
