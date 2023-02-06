@@ -17,20 +17,10 @@ CREATE TABLE IF NOT EXISTS public.BT_projects
 	species_col_code_name character varying(64),
 	species_col_name_name character varying(64),
     hierarchy_id integer NOT NULL DEFAULT -1,
+    hierarchy_name  character varying(64),  -- when specified as "Sonstige"
     created timestamp without time zone NOT NULL,
     updated timestamp without time zone DEFAULT null,
     deleted timestamp with time zone DEFAULT null,
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE IF NOT EXISTS public.BT_types
-(
-    id serial NOT NULL,
-	project_id integer NOT NULL,
-	parent_id integer NOT NULL,
-	code character varying(64),
-	description character varying(512),
-	color character varying(64),
 	PRIMARY KEY (id)
 );
 
@@ -38,9 +28,7 @@ CREATE TABLE IF NOT EXISTS public.BT_classes
 (
     id serial NOT NULL,
     description character varying(512),
-    types_filename character varying(512),
-    types_col_code_name character varying(64),
-    types_col_name_name character varying(64),
+    filename character varying(512),
     created timestamp without time zone NOT NULL,
     updated timestamp without time zone DEFAULT null,
     deleted timestamp with time zone DEFAULT null,
@@ -50,10 +38,12 @@ CREATE TABLE IF NOT EXISTS public.BT_classes
 CREATE TABLE IF NOT EXISTS public.BT_hierarchy
 (
     id serial NOT NULL,
-    project_id integer NOT NULL DEFAULT -1,   --  project id or -1 when class id is set
-    class_id integer NOT NULL DEFAULT -1,   -- class id or -1 when project id is set
-    code character varying(64),
+    project_id integer NOT NULL DEFAULT -1,   --  project id or -1 when standard category
+    class_id integer NOT NULL DEFAULT -1,   -- class id
+    code character varying(64),        -- code of standard list
+    mapped_code character varying(64), -- original code from geoserver call
     description character varying(512),
+    category character varying(128),
     parent_id integer NOT NULL,
     color character varying(32),
     PRIMARY KEY (id)
@@ -88,14 +78,6 @@ CREATE TABLE IF NOT EXISTS public.BT_Species
     PRIMARY KEY (id)
     );
 
-ALTER TABLE IF EXISTS public.BT_types
-    ADD CONSTRAINT projects_id_fkey1 FOREIGN KEY (project_id)
-    REFERENCES public.BT_projects (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-       ON DELETE NO ACTION
-    NOT VALID;
-
-
 ALTER TABLE IF EXISTS public.BT_species
     ADD CONSTRAINT projects_id_fkey2 FOREIGN KEY (project_id)
     REFERENCES public.BT_projects (id) MATCH SIMPLE
@@ -105,7 +87,3 @@ ALTER TABLE IF EXISTS public.BT_species
 
 create index IF NOT EXISTS projects_index1
     on public.BT_species (project_id);
-
-create index IF NOT EXISTS projects_index2
-    on public.BT_types (project_id);
-

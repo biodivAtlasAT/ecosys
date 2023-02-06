@@ -16,7 +16,7 @@ servers:
 paths:
   /api/layerData:
     get:
-      tags: ["Frontend Routes"]
+      tags: ["ECOSYS - Services"]
       description: "Returns ecosystem services included in a specific package for a given vector layer (synchronized 
       with Spatial Portal)."
       parameters:
@@ -50,7 +50,7 @@ paths:
             }
   /api/layers:
     get:
-      tags: [ "Frontend Routes" ]
+      tags: [ "ECOSYS - Services" ]
       description: "Returns the <i>enabled</i> vector layers which were synchronized with the spatial portal as 
       configured."
       responses:
@@ -64,7 +64,7 @@ paths:
             }
   /api/packages:
     get:
-      tags: [ "Frontend Routes" ]
+      tags: [ "ECOSYS - Services" ]
       description: "Returns the available packages and its default setting."
       responses:
         "200":
@@ -76,7 +76,7 @@ paths:
             }
   /api/rasterData:
     post:
-      tags: [ "Frontend Routes" ]
+      tags: [ "ECOSYS - Services" ]
       description: "Returns the service value for the requested services for the given longitude/latitude coordinates."
       parameters:
         - name: "packageID"
@@ -111,7 +111,7 @@ paths:
             }
   /api/services:
     get:
-      tags: [ "Frontend Routes" ]
+      tags: [ "ECOSYS - Services" ]
       description: "Returns all defined services for the given package."
       parameters:
         - name: "packageID"
@@ -131,7 +131,7 @@ paths:
             }
   /assets/svg/{showSVG}:
     get:
-      tags: ["Frontend Routes"]
+      tags: ["ECOSYS - Services"]
       description: "Returns the SVG file with the given name (no path information is needed)."
       parameters:
       - name: "showSVG"
@@ -148,3 +148,35 @@ paths:
           description: "Requested SVG file."
           content:
             "image/svg+xml": { }
+  /api/bt/projects:
+    get:
+      tags: [ "BIOTOP - Services" ]
+      description: "Returns the <i>enabled</i> projects for different biotop types."
+      responses:
+        "200":
+          description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
+          and a <i>data</i> block. If the error number ist set to 0, then the response is valid.<br><br>
+          The <i>data</i> block contains a list of projects containing the id and the name."
+          content:
+            "application/json": {
+            }
+  /api/bt/projects/{id}:
+    get:
+      tags: ["BIOTOP - Services"]
+      description: "Returns detailed data about the requested project."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "200":
+          description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
+          and a <i>data</i> block. If the error number ist set to 0, then the response is valid.<br>
+          The <i>data</i> block contains the data used in ecosys combined with the metadata from
+          the data resource defined in the Atlas-Collectory application. Metadata from ecosys is merged into the 
+           content of the data resource (for convenience reasons only)"
+          content:
+            "application/json": {
+            }
