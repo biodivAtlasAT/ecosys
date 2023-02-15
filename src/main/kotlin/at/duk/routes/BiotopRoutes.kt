@@ -20,6 +20,7 @@ package at.duk.routes
 
 import at.duk.DataCache
 import at.duk.models.biotop.ClassData
+import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices
 import at.duk.services.BiotopServices
@@ -28,6 +29,7 @@ import at.duk.services.BiotopServices.getListOfLayers
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
 import at.duk.tables.biotop.TableClasses
+import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
 import at.duk.tables.biotop.TableProjects.classId
 import io.ktor.client.*
@@ -44,6 +46,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.css.i
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -214,8 +217,6 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             if (fileName.isNotEmpty())
                 report = BiotopServices.classCSVProcessing(classesDataFolder.resolve(fileName).toString(), classId)
 
-            println("------------------------")
-            println (report)
             call.respondRedirect("/admin/biotop/classes/$classId")
         }
 
@@ -225,6 +226,31 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
                 call.respond(FreeMarkerContent("20_BTClass.ftl",
                     mapOf("classData" to classData)
+                ))
+            }
+        }
+
+        get("/classes/{classId}/types") {
+            call.parameters["classId"]?.toIntOrNull()?.let { classId ->
+                val classData: ClassData? = ClassData.getById(classId)
+                val typeList = mutableListOf<HierarchyData>()
+                val indentMap = mutableMapOf<Int, String>()
+                transaction {
+                    TableHierarchy.select { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }.orderBy(TableHierarchy.sortCode)
+                        .forEach {
+                            typeList.add(HierarchyData.mapRSToHierarchyData(it))
+                            val cnt = it[TableHierarchy.levelNumber]
+                            if (!indentMap.containsKey(cnt)) {
+                                var nbsp = ""
+                                for (i in 0..cnt) nbsp += "&nbsp;&nbsp;"
+                                indentMap[cnt] = nbsp
+                            }
+
+                    }
+                }
+
+                call.respond(FreeMarkerContent("21_BTClassHierarchy.ftl",
+                    mapOf("classData" to classData, "typeList" to typeList, "indentList" to indentMap.toSortedMap().values.toList() )
                 ))
             }
         }

@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS public.BT_hierarchy
     class_id integer NOT NULL DEFAULT -1,   -- class id
     key_code character varying(64),        -- code of standard list
     mapped_key_code character varying(64), -- original code from geoserver call
+    sort_code character varying(128),
     description character varying(512),
     category character varying(128),
     color character varying(32),

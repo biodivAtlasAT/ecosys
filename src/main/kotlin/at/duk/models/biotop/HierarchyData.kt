@@ -19,6 +19,7 @@
 package at.duk.models.biotop
 
 import at.duk.tables.biotop.TableClasses
+import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
 import at.duk.tables.biotop.TableProjects.default
 import at.duk.tables.biotop.TableProjects.nullable
@@ -40,7 +41,26 @@ data class HierarchyData(
     val classId: Int?,
     val keyCode: String,
     val mappedKeyCode: String?,
+    val sortCode: String?,
     val description: String,
     val category: String?,
     val color: String?
-)
+) {
+    companion object {
+        fun mapRSToHierarchyData(rs: ResultRow): HierarchyData {
+            return HierarchyData(
+                rs[TableHierarchy.id].value,
+                rs[TableHierarchy.parentId],
+                rs[TableHierarchy.levelNumber],
+                rs[TableHierarchy.projectId],
+                rs[TableHierarchy.classId],
+                rs[TableHierarchy.keyCode],
+                rs[TableHierarchy.sortCode],
+                rs[TableHierarchy.mappedKeyCode],
+                rs[TableHierarchy.description],
+                rs[TableHierarchy.category],
+                rs[TableHierarchy.color],
+            )
+        }
+    }
+}

@@ -30,6 +30,7 @@ object TableHierarchy : IntIdTable("bt_hierarchy") {
     var classId: Column<Int> = integer("class_id").default(-1)
     var keyCode: Column<String> = varchar("key_code", length = 64)
     var mappedKeyCode: Column<String?> = varchar("mapped_key_code", length = 64).nullable().default(null)
+    var sortCode: Column<String?> = varchar("sort_code", length = 128).nullable().default(null)
     var description: Column<String> = varchar("description", length = 512)
     var category: Column<String?> = varchar("category", length = 128).nullable().default(null)
     var color: Column<String?> = varchar("color", length = 32).nullable().default(null)

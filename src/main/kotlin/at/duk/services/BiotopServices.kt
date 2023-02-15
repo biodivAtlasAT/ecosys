@@ -38,6 +38,7 @@ import koodies.exec.error
 import koodies.exec.exitCode
 import koodies.shell.ShellScript
 import koodies.text.toLowerCase
+import koodies.unit.toSize
 import kotlinx.html.TABLE
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
@@ -168,13 +169,16 @@ object BiotopServices {
         csvCheckCols(content)
         // 2. generate data structure
         val items = mutableMapOf<String, Triple<String, String?, String?>>()
+        var longestKeyPart = 1
         content.forEachIndexed { ind, line ->
             val eles = line.split(";")
             val key = eles[0]
             if(items.containsKey(key))
                 report += "Schlüssel \"$key\" existiert mehrfach!"
-            if (ind > 0 && key[key.length-1] != '.')
+            if (ind > 0 && key[key.length-1] != '.') {
                 items[key] = Triple(eles[1], null, if (eles.size > 2) eles[2] else null)
+                key.split(".").forEach { if (it.length > longestKeyPart) longestKeyPart = it.length }
+            }
         }
         // check
         items.forEach { (k, v) ->
@@ -195,8 +199,8 @@ object BiotopServices {
                     it[TableHierarchy.description] = v.first
                     it[TableHierarchy.category] = v.third
                     val x = k.count { letter -> letter == '.' }
-                    println(x)
                     it[TableHierarchy.levelNumber] = k.count { letter -> letter == '.' }
+                    it[TableHierarchy.sortCode] = getSortCode(k, longestKeyPart)
                 }
                 keyMap[k] = id.value
             }
@@ -222,6 +226,17 @@ object BiotopServices {
             if (ind == 0 && (eles[0].toLowerCase() != "id" || eles[1].toLowerCase() != "name")) return false
         }
         return true
+    }
+
+    private fun getSortCode(k: String, longestKeyPart: Int): String {
+        val newKey = mutableListOf<String>()
+        k.split(".").forEach {
+            var newKeyPart = it
+            for (i in it.length..longestKeyPart)
+                newKeyPart = "0" + newKeyPart
+            newKey.add(newKeyPart)
+        }
+        return newKey.joinToString(separator = ".")
     }
 
 }
