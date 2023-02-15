@@ -38,14 +38,16 @@ CREATE TABLE IF NOT EXISTS public.BT_classes
 CREATE TABLE IF NOT EXISTS public.BT_hierarchy
 (
     id serial NOT NULL,
+    parent_id integer NOT NULL DEFAULT -1,
+    level_number integer NOT NULL DEFAULT 0,
     project_id integer NOT NULL DEFAULT -1,   --  project id or -1 when standard category
     class_id integer NOT NULL DEFAULT -1,   -- class id
-    code character varying(64),        -- code of standard list
-    mapped_code character varying(64), -- original code from geoserver call
+    key_code character varying(64),        -- code of standard list
+    mapped_key_code character varying(64), -- original code from geoserver call
     description character varying(512),
     category character varying(128),
-    parent_id integer NOT NULL,
     color character varying(32),
+    hasData boolean DEFAULT false,
     PRIMARY KEY (id)
     );
 

@@ -19,17 +19,23 @@
 package at.duk.routes
 
 import at.duk.DataCache
+import at.duk.models.biotop.ClassData
 import at.duk.models.biotop.ProjectData
+import at.duk.services.AdminServices
 import at.duk.services.BiotopServices
 import at.duk.services.BiotopServices.getListOfFeatures
 import at.duk.services.BiotopServices.getListOfLayers
 import at.duk.tables.TableRasterData
+import at.duk.tables.TableServices
+import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableProjects
+import at.duk.tables.biotop.TableProjects.classId
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
@@ -48,6 +54,9 @@ import java.time.LocalDateTime
 fun Route.biotopRouting(config: ApplicationConfig) {
     val geoserverWorkspace = config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
     val geoserverUrl = config.propertyOrNull("geoserver.url")?.getString() ?: ""
+    val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
+    Paths.get("").toAbsolutePath().toString()
+
 
     route("/admin/biotop") {
         post("/{projectId}/removeGeoserverData") {
@@ -130,11 +139,6 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.respondRedirect("./projects")
         }
 
-
-        get("/classes") {
-            call.respond(FreeMarkerContent("19_BTClasses.ftl", null))
-        }
-
         get("/{projectId}/metadata") {
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
                 val project: ProjectData? = ProjectData.getById(projectId)
@@ -158,6 +162,74 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             }
             call.respondRedirect("/admin/biotop/projects")
         }
+
+        get("/classes") {
+            val classesList = mutableListOf<ClassData>()
+
+            transaction {
+                classesList.addAll(
+                    TableClasses.select { TableClasses.deleted eq null }.orderBy(TableClasses.description).map
+                    { rs -> ClassData(rs[TableClasses.id].value, rs[TableClasses.description]) }
+                )
+            }
+            call.respond(
+                FreeMarkerContent(
+                    "19_BTClasses.ftl",
+                    mapOf("result" to classesList, "maxCount" to classesList.size)
+                )
+            )
+        }
+
+        post("/classes/classTypeUpdate") {
+            val formParameters = call.receiveParameters()
+            when (formParameters["mode"]?.toIntOrNull() ?: -1) {
+                0 -> if (formParameters["name"] != "")
+                    BiotopServices.classInsertOrUpdate(formParameters)
+                1 -> BiotopServices.classDelete(formParameters)
+                else -> { }
+            }
+            call.respondRedirect("/admin/biotop/classes")
+        }
+
+        post("/classes/{classId}/classTypeUpload") {
+            //val tmpFileName = AdminServices.getUniqueSVGName(svgDataFolder)
+
+            var fileName: String = ""
+
+            val classId = call.parameters["classId"]?.toIntOrNull() ?: return@post
+            val classesDataFolder = AdminServices.getClassDataFolder(dataCacheDirectory, classId)
+
+            call.receiveMultipart().forEachPart { part ->
+                when (part) {
+                    is PartData.FileItem -> {
+                        fileName = part.originalFileName as String
+                        File(classesDataFolder.resolve(fileName).toString())
+                            .writeBytes(part.streamProvider().readBytes())
+                    }
+                    else -> {}
+                }
+            }
+            // analyze csv file and return with message
+            var report = "No Report available!"
+            if (fileName.isNotEmpty())
+                report = BiotopServices.classCSVProcessing(classesDataFolder.resolve(fileName).toString(), classId)
+
+            println("------------------------")
+            println (report)
+            call.respondRedirect("/admin/biotop/classes/$classId")
+        }
+
+        get("/classes/{classId}") {
+            call.parameters["classId"]?.toIntOrNull()?.let { classId ->
+                val classData: ClassData? = ClassData.getById(classId)
+
+                call.respond(FreeMarkerContent("20_BTClass.ftl",
+                    mapOf("classData" to classData)
+                ))
+            }
+        }
+
+
 
 
     }

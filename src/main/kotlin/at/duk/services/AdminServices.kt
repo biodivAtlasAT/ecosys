@@ -98,4 +98,13 @@ object AdminServices {
         if (!File("$svgDataFolder").exists()) File("$svgDataFolder").mkdir()
         return svgDataFolder
     }
+
+    fun getClassDataFolder(dataCacheDirectory: String, classId: Int): File {
+        val dataFolder = File(dataCacheDirectory).resolve("classes")
+        if (!File("$dataFolder").exists()) File("$dataFolder").mkdir()
+        val df = dataFolder.resolve(classId.toString())
+        if (!File("$df").exists()) File("$df").mkdir()
+        return df
+    }
+
 }

@@ -22,6 +22,8 @@ import at.duk.tables.TableRasterTasks
 import at.duk.tables.TableUploadedRasterData
 import at.duk.tables.TableRasterData
 import at.duk.tables.TablePackages
+import at.duk.tables.biotop.TableClasses
+import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
@@ -35,6 +37,8 @@ import koodies.exec.Process
 import koodies.exec.error
 import koodies.exec.exitCode
 import koodies.shell.ShellScript
+import koodies.text.toLowerCase
+import kotlinx.html.TABLE
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -125,5 +129,99 @@ object BiotopServices {
                 }
             }
         }
+
+    fun classInsertOrUpdate(formParameters: Parameters) =
+        formParameters["name"]?.let { name ->
+            formParameters["id"]?.toIntOrNull().let { id ->
+                transaction {
+                    if (id == -1) {
+                        TableClasses.insert {
+                            it[TableClasses.description] = name
+                            it[TableClasses.created] = LocalDateTime.now()
+                        }
+                    } else
+                        TableClasses.update({ TableClasses.id eq id }) {
+                            it[TableClasses.description] = name
+                            it[TableClasses.updated] = LocalDateTime.now()
+                        }
+                }
+            }
+        }
+    fun classDelete(formParameters: Parameters) = formParameters["mode"]?.let {
+        formParameters["id"]?.toIntOrNull().let { id ->
+            transaction {
+                TableClasses.update({ TableClasses.id eq id }) {
+                    it[TableClasses.deleted] = LocalDateTime.now()
+                }
+            }
+        }
+    }
+
+    fun classCSVProcessing(filePath: String, classId: Int): String {
+        var report = "result of CSV-Import:\n"
+        val content = File(filePath).readLines()
+
+        report += "Analyized lines: ${content.size}"
+
+        // 1. check structure
+        //    header and lines (id must contain . ); at least two columns
+        csvCheckCols(content)
+        // 2. generate data structure
+        val items = mutableMapOf<String, Triple<String, String?, String?>>()
+        content.forEachIndexed { ind, line ->
+            val eles = line.split(";")
+            val key = eles[0]
+            if(items.containsKey(key))
+                report += "Schlüssel \"$key\" existiert mehrfach!"
+            if (ind > 0 && key[key.length-1] != '.')
+                items[key] = Triple(eles[1], null, if (eles.size > 2) eles[2] else null)
+        }
+        // check
+        items.forEach { (k, v) ->
+            if(k.contains("."))
+                items[k] = Triple(v.first, k.substring(0, k.lastIndexOf(".")), v.third)
+            else
+                items[k] = Triple(v.first, "", v.third)
+        }
+        if (items.filterValues { it.second == null }.isNotEmpty()) report += "Items with no valid parent found!\n"
+
+        transaction {
+            TableHierarchy.deleteWhere { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }
+            val keyMap = mutableMapOf<String, Int>()
+            items.toSortedMap().forEach { (k, v) ->
+                val id = TableHierarchy.insertAndGetId {
+                    it[TableHierarchy.classId] = classId
+                    it[TableHierarchy.keyCode] = k
+                    it[TableHierarchy.description] = v.first
+                    it[TableHierarchy.category] = v.third
+                    val x = k.count { letter -> letter == '.' }
+                    println(x)
+                    it[TableHierarchy.levelNumber] = k.count { letter -> letter == '.' }
+                }
+                keyMap[k] = id.value
+            }
+            // set parentId
+            TableHierarchy.select { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }.forEach {
+                keyMap[items[it[TableHierarchy.keyCode]]?.second]?.let { parentId ->
+                    TableHierarchy.update({ TableHierarchy.id eq it[TableHierarchy.id] }) { it2 ->
+                        it2[TableHierarchy.parentId] = parentId
+                    }
+                }
+            }
+        }
+        // 3. generate dependencies (parent, level, order by Id)
+        // 4. delete & save into database
+        // 5. create type for api which can be used for displaying the content
+        return report
+    }
+
+    fun csvCheckCols(content: List<String>): Boolean {
+        content.forEachIndexed { ind, line ->
+            val eles = line.split(";")
+            if (eles.size < 2) return false
+            if (ind == 0 && (eles[0].toLowerCase() != "id" || eles[1].toLowerCase() != "name")) return false
+        }
+        return true
+    }
 
 }
