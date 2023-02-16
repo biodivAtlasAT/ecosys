@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS public.BT_classes
     id serial NOT NULL,
     description character varying(512),
     filename character varying(512),
+    color_updated timestamp without time zone DEFAULT NULL,
     created timestamp without time zone NOT NULL,
     updated timestamp without time zone DEFAULT null,
     deleted timestamp with time zone DEFAULT null,
@@ -48,7 +49,8 @@ CREATE TABLE IF NOT EXISTS public.BT_hierarchy
     description character varying(512),
     category character varying(128),
     color character varying(32),
-    hasData boolean DEFAULT false,
+    is_leaf boolean DEFAULT true,
+    has_data boolean DEFAULT false,
     PRIMARY KEY (id)
     );
 

@@ -34,4 +34,6 @@ object TableHierarchy : IntIdTable("bt_hierarchy") {
     var description: Column<String> = varchar("description", length = 512)
     var category: Column<String?> = varchar("category", length = 128).nullable().default(null)
     var color: Column<String?> = varchar("color", length = 32).nullable().default(null)
+    var isLeaf: Column<Boolean> = bool("is_leaf").default(true)
+    var hasData: Column<Boolean> = bool("has_data").default(false)
 }

@@ -23,6 +23,8 @@ import at.duk.models.biotop.ClassData
 import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices
+import at.duk.services.AdminServices.isServiceReachable
+import at.duk.services.ApiServices
 import at.duk.services.BiotopServices
 import at.duk.services.BiotopServices.getListOfFeatures
 import at.duk.services.BiotopServices.getListOfLayers
@@ -32,6 +34,7 @@ import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
 import at.duk.tables.biotop.TableProjects.classId
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
@@ -56,7 +59,8 @@ import java.time.LocalDateTime
 
 fun Route.biotopRouting(config: ApplicationConfig) {
     val geoserverWorkspace = config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
-    val geoserverUrl = config.propertyOrNull("geoserver.url")?.getString() ?: ""
+    val geoserverUrl = config.propertyOrNull("geoserver.url")?.getString()
+    val collectoryUrl = config.propertyOrNull("atlas.collectory")?.getString()
     val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
     Paths.get("").toAbsolutePath().toString()
 
@@ -78,6 +82,12 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         }
 
         get("/projects") {
+            val errorList = mutableListOf<String>()
+            val isGR = if (geoserverUrl != null) isServiceReachable(geoserverUrl) else false
+            val isCR = if (collectoryUrl != null) isServiceReachable(collectoryUrl) else false
+            if (!isGR) errorList.add("Verbindung zu Geoserver nicht möglich! --> Check Konfiguration bzw. Service!")
+            if (!isCR) errorList.add("Verbindung zu Collectory nicht möglich! --> Check Konfiguration bzw. Service!")
+
             val projectsList = mutableListOf<ProjectData>()
 
             transaction {
@@ -89,13 +99,15 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.respond(
                 FreeMarkerContent(
                     "15_BTProjects.ftl",
-                    mapOf("result" to projectsList, "maxCount" to projectsList.size)
+                    mapOf("result" to projectsList, "maxCount" to projectsList.size, "errorList" to errorList,
+                        "isGR" to isGR, "isCR" to isCR)
                 )
             )
         }
         get("/{projectId}/saveGeoserverData") {
             val layer = call.request.queryParameters["layer"]
             val typeFeature = call.request.queryParameters["typeFeature"]
+            val nameFeature = call.request.queryParameters["nameFeature"]
             val projectId = call.parameters["projectId"]?.toIntOrNull()
             val workspace = call.request.queryParameters["workspace"]
             if (projectId != null && layer != null && typeFeature != null && workspace != null) {
@@ -104,6 +116,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                         it[TableProjects.geoserverLayer] = layer
                         it[TableProjects.geoserverWorkspace] = workspace
                         it[TableProjects.colTypesCode] = typeFeature
+                        it[TableProjects.colTypesDescription] = nameFeature
                         it[TableProjects.updated] = LocalDateTime.now()
                     }
                 }
@@ -164,6 +177,28 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 }
             }
             call.respondRedirect("/admin/biotop/projects")
+        }
+        get("/{projectId}/metadataJson") {
+            call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
+                //val project: ProjectData? = ProjectData.getById(projectId)
+
+                ProjectData.getById(projectId)?.let { project ->
+                    val url = "$collectoryUrl/dataResource/${project.resource}"
+                    val dataResourceExists = if (collectoryUrl != null) isServiceReachable(url) else false
+
+                    val mapper = jacksonObjectMapper()
+                    val json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
+                        mapper.readTree(ApiServices.generateProjectResponse(projectId, config))
+                    ).replace("\n", "<br>").replace(" ", "&nbsp;")
+
+                    call.respond(
+                        FreeMarkerContent(
+                            "16.1_BTMetaDataJson.ftl",
+                            mapOf("project" to project, "json" to json, "dataResourceExists" to dataResourceExists)
+                        )
+                    )
+                }
+            }
         }
 
         get("/classes") {

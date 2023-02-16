@@ -44,7 +44,9 @@ data class HierarchyData(
     val sortCode: String?,
     val description: String,
     val category: String?,
-    val color: String?
+    val color: String?,
+    val isLeaf: Boolean,
+    val hasData: Boolean,
 ) {
     companion object {
         fun mapRSToHierarchyData(rs: ResultRow): HierarchyData {
@@ -60,6 +62,8 @@ data class HierarchyData(
                 rs[TableHierarchy.description],
                 rs[TableHierarchy.category],
                 rs[TableHierarchy.color],
+                rs[TableHierarchy.isLeaf],
+                rs[TableHierarchy.hasData],
             )
         }
     }

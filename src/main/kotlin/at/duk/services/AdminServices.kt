@@ -20,6 +20,10 @@ package at.duk.services
 
 import at.duk.tables.TableCategories
 import at.duk.tables.TableServices
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -107,4 +111,9 @@ object AdminServices {
         return df
     }
 
+    suspend fun isServiceReachable(url: String) = try {
+        HttpClient(CIO).request(url) {
+            method = HttpMethod.Get
+        }.status == HttpStatusCode.OK
+    } catch (ex: Exception) { false }
 }

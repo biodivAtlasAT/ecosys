@@ -14,22 +14,29 @@
 
         <#if project.geoserverLayer?has_content>
             <div class="row">
-                <div class="row mt-4">
-                    <div class="col-md-3 m-2">
-                        Geoserver-Layer:
-                    </div>
-                    <div class="col-md-3 m-2"><b>${project.geoserverLayer}</b></div>
-                    <div class="col-md-3 m-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('btRemoveLayer').submit();">Zuordnung löschen</button>
-                    </div>
+                <div class="col-md-3 m-2">
+                    Geoserver-Layer:
+                </div>
+                <div class="col-md-3 m-2"><b>${project.geoserverLayer}</b></div>
+                <div class="col-md-3 m-2">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('btRemoveLayer').submit();">Zuordnung löschen</button>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-3 m-2">
                     Spalte für Biotop-Typ:
                 </div>
-                <div class="col-md-4 m-2"><b>${project.colTypesCode}</b></div>
+                <div class="col-md-4 m-2"><b><#if project.colTypesCode="-1">nicht zugeordnet!<#else>${project.colTypesCode}</#if></b></div>
             </div>
+            <#if project.colTypesDescription?has_content >
+            <div class="row">
+                <div class="col-md-3 m-2">
+                    Spalte für Biotop-Bezeichnung:
+                </div>
+                <div class="col-md-4 m-2"><b><#if project.colTypesDescription="-1">nicht zugeordnet!<#else>${project.colTypesDescription}</#if></b></div>
+            </div>
+            </#if>
+
             <#if project.colSpeciesCode?has_content >
                 <div class="row">
                     <div class="col-md-3 m-2">
@@ -70,6 +77,19 @@
                     </div>
                     <div class="col-md-4 m-2">
                         <select name="typeFeature" id="typeFeature" required>
+                            <option value="-1">------------------</option>
+                            <#list listOfFeatures as feature>
+                                <option value="${feature}">${feature}</option>
+                            </#list>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 m-2">
+                        Spalte für Biotop-Bezeichnung:
+                    </div>
+                    <div class="col-md-4 m-2">
+                        <select name="nameFeature" id="nameFeature" required>
                             <option value="-1">------------------</option>
                             <#list listOfFeatures as feature>
                                 <option value="${feature}">${feature}</option>

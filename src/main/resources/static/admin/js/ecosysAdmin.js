@@ -396,3 +396,4 @@ function classTypeDelete(idx, allowed) {
             keyboard: false
         }).show()
 }
+

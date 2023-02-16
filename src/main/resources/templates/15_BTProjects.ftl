@@ -13,15 +13,24 @@
     </div>
     <div class="col-md-8 m-4">
         <h1 class="text-primary">Projekte</h1>
+        <#if errorList?size != 0>
+            <div class="alert alert-danger" role="alert">
+                <ul>
+                <#list errorList as msg>
+                    <li>${msg}</li>
+                </#list>
+                </ul>
+            </div>
+        </#if>
         <div class="row">
             <div class="md-col-10">
                 <table class="table table-striped" id="projectTable">
                     <thead>
                     <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Metadaten</th>
-                        <th scope="col">GeoServer</th>
+                        <th scope="col">Projet</th>
+                        <th scope="col" class="text-center">Metadaten</th>
+                        <th scope="col" class="text-center">GeoServer</th>
                         <th scope="col">Arten</th>
                         <th scope="col">&nbsp;</th>
                     </tr>
@@ -36,15 +45,19 @@
                                 <input type="text" class="noClass" name="name_${prop.id}" id="name_${prop.id}" value="${prop.name}" disabled size="50" maxlength="128">
                                 <button id="bt_${prop.id}" class="btn btn-sm btn-outline-primary" style="margin-top:-4px" role="button" onclick='projectEdit("${prop.id}", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordEdit}</button>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <a href="./${prop.id}/metadata" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <a href="" class="btn btn-sm btn-outline-secondary">Preview</a>
+                                <a href="./${prop.id}/metadataJson" class="btn btn-sm btn-outline-secondary <#if !isCR>disabled</#if>" onclick='showMetaData("${prop.id}");'>Prev</a>
+                            </td>
+                            <td class="text-center">
+                                <a href="./${prop.id}/server" title="Geo Server zuordnen" class="btn btn-sm btn-outline-secondary <#if !isGR>disabled</#if>">&#x21C4;</a>
+                                <a href="" title="Daten mit Geo Server abgleichen" class="btn btn-sm btn-outline-secondary <#if !isGR>disabled</#if>">&#x21BB;</a>
                             </td>
                             <td>
-                                <a href="./${prop.id}/server" class="btn btn-sm btn-outline-secondary">Zuordnen</a>
+                                <a href="" class="btn btn-sm btn-outline-secondary disabled">Arten</a>
                             </td>
                             <td>
-                                <button id= "btDel_${prop.id}" class="btn btn-sm btn-outline-danger" role="button" onclick='projectDelete("${prop.id}");'>${wordDelete}</button>
+                                <button id= "btDel_${prop.id}" title="${wordDelete}" class="btn btn-sm btn-outline-danger" role="button" onclick='projectDelete("${prop.id}");'>&#x2717;</button>
                             </td>
                         </tr>
                     </#list>
@@ -88,6 +101,7 @@
         </div>
     </div>
 </div>
+
 
 <div class="modal fade" id="MessageModalNotAllowed" tabindex="-1" aria-labelledby="MessageModalNotAllowedLabel" aria-hidden="true">
     <div class="modal-dialog">
