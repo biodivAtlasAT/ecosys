@@ -18,7 +18,6 @@
  */
 package at.duk.routes
 
-import at.duk.DataCache
 import at.duk.models.biotop.ClassData
 import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
@@ -28,18 +27,10 @@ import at.duk.services.ApiServices
 import at.duk.services.BiotopServices
 import at.duk.services.BiotopServices.getListOfFeatures
 import at.duk.services.BiotopServices.getListOfLayers
-import at.duk.tables.TableRasterData
-import at.duk.tables.TableServices
 import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
-import at.duk.tables.biotop.TableProjects.classId
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
@@ -47,11 +38,7 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.css.i
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Paths
@@ -149,7 +136,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "")
                     BiotopServices.projectInsertOrUpdate(formParameters)
-                1 -> BiotopServices.projectDelete(formParameters)
+                1 -> BiotopServices.projectDelete(formParameters, dataCacheDirectory)
                 else -> { }
             }
             call.respondRedirect("./projects")

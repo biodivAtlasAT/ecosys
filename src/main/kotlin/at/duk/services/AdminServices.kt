@@ -111,6 +111,9 @@ object AdminServices {
         return df
     }
 
+    fun getProjectDataFolderName(dataCacheDirectory: String, projectId: Int): String =
+        File(dataCacheDirectory).resolve("projects").resolve(projectId.toString()).absolutePath
+
     suspend fun isServiceReachable(url: String) = try {
         HttpClient(CIO).request(url) {
             method = HttpMethod.Get

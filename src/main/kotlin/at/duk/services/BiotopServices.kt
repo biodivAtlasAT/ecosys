@@ -18,42 +18,30 @@
  */
 package at.duk.services
 
-import at.duk.tables.TableRasterTasks
-import at.duk.tables.TableUploadedRasterData
-import at.duk.tables.TableRasterData
-import at.duk.tables.TablePackages
+import at.duk.services.AdminServices.getProjectDataFolderName
 import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.config.*
-import koodies.exec.Process
-import koodies.exec.error
-import koodies.exec.exitCode
-import koodies.shell.ShellScript
 import koodies.text.toLowerCase
-import koodies.unit.toSize
-import kotlinx.html.TABLE
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.javatime.CurrentDateTime
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
-import java.nio.file.Paths
 import java.time.LocalDateTime
 
 object BiotopServices {
 
-    fun projectDelete(formParameters: Parameters) = formParameters["mode"]?.let {
-        formParameters["id"]?.toIntOrNull().let { id ->
+    fun projectDelete(formParameters: Parameters, dataCacheDirectory: String) = formParameters["mode"]?.let {
+        formParameters["id"]?.toIntOrNull()?.let { id ->
             transaction {
+                TableHierarchy.deleteWhere { TableHierarchy.projectId eq id }
+                File(getProjectDataFolderName(dataCacheDirectory, id)).deleteRecursively()
+                // todo: delete bt_species, bt_speciesgroups and bt_speciesjoingroups when "Arten" are implemented
+
                 TableProjects.update({ TableProjects.id eq id }) {
                     it[TableProjects.deleted] = LocalDateTime.now()
                 }
