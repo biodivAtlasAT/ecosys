@@ -31,13 +31,6 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-/*
-var description: Column<String> = varchar("description", length = 512)
-    var filename: Column<String> = varchar("filename", length = 512)
-    val created: Column<LocalDateTime> = datetime("created")
-    val updated: Column<LocalDateTime?> = datetime("updated").nullable()
-    val deleted: Column<LocalDateTime?> = datetime("deleted").nullable()
-*/
 @Serializable
 data class ClassData(
     val id: Int,

@@ -20,9 +20,8 @@
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Bearbeiten</th>
-                        <th scope="col">Hierarchie</th>
-                        <th scope="col">Farben</th>
+                        <th scope="col"class="text-center">Bearbeiten</th>
+                        <th scope="col"class="text-center">Hierarchie/Farben</th>
                         <th scope="col">&nbsp;</th>
                     </tr>
                     </thead>
@@ -36,17 +35,14 @@
                                 <input type="text" class="noClass" name="name_${prop.id}" id="name_${prop.id}" value="${prop.description}" disabled size="50" maxlength="128">
                                 <button id="bt_${prop.id}" class="btn btn-sm btn-outline-primary" style="margin-top:-4px" role="button" onclick='classTypeEdit("${prop.id}", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordEdit}</button>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <a href="./classes/${prop.id}" class="btn btn-sm btn-outline-secondary">Daten</a>
                             </td>
-                            <td>
-                                <a href="./classes/${prop.id}/preview" class="btn btn-sm btn-outline-secondary">Preview</a>
+                            <td class="text-center">
+                                <a href="./classes/${prop.id}/types" class="btn btn-sm btn-outline-secondary" <#if !prop.filename?hasContent>disabled</#if>>Zuordnen</a>
                             </td>
                             <td>
-                                <a href="./classes/${prop.id}/types" class="btn btn-sm btn-outline-secondary">Zuordnen</a>
-                            </td>
-                            <td>
-                                <button id= "btDel_${prop.id}" class="btn btn-sm btn-outline-danger" role="button" onclick='classTypeDelete("${prop.id}");'>${wordDelete}</button>
+                                <button id= "btDel_${prop.id}" class="btn btn-sm btn-outline-danger" role="button" onclick='classDelete("${prop.id}");'>${wordDelete}</button>
                             </td>
                         </tr>
                     </#list>
@@ -66,7 +62,7 @@
     </div>
 
 </div>
-<form id="classTypeSave" onclick="classTypeSave()" action="./classes/classTypeUpdate" method="post">
+<form id="classSave" onclick="classSave()" action="./classes/classUpdate" method="post">
     <input type="hidden" id="saveFormName" name="name">
     <input type="hidden" id="saveFormId" name="id" value="-1">
     <input type="hidden" id="saveFormMode" name="mode" value="0">
@@ -85,7 +81,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schlie&szlig;en</button>
-                <button type="button" class="btn btn-primary" onclick="document.getElementById('classTypeSave').submit();return true;">Löschen</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('classSave').submit();return true;">Löschen</button>
             </div>
         </div>
     </div>

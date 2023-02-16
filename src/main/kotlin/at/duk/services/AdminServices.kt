@@ -111,6 +111,9 @@ object AdminServices {
         return df
     }
 
+    fun getClassesDataFolderName(dataCacheDirectory: String, classId: Int): String =
+        File(dataCacheDirectory).resolve("classes").resolve(classId.toString()).absolutePath
+
     fun getProjectDataFolderName(dataCacheDirectory: String, projectId: Int): String =
         File(dataCacheDirectory).resolve("projects").resolve(projectId.toString()).absolutePath
 

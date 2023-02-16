@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 
 object TableClasses : IntIdTable("bt_classes") {
     var description: Column<String> = varchar("description", length = 512)
-    var filename: Column<String> = varchar("filename", length = 512)
+    var filename: Column<String?> = varchar("filename", length = 512).nullable().default(null)
     val created: Column<LocalDateTime> = datetime("created")
     val updated: Column<LocalDateTime?> = datetime("updated").nullable()
     val deleted: Column<LocalDateTime?> = datetime("deleted").nullable()

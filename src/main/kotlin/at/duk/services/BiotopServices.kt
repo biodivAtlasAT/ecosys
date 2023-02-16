@@ -127,7 +127,7 @@ object BiotopServices {
 
     fun classInsertOrUpdate(formParameters: Parameters) =
         formParameters["name"]?.let { name ->
-            formParameters["id"]?.toIntOrNull().let { id ->
+            formParameters["id"]?.toIntOrNull()?.let { id ->
                 transaction {
                     if (id == -1) {
                         TableClasses.insert {
@@ -142,16 +142,6 @@ object BiotopServices {
                 }
             }
         }
-    fun classDelete(formParameters: Parameters) = formParameters["mode"]?.let {
-        formParameters["id"]?.toIntOrNull().let { id ->
-            transaction {
-                TableClasses.update({ TableClasses.id eq id }) {
-                    it[TableClasses.deleted] = LocalDateTime.now()
-                }
-            }
-        }
-    }
-
     fun classCSVProcessing(filePath: String, classId: Int): String {
         var report = "result of CSV-Import:\n"
         val content = File(filePath).readLines()
@@ -232,5 +222,35 @@ object BiotopServices {
         }
         return newKey.joinToString(separator = ".")
     }
+
+    fun classTypesDelete(classId: Int, dataCacheDirectory: String) {
+        transaction {
+            TableHierarchy.deleteWhere { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }
+            TableClasses.update({ TableClasses.id eq classId }) {
+                it[TableClasses.filename] = null
+                it[TableClasses.updated] = LocalDateTime.now()
+            }
+            File(AdminServices.getClassesDataFolderName(dataCacheDirectory, classId)).deleteRecursively()
+            // todo sld-file in geoserver löschen
+        }
+
+
+    }
+    fun classDelete(formParameters: Parameters, dataCacheDirectory: String) = formParameters["mode"]?.let {
+        formParameters["id"]?.toIntOrNull()?.let { classId ->
+            classTypesDelete(classId, dataCacheDirectory)
+            transaction {
+                TableClasses.update({ TableClasses.id eq classId }) {
+                    it[TableClasses.deleted] = LocalDateTime.now()
+                }
+                TableProjects.update({ TableProjects.classId eq classId }) {
+                    it[TableProjects.classId] = -1
+                    it[TableProjects.updated] = LocalDateTime.now()
+                }
+            }
+        }
+    }
+
+
 
 }

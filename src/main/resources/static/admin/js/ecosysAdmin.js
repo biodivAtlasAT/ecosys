@@ -344,7 +344,7 @@ function classTypeEdit(idx, maxCount, wordSave, wordEdit) {
     if (document.getElementById("bt_" + idx).classList.contains("funcSave")) {
         document.getElementById("saveFormName").value = document.getElementById("name_" + idx).value
         document.getElementById("saveFormId").value = document.getElementById("id_" + idx).textContent
-        document.getElementById("classTypeSave").submit();
+        document.getElementById("classSave").submit();
     }
 
     // get every input field (via the class name "noClass")
@@ -380,15 +380,14 @@ function classTypeEdit(idx, maxCount, wordSave, wordEdit) {
         document.getElementById("btDel_"+idx).style.visibility = "hidden";
 }
 
-function classTypeDelete(idx, allowed) {
-    if (allowed) {
-        new bootstrap.Modal(document.getElementById('MessageModalNotAllowed'),
-            {
-                keyboard: false
-            }).show()
-        return;
-    }
+function classTypeDelete() {
+    new bootstrap.Modal(document.getElementById('MessageModal'),
+        {
+            keyboard: false
+        }).show()
+}
 
+function classDelete(idx) {
     document.getElementById("saveFormId").value = document.getElementById("id_"+idx).textContent
     document.getElementById("saveFormMode").value = 1
     new bootstrap.Modal(document.getElementById('MessageModal'),

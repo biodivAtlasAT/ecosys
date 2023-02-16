@@ -22,9 +22,12 @@ import at.duk.models.biotop.ClassData
 import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices
+import at.duk.services.AdminServices.getClassesDataFolderName
 import at.duk.services.AdminServices.isServiceReachable
 import at.duk.services.ApiServices
 import at.duk.services.BiotopServices
+import at.duk.services.BiotopServices.classDelete
+import at.duk.services.BiotopServices.classTypesDelete
 import at.duk.services.BiotopServices.getListOfFeatures
 import at.duk.services.BiotopServices.getListOfLayers
 import at.duk.tables.biotop.TableClasses
@@ -194,7 +197,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             transaction {
                 classesList.addAll(
                     TableClasses.select { TableClasses.deleted eq null }.orderBy(TableClasses.description).map
-                    { rs -> ClassData(rs[TableClasses.id].value, rs[TableClasses.description]) }
+                    { rs -> ClassData(rs[TableClasses.id].value, rs[TableClasses.description], rs[TableClasses.filename]) }
                 )
             }
             call.respond(
@@ -205,30 +208,27 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             )
         }
 
-        post("/classes/classTypeUpdate") {
+        post("/classes/classUpdate") {
             val formParameters = call.receiveParameters()
             when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "")
                     BiotopServices.classInsertOrUpdate(formParameters)
-                1 -> BiotopServices.classDelete(formParameters)
+                1 -> BiotopServices.classDelete(formParameters, dataCacheDirectory)
                 else -> { }
             }
             call.respondRedirect("/admin/biotop/classes")
         }
 
         post("/classes/{classId}/classTypeUpload") {
-            //val tmpFileName = AdminServices.getUniqueSVGName(svgDataFolder)
-
-            var fileName: String = ""
-
             val classId = call.parameters["classId"]?.toIntOrNull() ?: return@post
             val classesDataFolder = AdminServices.getClassDataFolder(dataCacheDirectory, classId)
+            var fileName: String? = null
 
             call.receiveMultipart().forEachPart { part ->
                 when (part) {
                     is PartData.FileItem -> {
-                        fileName = part.originalFileName as String
-                        File(classesDataFolder.resolve(fileName).toString())
+                        fileName = part.originalFileName as String? ?:"noFilenamefound"
+                        File(classesDataFolder.resolve(fileName!!).toString())
                             .writeBytes(part.streamProvider().readBytes())
                     }
                     else -> {}
@@ -236,10 +236,17 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             }
             // analyze csv file and return with message
             var report = "No Report available!"
-            if (fileName.isNotEmpty())
-                report = BiotopServices.classCSVProcessing(classesDataFolder.resolve(fileName).toString(), classId)
+            fileName?.let { fn ->
+                report = BiotopServices.classCSVProcessing(classesDataFolder.resolve(fn).toString(), classId)
+                transaction {
+                    TableClasses.update({ TableClasses.id eq classId }) {
+                        it[TableClasses.filename] = fn
+                        it[TableClasses.updated] = LocalDateTime.now()
+                    }
+                }
+            }
 
-            call.respondRedirect("/admin/biotop/classes/$classId")
+            call.respondRedirect("/admin/biotop/classes")
         }
 
         get("/classes/{classId}") {
@@ -277,8 +284,12 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             }
         }
 
-
-
+        post("/classes/{classId}/typesRemove") {
+            call.parameters["classId"]?.toIntOrNull()?.let { classId ->
+                classTypesDelete(classId, dataCacheDirectory)
+            }
+            call.respondRedirect("/admin/biotop/classes")
+        }
 
     }
 }
