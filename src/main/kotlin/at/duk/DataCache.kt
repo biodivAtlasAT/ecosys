@@ -45,12 +45,17 @@ object DataCache {
             if (response.status == HttpStatusCode.OK)
                 File(cachePath.resolve("navigation.html").toString())
                     .writeText(
-                        generateBody(response.bodyAsText(), it.getString(), config.propertyOrNull("ktor.api.url"))
+                        generateBody(response.bodyAsText(), it.getString(), config.propertyOrNull("ktor.api.url"), config.propertyOrNull("geoserver.url"))
                     )
         }
     }
 
-    private fun generateBody(branded: String, navigationUrl: String, apiServer: ApplicationConfigValue?): String {
+    private fun generateBody(
+        branded: String,
+        navigationUrl: String,
+        apiServer: ApplicationConfigValue?,
+        geoServer: ApplicationConfigValue?
+    ): String {
         val ecosys = this.javaClass.classLoader.getResource("static/frontend/index.html")?.readText()
             ?.let { Jsoup.parse(it) } ?: return "Error in server application: cannot read index.html for merging!"
 
@@ -96,6 +101,21 @@ object DataCache {
                 if (it.tagName() == "script" && it.data().contains("url_ecosys")) {
                     val preChild = it.data()
                     val startPos = preChild.indexOf("url_ecosys")
+                    val endPos = preChild.indexOf(";", startPos)
+                    val server = preChild.substring(startPos, endPos)
+                    val serverUrl = server.split("\"", "'")[1]
+                    val postChild = preChild.replace(serverUrl, conf.getString())
+                    it.text(postChild)
+                }
+            }
+        }
+
+        // 7. replace geoserver api url with configuration
+        geoServer?.let { conf ->
+            brand.getElementById("id_content")?.children()?.forEach {
+                if (it.tagName() == "script" && it.data().contains("url_geoserver")) {
+                    val preChild = it.data()
+                    val startPos = preChild.indexOf("url_geoserver")
                     val endPos = preChild.indexOf(";", startPos)
                     val server = preChild.substring(startPos, endPos)
                     val serverUrl = server.split("\"", "'")[1]
