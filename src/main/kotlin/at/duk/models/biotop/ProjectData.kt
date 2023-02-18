@@ -40,6 +40,7 @@ data class ProjectData(
     var resource: String? = null,
     var classId: Int = -1,
     var classInfo: String? = null,
+    var classMap: String? = null,
     val geoserverWorkspace: String? = null,
     val geoserverLayer: String? = null,
     val colTypesCode: String? = null,
@@ -50,7 +51,7 @@ data class ProjectData(
     val speciesColNameName: String? = null,
     var hierarchyId: Int = -1,
 ) {
-    constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,-1)
+    constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,null,-1)
     companion object{
         private fun mapRSToProjectData(rs: ResultRow): ProjectData {
             return ProjectData(
@@ -62,6 +63,7 @@ data class ProjectData(
                 rs[TableProjects.resource],
                 rs[TableProjects.classId],
                 rs[TableProjects.classInfo],
+                rs[TableProjects.classMap],
                 rs[TableProjects.geoserverWorkspace],
                 rs[TableProjects.geoserverLayer],
                 rs[TableProjects.colTypesCode],

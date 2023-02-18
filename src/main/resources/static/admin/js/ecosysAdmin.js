@@ -396,3 +396,9 @@ function classDelete(idx) {
         }).show()
 }
 
+function deleteBTMap() {
+    f = document.getElementById("classMapSpan")
+    f.style.color = "red"
+    f.style.textDecoration = "line-through"
+    document.getElementById("deleteMap").value = true
+}

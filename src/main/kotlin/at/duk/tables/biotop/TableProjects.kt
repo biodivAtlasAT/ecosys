@@ -31,6 +31,7 @@ object TableProjects : IntIdTable("bt_projects") {
     var resource: Column<String?> = varchar("resource", length = 32).nullable()
     var classId: Column<Int> = integer("class_id").default(-1)
     var classInfo: Column<String?> = varchar("class_info", length = 128).nullable()
+    var classMap: Column<String?> = varchar("class_map", length = 128).nullable()
     var geoserverWorkspace: Column<String?> = varchar("geoserver_workspace", length = 128).nullable()
     var geoserverLayer: Column<String?> = varchar("geoserver_layer", length = 128).nullable()
     var colTypesCode: Column<String?> = varchar("col_types_code", length = 64).nullable()

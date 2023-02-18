@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.BT_projects
     resource character varying(32),
     class_id integer NOT NULL DEFAULT -1,
     class_info character varying(128),
+    class_map character varying(128),
     geoserver_workspace character varying(128),
     geoserver_layer character varying(128),
 	col_types_code character varying(64),

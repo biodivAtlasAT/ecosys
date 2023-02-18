@@ -110,6 +110,13 @@ object AdminServices {
         if (!File("$df").exists()) File("$df").mkdir()
         return df
     }
+    fun getProjectDataFolder(dataCacheDirectory: String, projectId: Int): File {
+        val dataFolder = File(dataCacheDirectory).resolve("projects")
+        if (!File("$dataFolder").exists()) File("$dataFolder").mkdir()
+        val df = dataFolder.resolve(projectId.toString())
+        if (!File("$df").exists()) File("$df").mkdir()
+        return df
+    }
 
     fun getClassesDataFolderName(dataCacheDirectory: String, classId: Int): String =
         File(dataCacheDirectory).resolve("classes").resolve(classId.toString()).absolutePath

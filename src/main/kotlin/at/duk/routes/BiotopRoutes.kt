@@ -148,33 +148,80 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         get("/{projectId}/metadata") {
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
                 val project: ProjectData? = ProjectData.getById(projectId)
+                val classesList = mutableListOf<ClassData>()
 
+                transaction {
+                    classesList.addAll(
+                        TableClasses.select { TableClasses.deleted eq null and (TableClasses.filename neq null)}.orderBy(TableClasses.description).map
+                        { rs -> ClassData(rs[TableClasses.id].value, rs[TableClasses.description], rs[TableClasses.filename]) }
+                    )
+                }
                 call.respond(FreeMarkerContent("16_BTMetaData.ftl",
-                    mapOf("project" to project)
+                    mapOf("project" to project, "classesList" to classesList)
                 ))
             }
         }
-        get("/{projectId}/saveMetaData") {
-            call.parameters["projectId"]?.toIntOrNull()?.let {
-                transaction {
-                    TableProjects.update({ TableProjects.id eq it }) {
-                        it[TableProjects.enabled] = call.request.queryParameters["enabled"] == "on"
-                        it[TableProjects.resource] = call.request.queryParameters["resource"]
-                        it[TableProjects.epoch] = call.request.queryParameters["epoch"]
-                        it[TableProjects.area] = call.request.queryParameters["area"]
-                        it[TableProjects.updated] = LocalDateTime.now()
+        post("/{projectId}/saveMetaData") {
+            val projectId = call.parameters["projectId"]?.toIntOrNull() ?: return@post
+            val projectsDataFolder = AdminServices.getProjectDataFolder(dataCacheDirectory, projectId)
+            var fileName: String? = null
+            var deleteMap = false
+            val project = ProjectData.getById(projectId)?:return@post
+            project.enabled = false
+
+            call.receiveMultipart().forEachPart { part ->
+                when (part) {
+                    is PartData.FormItem -> {
+                        if (part.name == "deleteMap") deleteMap = part.value.toBoolean()
+                        if (part.name == "enabled") project.enabled = true
+                        if (part.name == "resource") project.resource = if (part.value == "") null else part.value
+                        if (part.name == "epoch") project.epoch = if (part.value == "") null else part.value
+                        if (part.name == "area") project.area = if (part.value == "") null else part.value
+                        if (part.name == "classId") project.classId = part.value?.toIntOrNull()?:-1
+                        if (part.name == "classInfo") project.classInfo = if (part.value == "") null else part.value
                     }
+                    is PartData.FileItem -> {
+                        fileName = part.originalFileName as String?
+                        project.classMap = part.originalFileName as String?
+                        fileName?.let {
+                            if (fileName != "")
+                                File(projectsDataFolder.resolve(fileName!!).toString())
+                                    .writeBytes(part.streamProvider().readBytes())
+                        }
+                    }
+                    else -> {}
                 }
             }
+
+            // todo: check structure of Map-file
+
+            if (deleteMap) {
+                project.classMap = null
+                projectsDataFolder.deleteRecursively()
+            }
+            transaction {
+                TableProjects.update({ TableProjects.id eq projectId }) {
+                    it[TableProjects.enabled] = project.enabled
+                    it[TableProjects.resource] = project.resource
+                    it[TableProjects.epoch] = project.epoch
+                    it[TableProjects.area] = project.area
+                    it[TableProjects.classId] = project.classId
+                    it[TableProjects.classInfo] = null
+                    if (project.classInfo != "" && project.classId == -1)
+                        it[TableProjects.classInfo] = project.classInfo
+                    it[TableProjects.classMap] = project.classMap
+                    it[TableProjects.updated] = LocalDateTime.now()
+                }
+            }
+
             call.respondRedirect("/admin/biotop/projects")
         }
         get("/{projectId}/metadataJson") {
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
-                //val project: ProjectData? = ProjectData.getById(projectId)
 
                 ProjectData.getById(projectId)?.let { project ->
                     val url = "$collectoryUrl/dataResource/${project.resource}"
-                    val dataResourceExists = if (collectoryUrl != null) isServiceReachable(url) else false
+                    val dataResourceExists = if (collectoryUrl != null && project.resource != null) isServiceReachable(url) else false
 
                     val mapper = jacksonObjectMapper()
                     val json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(

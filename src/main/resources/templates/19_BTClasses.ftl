@@ -32,7 +32,7 @@
                                 <span id="id_${prop.id}">${prop.id}</span>
                             </td>
                             <td>
-                                <input type="text" class="noClass" name="name_${prop.id}" id="name_${prop.id}" value="${prop.description}" disabled size="50" maxlength="128">
+                                <input type="text" class="noClass" name="name_${prop.id}" id="name_${prop.id}" value="${prop.description}" disabled size="30" maxlength="128">
                                 <button id="bt_${prop.id}" class="btn btn-sm btn-outline-primary" style="margin-top:-4px" role="button" onclick='classTypeEdit("${prop.id}", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordEdit}</button>
                             </td>
                             <td class="text-center">
@@ -49,7 +49,7 @@
                     <tr>
                         <td><span id="id_-1" style="visibility:hidden;">-1</span></td>
                         <td>
-                            <input type="text" class="noClass" name="name_-1" id="name_-1" value="" size="50" maxlength="128"  style="background-color: #CEE3F6">
+                            <input type="text" class="noClass" name="name_-1" id="name_-1" value="" size="30" maxlength="128"  style="background-color: #CEE3F6">
                             <button id="bt_-1" style="margin-top:-4px" class="btn btn-sm btn-primary funcSave" role="button" onclick='classTypeEdit("-1", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordSave}</button>
                         </td>
                         <td>&nbsp;
