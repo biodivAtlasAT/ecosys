@@ -43,6 +43,7 @@ data class ProjectData(
     var classMap: String? = null,
     val geoserverWorkspace: String? = null,
     val geoserverLayer: String? = null,
+    var geoserverDBFfile: String? = null,
     val colTypesCode: String? = null,
     val colTypesDescription: String? = null,
     val colSpeciesCode: String? = null,
@@ -51,7 +52,7 @@ data class ProjectData(
     val speciesColNameName: String? = null,
     var hierarchyId: Int = -1,
 ) {
-    constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,null,-1)
+    constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,null,null,-1)
     companion object{
         private fun mapRSToProjectData(rs: ResultRow): ProjectData {
             return ProjectData(
@@ -66,6 +67,7 @@ data class ProjectData(
                 rs[TableProjects.classMap],
                 rs[TableProjects.geoserverWorkspace],
                 rs[TableProjects.geoserverLayer],
+                rs[TableProjects.geoserverDBFfile],
                 rs[TableProjects.colTypesCode],
                 rs[TableProjects.colTypesDescription],
                 rs[TableProjects.colSpeciesCode],
@@ -85,4 +87,5 @@ data class ProjectData(
             return project
         }
     }
+    val hasMatchTable = this.classMap != null && this.classMap != ""
 }

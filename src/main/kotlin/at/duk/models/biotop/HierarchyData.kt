@@ -40,14 +40,17 @@ data class HierarchyData(
     val projectId: Int?,
     val classId: Int?,
     val keyCode: String,
-    val mappedKeyCode: String?,
+    var mappedKeyCode: String?,
     val sortCode: String?,
     val description: String,
     val category: String?,
     val color: String?,
-    val isLeaf: Boolean,
-    val hasData: Boolean,
+    var isLeaf: Boolean,
+    var hasData: Boolean,
 ) {
+    constructor(parentId: Int, levelNumber: Int, projectId: Int, keyCode: String, sortCode: String, description: String): this(
+        -1, parentId, levelNumber, projectId, -1, keyCode, null, sortCode, description, null, null, false, false
+    )
     companion object {
         fun mapRSToHierarchyData(rs: ResultRow): HierarchyData {
             return HierarchyData(
@@ -57,8 +60,8 @@ data class HierarchyData(
                 rs[TableHierarchy.projectId],
                 rs[TableHierarchy.classId],
                 rs[TableHierarchy.keyCode],
-                rs[TableHierarchy.sortCode],
                 rs[TableHierarchy.mappedKeyCode],
+                rs[TableHierarchy.sortCode],
                 rs[TableHierarchy.description],
                 rs[TableHierarchy.category],
                 rs[TableHierarchy.color],

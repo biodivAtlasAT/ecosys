@@ -122,6 +122,14 @@ fun Route.apiRouting(config: ApplicationConfig) {
             }
         }
 
+        get("/bt/projects/{projectId}/filter") {
+            call.parameters["projectId"]?.toIntOrNull()?.let {
+                call.respondText(
+                    ApiServices.generateProjectFilterResponse(it, config), ContentType.parse("application/json"),
+                    HttpStatusCode.OK
+                )
+            }
+        }
 
     }
 }

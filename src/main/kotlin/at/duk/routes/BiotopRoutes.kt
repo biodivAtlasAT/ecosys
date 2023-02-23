@@ -22,14 +22,13 @@ import at.duk.models.biotop.ClassData
 import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices
-import at.duk.services.AdminServices.getClassesDataFolderName
 import at.duk.services.AdminServices.isServiceReachable
 import at.duk.services.ApiServices
 import at.duk.services.BiotopServices
-import at.duk.services.BiotopServices.classDelete
 import at.duk.services.BiotopServices.classTypesDelete
 import at.duk.services.BiotopServices.getListOfFeatures
 import at.duk.services.BiotopServices.getListOfLayers
+import at.duk.services.BiotopServices.matchFeatures
 import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
@@ -41,11 +40,21 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.jetbrains.exposed.sql.*
+import org.geotools.data.FileDataStoreFinder
+import org.geotools.data.shapefile.dbf.DbaseFileReader
+import org.geotools.feature.FeatureCollection
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
+import org.opengis.feature.simple.SimpleFeature
+import org.opengis.feature.simple.SimpleFeatureType
 import java.io.File
+import java.io.FileInputStream
+import java.nio.charset.Charset
 import java.nio.file.Paths
 import java.time.LocalDateTime
+
 
 fun Route.biotopRouting(config: ApplicationConfig) {
     val geoserverWorkspace = config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
@@ -73,8 +82,11 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
         get("/projects") {
             val errorList = mutableListOf<String>()
-            val isGR = if (geoserverUrl != null) isServiceReachable(geoserverUrl) else false
-            val isCR = if (collectoryUrl != null) isServiceReachable(collectoryUrl) else false
+            //val isGR = if (geoserverUrl != null) isServiceReachable(geoserverUrl) else false
+            //val isCR = if (collectoryUrl != null) isServiceReachable(collectoryUrl) else false
+
+            val isGR = true
+            val isCR = true
             if (!isGR) errorList.add("Verbindung zu Geoserver nicht möglich! --> Check Konfiguration bzw. Service!")
             if (!isCR) errorList.add("Verbindung zu Collectory nicht möglich! --> Check Konfiguration bzw. Service!")
 
@@ -336,6 +348,49 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 classTypesDelete(classId, dataCacheDirectory)
             }
             call.respondRedirect("/admin/biotop/classes")
+        }
+
+        get("/{projectId}/matching") {
+            call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
+                ProjectData.getById(projectId)?.let { project ->
+                    // workaoround
+                    //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/shapeFiles/KLEINREGIONEN/KLEINREGIONENPolygon.dbf"
+                    //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/vonKunden/Mail_260122_Lebensraumtypen/shape/OEKOLEITA_Biotopkartierung.dbf"
+                    //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/vonKunden/Mail_260122_Lebensraumtypen/shape/OEKOLEITA_Biotopkartierung.dbf"
+                    //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/shapeFiles/bezirk_wgs84_iso/bezirk_wgs84_iso.dbf"
+                    project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/Testdaten/bundesland_wgs84_iso/bundesland_wgs84_iso.dbf"
+                    matchFeatures(config, project)
+                }
+                call.respondRedirect("/admin/biotop/projects")
+            }
+        }
+        get("/{projectId}/types") {
+            call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
+                ProjectData.getById(projectId)?.let { project ->
+                    val typeList = mutableListOf<HierarchyData>()
+                    val indentMap = mutableMapOf<Int, String>()
+                    transaction {
+                        TableHierarchy.select { TableHierarchy.projectId eq projectId }
+                            .orderBy(TableHierarchy.sortCode)
+                            .forEach {
+                                typeList.add(HierarchyData.mapRSToHierarchyData(it))
+                                val cnt = it[TableHierarchy.levelNumber]
+                                if (!indentMap.containsKey(cnt)) {
+                                    var nbsp = ""
+                                    for (i in 0..cnt) nbsp += "&nbsp;&nbsp;"
+                                    indentMap[cnt] = nbsp
+                                }
+
+                            }
+                    }
+                typeList.forEach {
+                    println("${it.id} ${it.keyCode} ${it.isLeaf} ${it.hasData} ${it.description}")
+                }
+                call.respond(FreeMarkerContent("22_BTProjectHierarchy.ftl",
+                    mapOf("project" to project, "typeList" to typeList, "indentList" to indentMap.toSortedMap().values.toList() )
+                ))
+                }
+            }
         }
 
     }

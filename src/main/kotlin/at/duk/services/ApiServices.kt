@@ -19,9 +19,11 @@
 package at.duk.services
 
 import at.duk.models.*
+import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices.resolveSVGPath
 import at.duk.tables.*
+import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -33,6 +35,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.config.*
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
@@ -311,4 +314,19 @@ object ApiServices {
 
         return node.toString()
     }
+
+
+    suspend fun generateProjectFilterResponse(projectId: Int, config: ApplicationConfig): String {
+        data class EcosysProjectDataResponse(val error: ResponseError, val filter: List<HierarchyData>)
+
+        val hierarchyList = mutableListOf<HierarchyData>()
+        transaction {
+            TableHierarchy.select { TableHierarchy.projectId eq projectId }.orderBy(TableHierarchy.sortCode)
+                .forEach {
+                    hierarchyList.add(HierarchyData.mapRSToHierarchyData(it))
+                }
+        }
+        return mapper.writeValueAsString(EcosysProjectDataResponse(ResponseError(0, ""), hierarchyList))
+    }
+
 }
