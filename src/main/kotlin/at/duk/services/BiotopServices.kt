@@ -25,6 +25,8 @@ import at.duk.services.AdminServices.getProjectDataFolderName
 import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
@@ -43,6 +45,8 @@ import java.time.LocalDateTime
 object BiotopServices {
     private const val ROOT_NODE = "ZZ"
     private const val EXT_ROOT_NODE = "$ROOT_NODE."
+
+    private val mapper = jacksonObjectMapper()
 
     fun projectDelete(formParameters: Parameters, dataCacheDirectory: String) = formParameters["mode"]?.let {
         formParameters["id"]?.toIntOrNull()?.let { id ->
@@ -328,8 +332,7 @@ object BiotopServices {
         }
     }
 
-    fun matchFeatures(config: ApplicationConfig, project: ProjectData) {
-        val matchDict = getValuesFromDBF(project)
+    fun matchFeatures(config: ApplicationConfig, project: ProjectData, matchDict: Map<String, String>) {
         val hierarchyList = mutableListOf<HierarchyData>()
         val content = mutableListOf<String>()  // imitates the lines of an uploaded file
 
@@ -451,6 +454,7 @@ object BiotopServices {
     }
 
 
+    // for later use - if properties of a layer cannot be retrieved from WFS Service
     private fun getValuesFromDBF(project: ProjectData): Map<String, String> {
 
         val fis = FileInputStream(project.geoserverDBFfile)
@@ -503,4 +507,27 @@ object BiotopServices {
         return dict
     }
 
+    suspend fun getLayerDataFromWFSService(project: ProjectData, config:ApplicationConfig): Map<String, String> {
+        // http://127.0.0.1:8081/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=ECO:bundesland_wgs84_iso&propertyName=BL_KZ,BL
+        val matchDict = mutableMapOf<String, String>()
+        config.propertyOrNull("geoserver.url")?.getString()?.let { geoserverUrl ->
+            val client = HttpClient(CIO)
+            val url = "$geoserverUrl/wfs?service=wfs&version=2.0.0&request=GetFeature&outputFormat=json&" +
+                    "typeNames=${project.geoserverWorkspace}:${project.geoserverLayer}&propertyName=${project.colTypesCode},${project.colTypesDescription}"
+            val response: HttpResponse = client.request(url) {
+                method = HttpMethod.Get
+            }
+            try {
+                if (response.status == HttpStatusCode.OK) {
+                    mapper.readTree(response.bodyAsText()).path("features").forEach {
+                        val props = it.path("properties")
+                        val key = props[project.colTypesCode].toString()
+                        val value = props[project.colTypesDescription].toString()
+                        matchDict[key] = value
+                    }
+                }
+            } catch (ex: Exception) { println("Response of WFS Request could not be analyzed!\nresponse.bodyAsText()")  }
+        }
+        return matchDict
+    }
 }

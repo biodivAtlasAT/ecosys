@@ -359,7 +359,10 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/vonKunden/Mail_260122_Lebensraumtypen/shape/OEKOLEITA_Biotopkartierung.dbf"
                     //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/shapeFiles/bezirk_wgs84_iso/bezirk_wgs84_iso.dbf"
                     project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/Testdaten/bundesland_wgs84_iso/bundesland_wgs84_iso.dbf"
-                    matchFeatures(config, project)
+                    //val matchAlt = BiotopServices.getLayerDataFromWFSService(project, config)
+                    //println(matchAlt)
+
+                    matchFeatures(config, project, BiotopServices.getLayerDataFromWFSService(project, config))
                 }
                 call.respondRedirect("/admin/biotop/projects")
             }
