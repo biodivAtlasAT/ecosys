@@ -44,7 +44,7 @@ data class HierarchyData(
     val sortCode: String?,
     val description: String,
     val category: String?,
-    val color: String?,
+    var color: String?,
     var isLeaf: Boolean,
     var hasData: Boolean,
 ) {

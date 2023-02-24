@@ -21,7 +21,9 @@ package at.duk.routes
 import at.duk.models.biotop.ClassData
 import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
+import at.duk.models.biotop.StyleData
 import at.duk.services.AdminServices
+import at.duk.services.AdminServices.getProjectDataFolderName
 import at.duk.services.AdminServices.isServiceReachable
 import at.duk.services.ApiServices
 import at.duk.services.BiotopServices
@@ -33,6 +35,12 @@ import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
@@ -49,11 +57,16 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.opengis.feature.simple.SimpleFeature
 import org.opengis.feature.simple.SimpleFeatureType
-import java.io.File
-import java.io.FileInputStream
+import java.io.*
 import java.nio.charset.Charset
 import java.nio.file.Paths
 import java.time.LocalDateTime
+import java.util.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+import java.nio.charset.StandardCharsets.UTF_8
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
 
 
 fun Route.biotopRouting(config: ApplicationConfig) {
@@ -386,15 +399,77 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
                             }
                     }
-                typeList.forEach {
-                    println("${it.id} ${it.keyCode} ${it.isLeaf} ${it.hasData} ${it.description}")
+
+                typeList.filter { it.isLeaf }.forEach {
+                    val r = Integer.toHexString(kotlin.random.Random.nextInt(0,255))
+                    val g = Integer.toHexString(kotlin.random.Random.nextInt(0,255))
+                    val b = Integer.toHexString(kotlin.random.Random.nextInt(0,255))
+                    it.color = "#$r$g$b"
+                    it.mappedKeyCode = if (it.mappedKeyCode == null || it.mappedKeyCode == "") it.keyCode else it.mappedKeyCode
                 }
-                call.respond(FreeMarkerContent("22_BTProjectHierarchy.ftl",
-                    mapOf("project" to project, "typeList" to typeList, "indentList" to indentMap.toSortedMap().values.toList() )
+                val sld = StyleData(project, typeList).generateSLD()
+
+                    val nr = kotlin.random.Random.nextInt(0,1255)
+                    val nameP = "ecosys_project_$nr"
+
+                    val sldZipped = myGzip(sld)
+
+                    val client = HttpClient(CIO)
+                    val urlToGeoServer = "$geoserverUrl/rest/styles"
+
+                    // create style
+                    val client1 = HttpClient(CIO)
+                    val url = "$geoserverUrl/rest/styles"
+                    val response1: HttpResponse = client1.request(url) {
+                        basicAuth("admin", "geoserver")
+                        method = HttpMethod.Post
+                        header(HttpHeaders.ContentType, "text/xml")
+                        setBody("<style><name>$nameP</name><filename>$nameP.sld</filename></style>")
+                    }
+                    println(response1.status)
+
+                    // provide sld information
+                    val response: HttpResponse = client.submitForm(
+                        url = urlToGeoServer+"/$nameP",
+                    ) {
+                        basicAuth("admin", "geoserver")
+                        setBody(sld)
+                        headers {
+                            append(HttpHeaders.ContentType, "application/vnd.ogc.sld+xml")
+                        }
+                        method = HttpMethod.Put
+                    }
+
+                    println(response.status)
+
+                    // assign new style to the layer
+                    val client2 = HttpClient(CIO)
+                    val url2 = "$geoserverUrl/rest/layers/ECO:bundesland_wgs84_iso"
+                    val response2: HttpResponse = client2.request(url2) {
+                        basicAuth("admin", "geoserver")
+                        method = HttpMethod.Put
+                        header(HttpHeaders.ContentType, "text/xml")
+                        setBody("<layer><defaultStyle><name>$nameP</name></defaultStyle></layer>")
+                    }
+                    println(response2.status)
+
+
+                    call.respond(FreeMarkerContent("22_BTProjectHierarchy.ftl",
+                    mapOf("project" to project, "typeList" to typeList,
+                        "indentList" to indentMap.toSortedMap().values.toList(),
+                        "sld" to sld)
                 ))
                 }
             }
         }
 
     }
+
+
+}
+
+fun myGzip(content: String): ByteArray {
+    val bos = ByteArrayOutputStream()
+    GZIPOutputStream(bos).bufferedWriter(UTF_8).use { it.write(content) }
+    return bos.toByteArray()
 }

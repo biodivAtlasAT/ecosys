@@ -19,6 +19,7 @@
         </#list>
 
     </div>
+    <div col="row col-md-10">${sld}</div>
 
 </div>
 </body>
