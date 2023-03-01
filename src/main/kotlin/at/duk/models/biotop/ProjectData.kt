@@ -30,6 +30,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
+const val GEOSERVER_PROJECT_PREFIX = "ecosys_project_"
 @Serializable
 data class ProjectData(
     val id: Int,
@@ -52,6 +53,8 @@ data class ProjectData(
     val speciesColNameName: String? = null,
     var hierarchyId: Int = -1,
 ) {
+    val geoServerStyleName =  GEOSERVER_PROJECT_PREFIX + id
+
     constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,null,null,-1)
     companion object{
         private fun mapRSToProjectData(rs: ResultRow): ProjectData {

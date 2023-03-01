@@ -43,10 +43,10 @@ import java.nio.charset.Charset
 import java.time.LocalDateTime
 
 object BiotopServices {
-    private const val ROOT_NODE = "ZZ"
+    private const val ROOT_NODE = "999"
     private const val EXT_ROOT_NODE = "$ROOT_NODE."
 
-    private val mapper = jacksonObjectMapper()
+    val mapper = jacksonObjectMapper()
 
     fun projectDelete(formParameters: Parameters, dataCacheDirectory: String) = formParameters["mode"]?.let {
         formParameters["id"]?.toIntOrNull()?.let { id ->

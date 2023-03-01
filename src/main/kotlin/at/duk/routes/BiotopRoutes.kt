@@ -23,7 +23,6 @@ import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
 import at.duk.models.biotop.StyleData
 import at.duk.services.AdminServices
-import at.duk.services.AdminServices.getProjectDataFolderName
 import at.duk.services.AdminServices.isServiceReachable
 import at.duk.services.ApiServices
 import at.duk.services.BiotopServices
@@ -31,6 +30,7 @@ import at.duk.services.BiotopServices.classTypesDelete
 import at.duk.services.BiotopServices.getListOfFeatures
 import at.duk.services.BiotopServices.getListOfLayers
 import at.duk.services.BiotopServices.matchFeatures
+import at.duk.services.GeoServerService
 import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
@@ -48,28 +48,20 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.geotools.data.FileDataStoreFinder
-import org.geotools.data.shapefile.dbf.DbaseFileReader
-import org.geotools.feature.FeatureCollection
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
-import org.opengis.feature.simple.SimpleFeature
-import org.opengis.feature.simple.SimpleFeatureType
 import java.io.*
-import java.nio.charset.Charset
 import java.nio.file.Paths
 import java.time.LocalDateTime
-import java.util.*
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 import java.nio.charset.StandardCharsets.UTF_8
-import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
 
 fun Route.biotopRouting(config: ApplicationConfig) {
+    val geoServer = GeoServerService(config)
+
     val geoserverWorkspace = config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
     val geoserverUrl = config.propertyOrNull("geoserver.url")?.getString()
     val collectoryUrl = config.propertyOrNull("atlas.collectory")?.getString()
@@ -407,58 +399,26 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     it.color = "#$r$g$b"
                     it.mappedKeyCode = if (it.mappedKeyCode == null || it.mappedKeyCode == "") it.keyCode else it.mappedKeyCode
                 }
-                val sld = StyleData(project, typeList).generateSLD()
 
-                    val nr = kotlin.random.Random.nextInt(0,1255)
-                    val nameP = "ecosys_project_$nr"
+                    val sld = StyleData(project, typeList).generateSLD()
 
-                    val sldZipped = myGzip(sld)
-
-                    val client = HttpClient(CIO)
-                    val urlToGeoServer = "$geoserverUrl/rest/styles"
-
-                    // create style
-                    val client1 = HttpClient(CIO)
-                    val url = "$geoserverUrl/rest/styles"
-                    val response1: HttpResponse = client1.request(url) {
-                        basicAuth("admin", "geoserver")
-                        method = HttpMethod.Post
-                        header(HttpHeaders.ContentType, "text/xml")
-                        setBody("<style><name>$nameP</name><filename>$nameP.sld</filename></style>")
+                    geoServer.getStyles()?.let { styleList ->
+                        if (!styleList.contains(project.geoServerStyleName))
+                            geoServer.createStyle(project)
                     }
-                    println(response1.status)
 
-                    // provide sld information
-                    val response: HttpResponse = client.submitForm(
-                        url = urlToGeoServer+"/$nameP",
-                    ) {
-                        basicAuth("admin", "geoserver")
-                        setBody(sld)
-                        headers {
-                            append(HttpHeaders.ContentType, "application/vnd.ogc.sld+xml")
+                    geoServer.getStyles()?.let { styleList ->
+                        if (styleList.any { it == project.geoServerStyleName }) {
+                            if (geoServer.putSLDFile(project, sld))
+                                geoServer.setDefaultStyle(project)
                         }
-                        method = HttpMethod.Put
                     }
-
-                    println(response.status)
-
-                    // assign new style to the layer
-                    val client2 = HttpClient(CIO)
-                    val url2 = "$geoserverUrl/rest/layers/ECO:bundesland_wgs84_iso"
-                    val response2: HttpResponse = client2.request(url2) {
-                        basicAuth("admin", "geoserver")
-                        method = HttpMethod.Put
-                        header(HttpHeaders.ContentType, "text/xml")
-                        setBody("<layer><defaultStyle><name>$nameP</name></defaultStyle></layer>")
-                    }
-                    println(response2.status)
-
 
                     call.respond(FreeMarkerContent("22_BTProjectHierarchy.ftl",
                     mapOf("project" to project, "typeList" to typeList,
                         "indentList" to indentMap.toSortedMap().values.toList(),
                         "sld" to sld)
-                ))
+                    ))
                 }
             }
         }
