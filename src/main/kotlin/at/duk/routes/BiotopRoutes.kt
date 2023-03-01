@@ -35,12 +35,6 @@ import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
@@ -55,8 +49,6 @@ import org.jetbrains.exposed.sql.update
 import java.io.*
 import java.nio.file.Paths
 import java.time.LocalDateTime
-import java.nio.charset.StandardCharsets.UTF_8
-import java.util.zip.GZIPOutputStream
 
 
 fun Route.biotopRouting(config: ApplicationConfig) {
@@ -426,10 +418,4 @@ fun Route.biotopRouting(config: ApplicationConfig) {
     }
 
 
-}
-
-fun myGzip(content: String): ByteArray {
-    val bos = ByteArrayOutputStream()
-    GZIPOutputStream(bos).bufferedWriter(UTF_8).use { it.write(content) }
-    return bos.toByteArray()
 }

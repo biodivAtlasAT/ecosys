@@ -34,7 +34,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.config.*
 import koodies.text.toLowerCase
-import org.geotools.data.shapefile.dbf.DbaseFileReader
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -456,8 +455,8 @@ object BiotopServices {
 
     // for later use - if properties of a layer cannot be retrieved from WFS Service
     private fun getValuesFromDBF(project: ProjectData): Map<String, String> {
-
-        val fis = FileInputStream(project.geoserverDBFfile)
+        val matchDict = mutableMapOf<String, String>()
+       /* val fis = FileInputStream(project.geoserverDBFfile)
         val dbfReader = DbaseFileReader(
             fis.channel,
             false, Charset.forName("ISO-8859-1")
@@ -472,7 +471,7 @@ object BiotopServices {
                 nameColIndex = i
         }
 
-        val matchDict = mutableMapOf<String, String>()
+
         if (keyColIndex != -1 && nameColIndex != -1) {
             while (dbfReader.hasNext()) {
                 val fields = dbfReader.readEntry()
@@ -485,7 +484,7 @@ object BiotopServices {
         }
         dbfReader.close()
         fis.close()
-
+*/
         return matchDict
     }
 
