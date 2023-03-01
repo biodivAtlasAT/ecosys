@@ -209,9 +209,23 @@ object BiotopServices {
                 }
             }
         }
-        // 3. generate dependencies (parent, level, order by Id)
-        // 4. delete & save into database
-        // 5. create type for api which can be used for displaying the content
+
+        val hierarchyList = mutableListOf<HierarchyData>()
+        transaction {
+            TableHierarchy.select { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }
+                .orderBy(TableHierarchy.sortCode)
+                .forEach {
+                    hierarchyList.add(HierarchyData.mapRSToHierarchyData(it))
+                }
+        }
+        hierarchyList.setIsLeaf()
+        transaction {
+            hierarchyList.filter { it.isLeaf }.forEach {
+                TableHierarchy.update({ TableHierarchy.id eq it.id }) { it ->
+                    it[TableHierarchy.isLeaf] = true
+                }
+            }
+        }
         return report
     }
 
@@ -281,6 +295,11 @@ object BiotopServices {
                     }
             }
         }
+
+
+
+
+
         return report
     }
     fun csvCheckCols(content: List<String>): Boolean {
@@ -396,10 +415,16 @@ object BiotopServices {
         }
     }
 
-    private fun getHierarchyListFromDB(project: ProjectData): List<HierarchyData> = transaction {
+    public fun getHierarchyListFromDB(project: ProjectData): List<HierarchyData> = transaction {
             TableHierarchy.select { TableHierarchy.projectId eq project.id }.orderBy(TableHierarchy.sortCode)
                 .map { HierarchyData.mapRSToHierarchyData(it) }
         }
+
+    private fun getHierarchyMapFromDBForClassId(classId: Int): Map<String, HierarchyData> = transaction {
+        TableHierarchy.select { TableHierarchy.classId eq classId }.orderBy(TableHierarchy.sortCode)
+            .associate { HierarchyData.mapRSToHierarchyData(it).keyCode to HierarchyData.mapRSToHierarchyData(it) }
+    }
+
 
     fun List<HierarchyData>.setIsLeaf() {
         this.forEach { tl ->
@@ -413,10 +438,17 @@ object BiotopServices {
         }
     }
 
+    fun List<HierarchyData>.setColors(hierarchyDataMap: Map<String, HierarchyData>) {
+        this.forEach {
+            it.color = hierarchyDataMap[it.keyCode]?.color
+        }
+    }
+
     private fun matchFeaturesPost(project: ProjectData, matchTable: Map<String, String>) {
         val hierarchyList = getHierarchyListFromDB(project).also {
             it.setIsLeaf()
             it.setHasData()
+            it.setColors(getHierarchyMapFromDBForClassId(project.classId))
         }
         // set matchCode from matchTable
         matchTable.forEach {(k, v) ->
@@ -432,6 +464,7 @@ object BiotopServices {
                         it[TableHierarchy.hasData] = hd.hasData
                         it[TableHierarchy.isLeaf] = hd.isLeaf
                         it[TableHierarchy.mappedKeyCode] = hd.mappedKeyCode
+                        it[TableHierarchy.color] = hd.color
                     }
                 }
                 if (hd.keyCode.startsWith(EXT_ROOT_NODE)) {
@@ -441,6 +474,8 @@ object BiotopServices {
                 }
             }
         }
+
+
     }
 
     private fun setHasDataRecursively(hd: HierarchyData, hierarchyList: List<HierarchyData>) {

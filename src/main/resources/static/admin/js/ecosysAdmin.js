@@ -402,3 +402,144 @@ function deleteBTMap() {
     f.style.textDecoration = "line-through"
     document.getElementById("deleteMap").value = true
 }
+
+function colorMe(ele, keyCode) {
+    console.log(ele.value);
+    if(ele.value !== "") {
+        console.log("color_"+keyCode);
+        console.log(document.getElementById("color_"+keyCode));
+        document.getElementById("color_"+keyCode).style.backgroundColor = ele.value;
+
+    }
+
+}
+
+function delegateToChildren(keyCode) {
+    sp = keyCode.split(".");
+    liste = document.getElementsByClassName("class_"+sp[0]);
+    console.log(liste.length)
+
+    color = document.getElementById("colCode_"+sp[0]).value; // = hex value of color of root node
+    if (color === "") return;
+
+    // color = "#FF0000";
+    const [hsl_h, hsl_s, hsl_l] = hexToHSL(color);
+    console.log(color);
+    console.log(hsl_h);
+    console.log(hsl_s);
+    console.log(hsl_l);
+    min_l = 20;
+    max_l = 90;
+    stepWidth = (max_l - min_l) / liste.length;
+    actual_l = min_l;
+    actual_s = hsl_s;
+
+    for (i = 0; i < liste.length; i++) {
+        id = liste[i].id;
+        if (id === "colCode_"+sp[0]) continue;
+        console.log(id);
+        //dummy set
+        newColor = HSLToHex(hsl_h, actual_s, actual_l);
+        document.getElementById(id).value = newColor;
+
+
+        eleCodeId = "color_"+id.split("_")[1];
+        document.getElementById(eleCodeId).style.backgroundColor = newColor;
+        actual_l += stepWidth;
+        if (actual_l > 90) {
+            actual_l = min_l;
+            if (actual_s < 50)
+                actual_s +=50;
+            else
+                actual_s -=50;
+        }
+
+    }
+
+}
+
+function hexToHSL(H) {
+    // Convert hex to RGB first
+    let r = 0, g = 0, b = 0;
+    if (H.length == 4) {
+        r = "0x" + H[1] + H[1];
+        g = "0x" + H[2] + H[2];
+        b = "0x" + H[3] + H[3];
+    } else if (H.length == 7) {
+        r = "0x" + H[1] + H[2];
+        g = "0x" + H[3] + H[4];
+        b = "0x" + H[5] + H[6];
+    }
+    // Then to HSL
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    let cmin = Math.min(r,g,b),
+        cmax = Math.max(r,g,b),
+        delta = cmax - cmin,
+        h = 0,
+        s = 0,
+        l = 0;
+
+    if (delta == 0)
+        h = 0;
+    else if (cmax == r)
+        h = ((g - b) / delta) % 6;
+    else if (cmax == g)
+        h = (b - r) / delta + 2;
+    else
+        h = (r - g) / delta + 4;
+
+    h = Math.round(h * 60);
+
+    if (h < 0)
+        h += 360;
+
+    l = (cmax + cmin) / 2;
+    s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+    s = +(s * 100).toFixed(1);
+    l = +(l * 100).toFixed(1);
+
+    //return "hsl(" + h + "," + s + "%," + l + "%)";
+    return [h, s, l];
+}
+
+function HSLToHex(h,s,l) {
+    s /= 100;
+    l /= 100;
+
+    let c = (1 - Math.abs(2 * l - 1)) * s,
+        x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+        m = l - c/2,
+        r = 0,
+        g = 0,
+        b = 0;
+
+    if (0 <= h && h < 60) {
+        r = c; g = x; b = 0;
+    } else if (60 <= h && h < 120) {
+        r = x; g = c; b = 0;
+    } else if (120 <= h && h < 180) {
+        r = 0; g = c; b = x;
+    } else if (180 <= h && h < 240) {
+        r = 0; g = x; b = c;
+    } else if (240 <= h && h < 300) {
+        r = x; g = 0; b = c;
+    } else if (300 <= h && h < 360) {
+        r = c; g = 0; b = x;
+    }
+    // Having obtained RGB, convert channels to hex
+    r = Math.round((r + m) * 255).toString(16);
+    g = Math.round((g + m) * 255).toString(16);
+    b = Math.round((b + m) * 255).toString(16);
+
+    // Prepend 0s, if necessary
+    if (r.length == 1)
+        r = "0" + r;
+    if (g.length == 1)
+        g = "0" + g;
+    if (b.length == 1)
+        b = "0" + b;
+
+    return "#" + r + g + b;
+}

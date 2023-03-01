@@ -27,6 +27,7 @@ import at.duk.services.AdminServices.isServiceReachable
 import at.duk.services.ApiServices
 import at.duk.services.BiotopServices
 import at.duk.services.BiotopServices.classTypesDelete
+import at.duk.services.BiotopServices.getHierarchyListFromDB
 import at.duk.services.BiotopServices.getListOfFeatures
 import at.duk.services.BiotopServices.getListOfLayers
 import at.duk.services.BiotopServices.matchFeatures
@@ -340,6 +341,26 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             }
         }
 
+        post("/classes/{classId}/typesUpdate") {
+            val formParameters = call.receiveParameters()
+            call.parameters["classId"]?.toIntOrNull()?.let { classId ->
+                transaction {
+                    formParameters.forEach { s, strings ->
+                        val pos = s.indexOf("_")
+                        val keyCode = s.substring(pos + 1)
+                        TableHierarchy.update({ TableHierarchy.classId eq classId and (TableHierarchy.keyCode eq keyCode) }) {
+                            it[TableHierarchy.color] = strings[0]
+                        }
+                    }
+                    TableClasses.update({ TableClasses.id eq classId }) {
+                        it[TableClasses.updated] = LocalDateTime.now()
+                    }
+                }
+            }
+
+            call.respondRedirect("/admin/biotop/classes")
+        }
+
         post("/classes/{classId}/typesRemove") {
             call.parameters["classId"]?.toIntOrNull()?.let { classId ->
                 classTypesDelete(classId, dataCacheDirectory)
@@ -350,16 +371,20 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         get("/{projectId}/matching") {
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
                 ProjectData.getById(projectId)?.let { project ->
-                    // workaoround
-                    //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/shapeFiles/KLEINREGIONEN/KLEINREGIONENPolygon.dbf"
-                    //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/vonKunden/Mail_260122_Lebensraumtypen/shape/OEKOLEITA_Biotopkartierung.dbf"
-                    //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/vonKunden/Mail_260122_Lebensraumtypen/shape/OEKOLEITA_Biotopkartierung.dbf"
-                    //project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/shapeFiles/bezirk_wgs84_iso/bezirk_wgs84_iso.dbf"
-                    project.geoserverDBFfile = "D:/reinhardt/firma/OeKOLEITA/Testdaten/bundesland_wgs84_iso/bundesland_wgs84_iso.dbf"
-                    //val matchAlt = BiotopServices.getLayerDataFromWFSService(project, config)
-                    //println(matchAlt)
-
                     matchFeatures(config, project, BiotopServices.getLayerDataFromWFSService(project, config))
+
+                    val sld = StyleData(project, getHierarchyListFromDB(project)).generateSLD()
+                    geoServer.getStyles()?.let { styleList ->
+                        if (!styleList.contains(project.geoServerStyleName))
+                            geoServer.createStyle(project)
+                    }
+
+                    geoServer.getStyles()?.let { styleList ->
+                        if (styleList.any { it == project.geoServerStyleName }) {
+                            if (geoServer.putSLDFile(project, sld))
+                                geoServer.setDefaultStyle(project)
+                        }
+                    }
                 }
                 call.respondRedirect("/admin/biotop/projects")
             }
@@ -384,15 +409,15 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                             }
                     }
 
-                typeList.filter { it.isLeaf }.forEach {
+      /*          typeList.filter { it.isLeaf }.forEach {
                     val r = Integer.toHexString(kotlin.random.Random.nextInt(0,255))
                     val g = Integer.toHexString(kotlin.random.Random.nextInt(0,255))
                     val b = Integer.toHexString(kotlin.random.Random.nextInt(0,255))
                     it.color = "#$r$g$b"
                     it.mappedKeyCode = if (it.mappedKeyCode == null || it.mappedKeyCode == "") it.keyCode else it.mappedKeyCode
-                }
+                }*/
 
-                    val sld = StyleData(project, typeList).generateSLD()
+            /*        val sld = StyleData(project, typeList).generateSLD()
 
                     geoServer.getStyles()?.let { styleList ->
                         if (!styleList.contains(project.geoServerStyleName))
@@ -405,11 +430,11 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                                 geoServer.setDefaultStyle(project)
                         }
                     }
-
+*/
                     call.respond(FreeMarkerContent("22_BTProjectHierarchy.ftl",
                     mapOf("project" to project, "typeList" to typeList,
                         "indentList" to indentMap.toSortedMap().values.toList(),
-                        "sld" to sld)
+                        )
                     ))
                 }
             }

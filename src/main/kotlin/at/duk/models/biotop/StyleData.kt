@@ -38,10 +38,12 @@ data class StyleData(val project: ProjectData, val hierarchyList: List<Hierarchy
         val sb = StringBuilder(HEADER)
 
         hierarchyList.filter { it.isLeaf }.forEach {
+            val key = it.mappedKeyCode?:it.keyCode
+            val color = it.color?:"#808080"
             val rule = RULE.replace("myTitle",it.description)
                 .replace("myPropertyName", project.colTypesCode!!)
-                .replace("myLiteral", it.mappedKeyCode!!)
-                .replace("myColor", it.color!!)
+                .replace("myLiteral", key)
+                .replace("myColor", color)
             sb.append(rule)
         }
 

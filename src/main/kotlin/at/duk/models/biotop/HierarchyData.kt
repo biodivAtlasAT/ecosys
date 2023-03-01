@@ -51,6 +51,9 @@ data class HierarchyData(
     constructor(parentId: Int, levelNumber: Int, projectId: Int, keyCode: String, sortCode: String, description: String): this(
         -1, parentId, levelNumber, projectId, -1, keyCode, null, sortCode, description, null, null, false, false
     )
+
+    // necessary becaus Apache Freemarker cannot check properties with is....
+    val checkLeaf = isLeaf
     companion object {
         fun mapRSToHierarchyData(rs: ResultRow): HierarchyData {
             return HierarchyData(
