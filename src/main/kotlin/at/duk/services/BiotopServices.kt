@@ -18,14 +18,12 @@
  */
 package at.duk.services
 
-import at.duk.models.biotop.ClassData
 import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices.getProjectDataFolderName
 import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -37,8 +35,6 @@ import koodies.text.toLowerCase
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
-import java.io.FileInputStream
-import java.nio.charset.Charset
 import java.time.LocalDateTime
 
 object BiotopServices {
@@ -444,6 +440,42 @@ object BiotopServices {
         }
     }
 
+    private fun getChildrenKeyCodes(hdList: List<HierarchyData>, hierarchyData: HierarchyData): List<String> {
+        val keyCodesList = mutableListOf<String>()
+        val actLevel = hierarchyData.levelNumber
+        var inside = false
+
+        hdList.forEach {
+            if (it === hierarchyData) {
+                inside = true
+                return@forEach
+            }
+            if (inside) {
+                if (it.levelNumber <= actLevel)
+                    inside = false
+                else
+                    if (it.hasData && it.isLeaf)
+                        keyCodesList.add(it.mappedKeyCode ?: it.keyCode)
+            }
+        }
+
+        return keyCodesList
+    }
+    fun List<HierarchyData>.setCQLFilter(colTypesCode: String?) {
+        val mapKeyCodeToKeys = mutableMapOf<String, List<String>>()
+        this.filter { !it.isLeaf }.forEach {
+            val kl = getChildrenKeyCodes(this, it)
+
+            it.cqlQuery = kl.joinToString(" OR ") { "$colTypesCode=$it" }
+        }
+
+
+        this.filter { it.isLeaf && it.hasData }.forEach {
+            it.cqlQuery = "$colTypesCode=${it.mappedKeyCode?:it.keyCode}"
+        }
+    }
+
+
     private fun matchFeaturesPost(project: ProjectData, matchTable: Map<String, String>) {
         val hierarchyList = getHierarchyListFromDB(project).also {
             it.setIsLeaf()
@@ -555,8 +587,8 @@ object BiotopServices {
                 if (response.status == HttpStatusCode.OK) {
                     mapper.readTree(response.bodyAsText()).path("features").forEach {
                         val props = it.path("properties")
-                        val key = props[project.colTypesCode].toString()
-                        val value = props[project.colTypesDescription].toString()
+                        val key = props[project.colTypesCode].asText() //.toString()
+                        val value = props[project.colTypesDescription].asText() // .toString()
                         matchDict[key] = value
                     }
                 }

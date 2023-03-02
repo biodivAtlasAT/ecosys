@@ -31,6 +31,7 @@ import at.duk.services.BiotopServices.getHierarchyListFromDB
 import at.duk.services.BiotopServices.getListOfFeatures
 import at.duk.services.BiotopServices.getListOfLayers
 import at.duk.services.BiotopServices.matchFeatures
+import at.duk.services.BiotopServices.setCQLFilter
 import at.duk.services.GeoServerService
 import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
@@ -390,6 +391,13 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             }
         }
         get("/{projectId}/types") {
+
+            val wmsUrl = "http://localhost:8081/geoserver/ECO/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&" +
+                    "LAYERS=my_ws_layer&exceptions=application/vnd.ogc.se_inimage&" +
+                    "CQL_FILTER=my_cql_filter&SRS=EPSG:4326&WIDTH=768&HEIGHT=330&BBOX=9.129638671875,45.87890625,17.567138671875,49.50439453125"
+
+            // BL_KZ=8 or BL_KZ=3
+
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
                 ProjectData.getById(projectId)?.let { project ->
                     val typeList = mutableListOf<HierarchyData>()
@@ -409,31 +417,12 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                             }
                     }
 
-      /*          typeList.filter { it.isLeaf }.forEach {
-                    val r = Integer.toHexString(kotlin.random.Random.nextInt(0,255))
-                    val g = Integer.toHexString(kotlin.random.Random.nextInt(0,255))
-                    val b = Integer.toHexString(kotlin.random.Random.nextInt(0,255))
-                    it.color = "#$r$g$b"
-                    it.mappedKeyCode = if (it.mappedKeyCode == null || it.mappedKeyCode == "") it.keyCode else it.mappedKeyCode
-                }*/
-
-            /*        val sld = StyleData(project, typeList).generateSLD()
-
-                    geoServer.getStyles()?.let { styleList ->
-                        if (!styleList.contains(project.geoServerStyleName))
-                            geoServer.createStyle(project)
-                    }
-
-                    geoServer.getStyles()?.let { styleList ->
-                        if (styleList.any { it == project.geoServerStyleName }) {
-                            if (geoServer.putSLDFile(project, sld))
-                                geoServer.setDefaultStyle(project)
-                        }
-                    }
-*/
+                    typeList.setCQLFilter(project.colTypesCode)
+                    val checkUrl = wmsUrl.replace("my_ws_layer", "${project.geoserverWorkspace}:${project.geoserverLayer}")
                     call.respond(FreeMarkerContent("22_BTProjectHierarchy.ftl",
                     mapOf("project" to project, "typeList" to typeList,
                         "indentList" to indentMap.toSortedMap().values.toList(),
+                        "checkUrl" to checkUrl
                         )
                     ))
                 }

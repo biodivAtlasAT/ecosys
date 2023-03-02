@@ -22,6 +22,7 @@ import at.duk.models.*
 import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices.resolveSVGPath
+import at.duk.services.BiotopServices.setCQLFilter
 import at.duk.tables.*
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
@@ -321,11 +322,14 @@ object ApiServices {
 
         val hierarchyList = mutableListOf<HierarchyData>()
         transaction {
+
             TableHierarchy.select { TableHierarchy.projectId eq projectId }.orderBy(TableHierarchy.sortCode)
                 .forEach {
                     hierarchyList.add(HierarchyData.mapRSToHierarchyData(it))
                 }
         }
+        ProjectData.getById(projectId)?.let { hierarchyList.setCQLFilter(it.colTypesCode) }
+
         return mapper.writeValueAsString(EcosysProjectDataResponse(ResponseError(0, ""), hierarchyList))
     }
 

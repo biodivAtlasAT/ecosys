@@ -23,6 +23,7 @@ import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
 import at.duk.tables.biotop.TableProjects.default
 import at.duk.tables.biotop.TableProjects.nullable
+import com.fasterxml.jackson.annotation.JsonIgnore
 import koodies.docker.Docker
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Column
@@ -53,7 +54,9 @@ data class HierarchyData(
     )
 
     // necessary becaus Apache Freemarker cannot check properties with is....
+    @JsonIgnore
     val checkLeaf = isLeaf
+    var cqlQuery: String? = null
     companion object {
         fun mapRSToHierarchyData(rs: ResultRow): HierarchyData {
             return HierarchyData(
