@@ -47,12 +47,12 @@
                             </td>
                             <td class="text-center">
                                 <a href="./${prop.id}/metadata" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <a href="./${prop.id}/metadataJson" class="btn btn-sm btn-outline-secondary <#if !isCR>disabled</#if>" onclick='showMetaData("${prop.id}");'>Prev</a>
+                                <a href="./${prop.id}/metadataJson" title="Metadaten anzeigen" class="btn btn-sm btn-outline-secondary" onclick='showMetaData("${prop.id}");'>&#x29DD;</a>
                             </td>
                             <td class="text-center">
-                                <a href="./${prop.id}/server" title="Geo Server zuordnen" class="btn btn-sm btn-outline-secondary <#if !isGR>disabled</#if>">&#x21C4;</a>
-                                <a href="./${prop.id}/matching" title="Daten mit Geo Server abgleichen" class="btn btn-sm btn-outline-secondary <#if !isGR>disabled</#if>">&#x21BB;</a>
-                                <a href="./${prop.id}/types" title="Filter anzeigen" class="btn btn-sm btn-outline-secondary <#if !isGR>disabled</#if>">&#9782;</a>
+                                <a href="./${prop.id}/server" title="Geo Server zuordnen" class="btn btn-sm btn-outline-secondary">&#x21C4;</a>
+                                <a href="./${prop.id}/matching" title="Daten mit Geo Server abgleichen" class="btn btn-sm btn-outline-secondary <#if !prop.syncEnabled> disabled</#if>">&#x21BB;</a>
+                                <a href="./${prop.id}/types" title="Filter anzeigen" class="btn btn-sm btn-outline-secondary <#if !prop.hasSyncWithClassification>disabled</#if>">&#9782;</a>
                             </td>
                             <td>
                                 <a href="" class="btn btn-sm btn-outline-secondary disabled">Arten</a>

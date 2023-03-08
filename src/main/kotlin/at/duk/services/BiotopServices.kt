@@ -38,6 +38,8 @@ import java.io.File
 import java.time.LocalDateTime
 
 object BiotopServices {
+    const val DEFAULT_LAYER_COLOR = "#808080"
+
     private const val ROOT_NODE = "999"
     private const val EXT_ROOT_NODE = "$ROOT_NODE."
 
@@ -334,7 +336,7 @@ object BiotopServices {
                 newKeyPart = "0" + newKeyPart
             newKey.add(newKeyPart)
         }
-        return newKey.joinToString(separator = ".")
+        return newKey.joinToString(separator = ".").take(128) // max DB col
     }
 
     fun classTypesDelete(classId: Int, dataCacheDirectory: String) {
@@ -452,9 +454,12 @@ object BiotopServices {
         }
     }
 
-    fun List<HierarchyData>.setColors(hierarchyDataMap: Map<String, HierarchyData>) {
+    private fun List<HierarchyData>.setColors(hierarchyDataMap: Map<String, HierarchyData>) {
         this.forEach {
             it.color = hierarchyDataMap[it.keyCode]?.color
+        }
+        this.filter { it.hasData && it.isLeaf && it.keyCode.startsWith(EXT_ROOT_NODE) }.forEach {
+            it.color = DEFAULT_LAYER_COLOR
         }
     }
 
@@ -620,4 +625,9 @@ object BiotopServices {
         }
         return matchDict
     }
+
+    fun projectIsSynchronized(projectId: Int): Boolean = transaction {
+            TableHierarchy.select { TableHierarchy.projectId eq projectId }.count() > 0
+        }
+
 }

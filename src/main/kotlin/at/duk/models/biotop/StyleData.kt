@@ -2,7 +2,7 @@ package at.duk.models.biotop
 
 import java.awt.event.HierarchyListener
 
-data class StyleData(val project: ProjectData, val hierarchyList: List<HierarchyData>) {
+data class StyleData(val project: ProjectData, val hierarchyList: List<HierarchyData>, val defaultColor: String) {
 
     val HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sld:StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:sld=\"http://www.opengis.net/sld\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" version=\"1.0.0\">\n" +
             "  <sld:NamedLayer>\n" +
@@ -39,7 +39,7 @@ data class StyleData(val project: ProjectData, val hierarchyList: List<Hierarchy
 
         hierarchyList.filter { it.isLeaf }.forEach {
             val key = it.mappedKeyCode?:it.keyCode
-            val color = it.color?:"#808080"
+            val color = it.color?:defaultColor
             val rule = RULE.replace("myTitle",it.description)
                 .replace("myPropertyName", project.colTypesCode!!)
                 .replace("myLiteral", key)

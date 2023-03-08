@@ -18,6 +18,7 @@
  */
 package at.duk.models.biotop
 
+import at.duk.services.BiotopServices.projectIsSynchronized
 import at.duk.tables.biotop.TableProjects
 import at.duk.tables.biotop.TableProjects.default
 import at.duk.tables.biotop.TableProjects.nullable
@@ -56,9 +57,8 @@ data class ProjectData(
 ) {
     val geoServerStyleName =  GEOSERVER_PROJECT_PREFIX + id
 
-    constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,null,null,null,-1)
     companion object{
-        private fun mapRSToProjectData(rs: ResultRow): ProjectData {
+        public fun mapRSToProjectData(rs: ResultRow): ProjectData {
             return ProjectData(
                 rs[TableProjects.id].value,
                 rs[TableProjects.name],
@@ -93,4 +93,6 @@ data class ProjectData(
         }
     }
     val hasMatchTable = this.classMap != null && this.classMap != ""
+    val hasSyncWithClassification = projectIsSynchronized(this.id)
+    val syncEnabled = geoserverLayer != null && classId != -1
 }

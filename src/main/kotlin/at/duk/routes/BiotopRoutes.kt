@@ -81,27 +81,19 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
         get("/projects") {
             val errorList = mutableListOf<String>()
-            //val isGR = if (geoserverUrl != null) isServiceReachable(geoserverUrl) else false
-            //val isCR = if (collectoryUrl != null) isServiceReachable(collectoryUrl) else false
-
-            val isGR = true
-            val isCR = true
-            if (!isGR) errorList.add("Verbindung zu Geoserver nicht möglich! --> Check Konfiguration bzw. Service!")
-            if (!isCR) errorList.add("Verbindung zu Collectory nicht möglich! --> Check Konfiguration bzw. Service!")
-
             val projectsList = mutableListOf<ProjectData>()
 
             transaction {
                 projectsList.addAll(
-                    TableProjects.select { TableProjects.deleted eq null }.orderBy(TableProjects.name).map
-                    { rs -> ProjectData(rs[TableProjects.id].value, rs[TableProjects.name], rs[TableProjects.enabled]) }
+                    TableProjects.select { TableProjects.deleted eq null }.orderBy(TableProjects.name)
+                        .map { ProjectData.mapRSToProjectData(it) }
                 )
             }
             call.respond(
                 FreeMarkerContent(
                     "15_BTProjects.ftl",
                     mapOf("result" to projectsList, "maxCount" to projectsList.size, "errorList" to errorList,
-                        "isGR" to isGR, "isCR" to isCR)
+                        )
                 )
             )
         }
@@ -380,7 +372,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 ProjectData.getById(projectId)?.let { project ->
                     matchFeatures(config, project, BiotopServices.getLayerDataFromWFSService(project, config))
 
-                    val sld = StyleData(project, getHierarchyListFromDB(project)).generateSLD()
+                    val sld = StyleData(project, getHierarchyListFromDB(project), BiotopServices.DEFAULT_LAYER_COLOR).generateSLD()
                     geoServer.getStyles()?.let { styleList ->
                         if (!styleList.contains(project.geoServerStyleName))
                             geoServer.createStyle(project)
