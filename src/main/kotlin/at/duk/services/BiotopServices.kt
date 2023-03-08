@@ -495,6 +495,10 @@ object BiotopServices {
         this.filter { it.isLeaf && it.hasData }.forEach {
             it.cqlQuery = "$colTypesCode=$stringDelim${it.mappedKeyCode?:it.keyCode}$stringDelim"
         }
+        this.filter { !it.isLeaf && !it.hasData }.forEach {
+            it.cqlQuery = null
+        }
+
     }
 
     private fun matchFeaturesPost(project: ProjectData, matchTable: Map<String, String>) {
