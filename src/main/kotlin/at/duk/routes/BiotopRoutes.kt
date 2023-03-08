@@ -320,6 +320,12 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 val classData: ClassData? = ClassData.getById(classId)
                 val typeList = mutableListOf<HierarchyData>()
                 val indentMap = mutableMapOf<Int, String>()
+
+                val projectsList = transaction {
+                    TableProjects.select { TableProjects.deleted eq null and (TableProjects.classId eq classId)}.orderBy(TableProjects.name)
+                        .map { ProjectData.mapRSToProjectData(it) }
+                }
+
                 transaction {
                     TableHierarchy.select { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }.orderBy(TableHierarchy.sortCode)
                         .forEach {
@@ -335,7 +341,9 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 }
 
                 call.respond(FreeMarkerContent("21_BTClassHierarchy.ftl",
-                    mapOf("classData" to classData, "typeList" to typeList, "indentList" to indentMap.toSortedMap().values.toList() )
+                    mapOf("classData" to classData, "typeList" to typeList,
+                        "indentList" to indentMap.toSortedMap().values.toList(),
+                        "projectsList" to projectsList)
                 ))
             }
         }

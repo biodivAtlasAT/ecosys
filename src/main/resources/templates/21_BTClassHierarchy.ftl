@@ -12,6 +12,18 @@
         <form id="hierarchyColors" method="post" action="./typesUpdate">
         <h1 class="text-primary">Biotoptypen - Klassen-Hierarchie</h1>
         <h4>Klasse: ${classData.description}</h4>
+
+        <#if !(projectsList?size = 0) >
+            <div class="alert alert-danger" role="alert">
+                Achtung: diese Klasse ist bereits den folgenden Projekten zugeordnet:<br>
+                <ul>
+                <#list projectsList as project>
+                    <li>${project.name}</li>
+                </#list>
+                </ul>
+                Bei Änderungen müssen die Projekte neu abgeglichen werden!
+            </div>
+        </#if>
         <#list typeList as prop>
             <#if prop.levelNumber == 0>
                 <div class="row mt-3">

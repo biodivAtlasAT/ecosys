@@ -45,11 +45,6 @@
                     <div class="col-md-4 m-2"><b>${project.colSpeciesCode}</b></div>
                 </div>
             </#if>
-            <div class="row mt-5">
-                <div class="col-md-3 m-2">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="alert('Not implemented yet!')">Farbschema erzeugen</button>
-                </div>
-            </div>
 
         <#else>
             <form name="geoserverSave" method="GET" action="./saveGeoserverData">
