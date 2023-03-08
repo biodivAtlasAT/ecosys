@@ -396,7 +396,6 @@ object BiotopServices {
         hierarchyList: List<HierarchyData>
     ) {
         var needsRootItem = false
-        //val matchTable = getMatchTable(config, project)
         // check if there is some data from the shape file
         matchDict.forEach { (k, v) ->
             val compareKey = if (project.hasMatchTable && matchTable.containsKey(k)) matchTable[k]!! else k
