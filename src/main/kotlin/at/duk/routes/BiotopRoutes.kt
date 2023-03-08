@@ -111,12 +111,18 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             val nameFeature = call.request.queryParameters["nameFeature"]
             val projectId = call.parameters["projectId"]?.toIntOrNull()
             val workspace = call.request.queryParameters["workspace"]
+
             if (projectId != null && layer != null && typeFeature != null && workspace != null) {
+                val mapOfFeature = call.request.queryParameters["layer"]?.let { layer ->
+                    getListOfFeatures(layer, geoserverUrl, workspace)
+                } ?: emptyMap()
+
                 transaction {
                     TableProjects.update({ TableProjects.id eq projectId }) {
                         it[TableProjects.geoserverLayer] = layer
                         it[TableProjects.geoserverWorkspace] = workspace
                         it[TableProjects.colTypesCode] = typeFeature
+                        it[TableProjects.colTypesCodeType] = mapOfFeature[typeFeature]
                         it[TableProjects.colTypesDescription] = nameFeature
                         it[TableProjects.updated] = LocalDateTime.now()
                     }
@@ -129,7 +135,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
                 val project: ProjectData? = ProjectData.getById(projectId)
                 val listOfFeatures = call.request.queryParameters["layer"]?.let { layer ->
-                    getListOfFeatures(layer, geoserverUrl, geoserverWorkspace)
+                    getListOfFeatures(layer, geoserverUrl, geoserverWorkspace).keys
                 } ?: emptyList()
                 val listOfLayers = if (project?.geoserverLayer == null) {
                     getListOfLayers(geoserverUrl, geoserverWorkspace)
@@ -394,9 +400,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
             val wmsUrl = "http://localhost:8081/geoserver/ECO/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&" +
                     "LAYERS=my_ws_layer&exceptions=application/vnd.ogc.se_inimage&" +
-                    "CQL_FILTER=my_cql_filter&SRS=EPSG:4326&WIDTH=768&HEIGHT=330&BBOX=9.129638671875,45.87890625,17.567138671875,49.50439453125"
-
-            // BL_KZ=8 or BL_KZ=3
+                    "my_cql_filter&SRS=EPSG:4326&WIDTH=768&HEIGHT=330&BBOX=9.129638671875,45.87890625,17.567138671875,49.50439453125"
 
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
                 ProjectData.getById(projectId)?.let { project ->
@@ -417,7 +421,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                             }
                     }
 
-                    typeList.setCQLFilter(project.colTypesCode)
+                    typeList.setCQLFilter(project.colTypesCode, project.colTypesCodeType)
                     val checkUrl = wmsUrl.replace("my_ws_layer", "${project.geoserverWorkspace}:${project.geoserverLayer}")
                     call.respond(FreeMarkerContent("22_BTProjectHierarchy.ftl",
                     mapOf("project" to project, "typeList" to typeList,

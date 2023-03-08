@@ -46,6 +46,7 @@ data class ProjectData(
     val geoserverLayer: String? = null,
     var geoserverDBFfile: String? = null,
     val colTypesCode: String? = null,
+    val colTypesCodeType: String? = null,
     val colTypesDescription: String? = null,
     val colSpeciesCode: String? = null,
     val speciesFileName: String? = null,
@@ -55,7 +56,7 @@ data class ProjectData(
 ) {
     val geoServerStyleName =  GEOSERVER_PROJECT_PREFIX + id
 
-    constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,null,null,-1)
+    constructor(id: Int, name: String, enabled: Boolean): this(id, name,enabled,null,null,null,-1,null,null, null,null,null,null,null,null,null,null,null,null,-1)
     companion object{
         private fun mapRSToProjectData(rs: ResultRow): ProjectData {
             return ProjectData(
@@ -72,6 +73,7 @@ data class ProjectData(
                 rs[TableProjects.geoserverLayer],
                 rs[TableProjects.geoserverDBFfile],
                 rs[TableProjects.colTypesCode],
+                rs[TableProjects.colTypesCodeType],
                 rs[TableProjects.colTypesDescription],
                 rs[TableProjects.colSpeciesCode],
                 rs[TableProjects.speciesFileName],

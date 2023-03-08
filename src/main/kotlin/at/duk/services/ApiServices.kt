@@ -36,7 +36,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.config.*
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.select
@@ -328,7 +327,7 @@ object ApiServices {
                     hierarchyList.add(HierarchyData.mapRSToHierarchyData(it))
                 }
         }
-        ProjectData.getById(projectId)?.let { hierarchyList.setCQLFilter(it.colTypesCode) }
+        ProjectData.getById(projectId)?.let { hierarchyList.setCQLFilter(it.colTypesCode, it.colTypesCodeType) }
 
         return mapper.writeValueAsString(EcosysProjectDataResponse(ResponseError(0, ""), hierarchyList))
     }

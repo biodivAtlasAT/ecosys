@@ -16,7 +16,12 @@
                 <div class="col-md-2">
                     ${indentList[prop.levelNumber]}${prop.keyCode}
                     <#if prop.hasData>
-                        <a href="${checkUrl?replace("my_cql_filter", prop.cqlQuery)}" target="_geoserver" title="Link to Geoserver" style="text-decoration:none">&#x2699;</a>
+                        <#if prop.cqlQuery?has_content>
+                            <a href="${checkUrl?replace("my_cql_filter", "CQL_FILTER=${prop.cqlQuery}")}" target="_geoserver" title="Link to Geoserver" style="text-decoration:none"><img src="/static/admin/img/geoserver_icon.png" title="Link to GeoServer"></a>
+
+                        <#else>
+                            <a href="${checkUrl?replace("my_cql_filter", "")}" target="_geoserver" title="Link to Geoserver" style="text-decoration:none"><img src="/static/admin/img/geoserver_icon.png" title="Link to GeoServer"></a>
+                        </#if>
                     </#if>
                 </div>
                 <div class="col-md-2">

@@ -36,6 +36,7 @@ object TableProjects : IntIdTable("bt_projects") {
     var geoserverLayer: Column<String?> = varchar("geoserver_layer", length = 128).nullable()
     var geoserverDBFfile: Column<String?> = varchar("geoserver_dbf_file", length = 256).nullable()
     var colTypesCode: Column<String?> = varchar("col_types_code", length = 64).nullable()
+    var colTypesCodeType: Column<String?> = varchar("col_types_code_type", length = 64).nullable()
     var colTypesDescription: Column<String?> = varchar("col_types_description", length = 128).nullable()
     var colSpeciesCode: Column<String?> = varchar("col_species_code", length = 64).nullable()
     var speciesFileName : Column<String?> = varchar("species_filename", length = 512).nullable()

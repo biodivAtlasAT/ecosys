@@ -75,7 +75,7 @@ object BiotopServices {
         return listOfLayers
     }
 
-    suspend fun getListOfFeatures(layer: String?, geoserverUrl: String?, geoserverWorkspace: String): List<String> {
+    suspend fun getListOfFeatures(layer: String?, geoserverUrl: String?, geoserverWorkspace: String): Map<String, String> {
         geoserverUrl?.let {
             layer?.let { name ->
                 val client = HttpClient(CIO)
@@ -84,13 +84,13 @@ object BiotopServices {
                     method = HttpMethod.Get
                 }
                 if (response.status == HttpStatusCode.OK) {
-                    return getListOfFeaturesSub(response.bodyAsText(), geoserverUrl, geoserverWorkspace)
+                    return getListOfFeaturesSub(response.bodyAsText(), geoserverUrl)
                 }
             }
         }
-        return emptyList<String>()
+        return emptyMap<String, String>()
     }
-    private suspend fun getListOfFeaturesSub(resp: String, geoserverUrl: String?, geoserverWorkspace: String): List<String> {
+    private suspend fun getListOfFeaturesSubOld(resp: String, geoserverUrl: String?, geoserverWorkspace: String): List<String> {
         val listOfFeatures = mutableListOf<String>()
         val featureUrl = resp.split("@").first {
             it.startsWith("class\":\"featureType\"")}.split("\"").first {
@@ -114,6 +114,25 @@ object BiotopServices {
         }
         return listOfFeatures
     }
+
+    private suspend fun getListOfFeaturesSub(resp: String, geoserverUrl: String?): Map<String, String> {
+        val mapOfFeatures = mutableMapOf<String, String>()
+        val featureUrl = resp.split("@").first {
+            it.startsWith("class\":\"featureType\"")}.split("\"").first {
+            it.startsWith("http") }
+        geoserverUrl?.let {
+            val client2 = HttpClient(CIO)
+            val response2: HttpResponse = client2.request(featureUrl) {
+                method = HttpMethod.Get
+            }
+            if (response2.status == HttpStatusCode.OK) {
+                return mapper.readTree(response2.bodyAsText()).path("featureType").path("attributes").path("attribute")
+                    .associate { it.path("name").textValue() to it.path("binding").textValue() }
+                }
+        }
+        return mapOfFeatures
+    }
+
 
     fun projectInsertOrUpdate(formParameters: Parameters) =
         formParameters["name"]?.let { name ->
@@ -461,20 +480,22 @@ object BiotopServices {
 
         return keyCodesList
     }
-    fun List<HierarchyData>.setCQLFilter(colTypesCode: String?) {
-        val mapKeyCodeToKeys = mutableMapOf<String, List<String>>()
-        this.filter { !it.isLeaf }.forEach {
-            val kl = getChildrenKeyCodes(this, it)
+    fun List<HierarchyData>.setCQLFilter(colTypesCode: String?, colTypesCodeType: String?) {
+        val numberOfDataLeaves = this.count { it.isLeaf && it.hasData }
+        val stringDelim = if (colTypesCodeType == "java.lang.String") "'" else ""
 
-            it.cqlQuery = kl.joinToString(" OR ") { "$colTypesCode=$it" }
+        this.filter { !it.isLeaf }.forEach { hierarchyData ->
+            val kl = getChildrenKeyCodes(this, hierarchyData)
+            if (kl.size == numberOfDataLeaves) // if node contains all subnodes, then do not save a cql-filter; the filter may contain to many characters for an URL-Parameter
+                hierarchyData.cqlQuery = null
+            else
+                hierarchyData.cqlQuery = kl.joinToString(",", "$colTypesCode in (", ")") { "$stringDelim$it$stringDelim" }
         }
-
 
         this.filter { it.isLeaf && it.hasData }.forEach {
-            it.cqlQuery = "$colTypesCode=${it.mappedKeyCode?:it.keyCode}"
+            it.cqlQuery = "$colTypesCode=$stringDelim${it.mappedKeyCode?:it.keyCode}$stringDelim"
         }
     }
-
 
     private fun matchFeaturesPost(project: ProjectData, matchTable: Map<String, String>) {
         val hierarchyList = getHierarchyListFromDB(project).also {

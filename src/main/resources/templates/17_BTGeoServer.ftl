@@ -79,7 +79,9 @@
                         <select name="typeFeature" id="typeFeature" required>
                             <option value="-1">------------------</option>
                             <#list listOfFeatures as feature>
-                                <option value="${feature}">${feature}</option>
+                                <#if feature != "the_geom">
+                                    <option value="${feature}">${feature}</option>
+                                </#if>
                             </#list>
                         </select>
                     </div>
@@ -92,7 +94,9 @@
                         <select name="nameFeature" id="nameFeature" required>
                             <option value="-1">------------------</option>
                             <#list listOfFeatures as feature>
-                                <option value="${feature}">${feature}</option>
+                                <#if feature != "the_geom">
+                                    <option value="${feature}">${feature}</option>
+                                </#if>
                             </#list>
                         </select>
                     </div>
