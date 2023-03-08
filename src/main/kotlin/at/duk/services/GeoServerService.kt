@@ -35,13 +35,13 @@ class GeoServerService(config: ApplicationConfig) {
             basicAuth(username, password)
             method = HttpMethod.Post
             header(HttpHeaders.ContentType, "text/xml")
-            setBody("<style><name>${project.geoServerStyleName}</name><filename>${project.geoServerStyleName}.sld</filename></style>")
+            setBody("<style><name>${project.geoServerStyleName}</name><workspace>$workspace</workspace><filename>${project.geoServerStyleName}.sld</filename></style>")
         }.status == HttpStatusCode.Created
     }
 
     suspend fun getStyles(): List<String>? {
         val client = HttpClient(CIO)
-        val url = "$geoserverUrl/rest/styles"
+        val url = "$geoserverUrl/rest/workspaces/$workspace/styles"
         val response = client.request(url) {
             basicAuth(username, password)
             method = HttpMethod.Get
@@ -58,7 +58,7 @@ class GeoServerService(config: ApplicationConfig) {
     suspend fun putSLDFile(project: ProjectData, sld: String): Boolean {
         val client = HttpClient(CIO)
         val response: HttpResponse = client.submitForm(
-            url = geoserverUrl + "/rest/styles/${project.geoServerStyleName}",
+            url = geoserverUrl + "/rest/workspaces/${workspace}/styles/${project.geoServerStyleName}",
         ) {
             basicAuth(username, password)
             setBody(sld)
@@ -77,7 +77,7 @@ class GeoServerService(config: ApplicationConfig) {
             basicAuth(username, password)
             method = HttpMethod.Put
             header(HttpHeaders.ContentType, "text/xml")
-            setBody("<layer><defaultStyle><name>${project.geoServerStyleName}</name></defaultStyle></layer>")
+            setBody("<layer><defaultStyle><name>$workspace:${project.geoServerStyleName}</name></defaultStyle></layer>")
         }
         return response.status == HttpStatusCode.OK
     }
