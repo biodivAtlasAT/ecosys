@@ -35,9 +35,7 @@ import at.duk.services.BiotopServices.setCQLFilter
 import at.duk.services.BiotopServices.speciesRenewComplete
 import at.duk.services.BiotopServices.speciesRenewValues
 import at.duk.services.GeoServerService
-import at.duk.tables.biotop.TableClasses
-import at.duk.tables.biotop.TableHierarchy
-import at.duk.tables.biotop.TableProjects
+import at.duk.tables.biotop.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -46,7 +44,9 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -555,8 +555,23 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
         post("/{projectId}/removeSpeciesFile") {
             val projectId = call.parameters["projectId"]?.toIntOrNull() ?: return@post
-            val projectDataFolder = AdminServices.getProjectDataFolder(dataCacheDirectory, projectId)
+            val project = ProjectData.getById(projectId)
 
+            project?.speciesFileName?.let {
+                AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it).delete()
+            }
+
+            transaction {
+                TableSpeciesGroups.deleteWhere { TableSpeciesGroups.projectId eq projectId }
+                TableSpecies.deleteWhere { TableSpecies.projectId eq projectId }
+                TableProjects.update({ TableProjects.id eq projectId }) {
+                    it[TableProjects.speciesFileName] = null
+                    it[TableProjects.speciesColId] = null
+                    it[TableProjects.speciesColTaxonId] = null
+                    it[TableProjects.speciesColTaxonName] = null
+                    it[TableProjects.updated] = LocalDateTime.now()
+                }
+            }
 
             call.respondRedirect("/admin/biotop/projects")
 
@@ -570,9 +585,9 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             val speciesColTaxonId = call.request.queryParameters["speciesColTaxonId"].orEmpty()
             val speciesColTaxonName = call.request.queryParameters["speciesColTaxonName"].orEmpty()
 
-            val speciesColIdChanged = speciesColId == project.speciesColId
-            val speciesColTaxonIdChanged = speciesColTaxonId == project.speciesColTaxonId
-            val speciesColTaxonNameChanged = speciesColTaxonName == project.speciesColTaxonName
+            val speciesColIdChanged = speciesColId != project.speciesColId
+            val speciesColTaxonIdChanged = speciesColTaxonId != project.speciesColTaxonId
+            val speciesColTaxonNameChanged = speciesColTaxonName != project.speciesColTaxonName
 
             if (speciesColId.isNotEmpty() && speciesColTaxonId.isNotEmpty() && speciesColTaxonName.isNotEmpty() &&
                 (speciesColIdChanged || speciesColTaxonIdChanged || speciesColTaxonNameChanged)) {
@@ -592,9 +607,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     else
                         speciesRenewValues(proj, dataCacheDirectory)
                 }
-                call.respondRedirect("/admin/biotop/projects")
             }
-
+            call.respondRedirect("/admin/biotop/projects")
         }
     }
 }

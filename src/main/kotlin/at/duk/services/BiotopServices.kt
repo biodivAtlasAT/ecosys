@@ -48,8 +48,8 @@ object BiotopServices {
             transaction {
                 TableHierarchy.deleteWhere { TableHierarchy.projectId eq id }
                 File(getProjectDataFolderName(dataCacheDirectory, id)).deleteRecursively()
-                // todo: delete bt_species, bt_speciesgroups and bt_speciesjoingroups when "Arten" are implemented
-
+                TableSpeciesGroups.deleteWhere { TableSpeciesGroups.projectId eq id }
+                TableSpecies.deleteWhere { TableSpecies.projectId eq id }
                 TableProjects.update({ TableProjects.id eq id }) {
                     it[TableProjects.deleted] = LocalDateTime.now()
                 }
@@ -687,10 +687,6 @@ object BiotopServices {
                     }
                 }
         }
-
-
-
-        // Import speciesFile and process groups
     }
 
     private fun speciesRenewTaxon(project:ProjectData, dataCacheDirectory: String) {
@@ -725,7 +721,7 @@ object BiotopServices {
     }
 
 
-    fun speciesGetCSVCols(project:ProjectData, dataCacheDirectory: String) =
+    private fun speciesGetCSVCols(project:ProjectData, dataCacheDirectory: String) =
         (project.speciesFileName?.let {
             AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it) })
             ?.useLines { it.firstOrNull() }?.split(";")

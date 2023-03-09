@@ -387,6 +387,14 @@ function classTypeDelete() {
         }).show()
 }
 
+function speciesFileDelete() {
+    new bootstrap.Modal(document.getElementById('MessageModal'),
+        {
+            keyboard: false
+        }).show()
+}
+
+
 function classDelete(idx) {
     document.getElementById("saveFormId").value = document.getElementById("id_"+idx).textContent
     document.getElementById("saveFormMode").value = 1

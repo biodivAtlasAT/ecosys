@@ -24,7 +24,7 @@
                 <div class="col-md-3 m-2">
                 </div>
                 <div class="col-md-3 m-2">
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="document.getElementById('btRemoveSpecies').submit();">Datei löschen</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="speciesFileDelete();">Datei löschen</button>
                 </div>
             </div>
             <div class="row">
@@ -107,5 +107,25 @@
 
 </div>
 <form id="btRemoveSpecies" name="btRemoveSpecies" action="./removeSpeciesFile" method="POST"></form>
+
+<div class="modal fade" id="MessageModal" tabindex="-1" aria-labelledby="MessageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Rückfrage</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Soll die CSV-Datei und alle zugehörigen Daten wirklich gelöscht werden?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schlie&szlig;en</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('btRemoveSpecies').submit();return true;">Löschen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 </body>
 </html>
