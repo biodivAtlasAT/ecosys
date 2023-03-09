@@ -17,8 +17,9 @@ CREATE TABLE IF NOT EXISTS public.BT_projects
     col_types_description character varying(128),
 	col_species_code character varying(64),
 	species_filename character varying(512),
-	species_col_code_name character varying(64),
-	species_col_name_name character varying(64),
+    species_col_id character varying(64),
+    species_col_taxon_id character varying(64),
+    species_col_taxon_name character varying(64),
     hierarchy_id integer NOT NULL DEFAULT -1,
     hierarchy_name  character varying(64),  -- when specified as "Sonstige"
     created timestamp without time zone NOT NULL,
@@ -57,18 +58,7 @@ CREATE TABLE IF NOT EXISTS public.BT_hierarchy
     PRIMARY KEY (id)
     );
 
-
 CREATE TABLE IF NOT EXISTS public.BT_SpeciesGroups
-(
-    id serial NOT NULL,
-	project_id integer NOT NULL,
-	group_code character varying(64),
-	description character varying(512),
-    filename character varying(512),
-	PRIMARY KEY (id)
-);
-
-CREATE TABLE IF NOT EXISTS public.BT_SpeciesJoinGroups
 (
     id serial NOT NULL,
     project_id integer NOT NULL,
@@ -81,12 +71,12 @@ CREATE TABLE IF NOT EXISTS public.BT_Species
 (
     id serial NOT NULL,
     project_id integer NOT NULL,
-    taxon_id character varying(64),
+    taxon_id integer NOT NULL,
     description character varying(512),
     PRIMARY KEY (id)
     );
 
-ALTER TABLE IF EXISTS public.BT_species
+ALTER TABLE IF EXISTS public.BT_Species
     ADD CONSTRAINT projects_id_fkey2 FOREIGN KEY (project_id)
     REFERENCES public.BT_projects (id) MATCH SIMPLE
     ON UPDATE NO ACTION

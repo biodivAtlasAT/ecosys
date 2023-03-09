@@ -55,7 +55,7 @@
                                 <a href="./${prop.id}/types" title="Filter anzeigen" class="btn btn-sm btn-outline-secondary <#if !prop.hasSyncWithClassification>disabled</#if>">&#9782;</a>
                             </td>
                             <td>
-                                <a href="" class="btn btn-sm btn-outline-secondary disabled">Arten</a>
+                                <a href="./${prop.id}/species" class="btn btn-sm btn-outline-secondary">Arten</a>
                             </td>
                             <td>
                                 <button id= "btDel_${prop.id}" title="${wordDelete}" class="btn btn-sm btn-outline-danger" role="button" onclick='projectDelete("${prop.id}");'>&#x2717;</button>

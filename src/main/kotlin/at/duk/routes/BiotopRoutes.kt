@@ -32,6 +32,8 @@ import at.duk.services.BiotopServices.getListOfFeatures
 import at.duk.services.BiotopServices.getListOfLayers
 import at.duk.services.BiotopServices.matchFeatures
 import at.duk.services.BiotopServices.setCQLFilter
+import at.duk.services.BiotopServices.speciesRenewComplete
+import at.duk.services.BiotopServices.speciesRenewValues
 import at.duk.services.GeoServerService
 import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
@@ -92,8 +94,9 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.respond(
                 FreeMarkerContent(
                     "15_BTProjects.ftl",
-                    mapOf("result" to projectsList, "maxCount" to projectsList.size, "errorList" to errorList,
-                        )
+                    mapOf(
+                        "result" to projectsList, "maxCount" to projectsList.size, "errorList" to errorList,
+                    )
                 )
             )
         }
@@ -133,13 +136,18 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     getListOfLayers(geoserverUrl, geoserverWorkspace)
                 } else emptyList()
 
-                call.respond(FreeMarkerContent("17_BTGeoServer.ftl",
-                    mapOf("project" to project, "listOfLayers" to listOfLayers,
-                        "urlRedirect" to this.context.request.path(),
-                        "listOfFeatures" to listOfFeatures.sorted(),
-                        "selectedLayer" to call.request.queryParameters["layer"],
-                        "workspace" to geoserverWorkspace)
-                ))
+                call.respond(
+                    FreeMarkerContent(
+                        "17_BTGeoServer.ftl",
+                        mapOf(
+                            "project" to project, "listOfLayers" to listOfLayers,
+                            "urlRedirect" to this.context.request.path(),
+                            "listOfFeatures" to listOfFeatures.sorted(),
+                            "selectedLayer" to call.request.queryParameters["layer"],
+                            "workspace" to geoserverWorkspace
+                        )
+                    )
+                )
             }
         }
 
@@ -148,8 +156,9 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "")
                     BiotopServices.projectInsertOrUpdate(formParameters)
+
                 1 -> BiotopServices.projectDelete(formParameters, dataCacheDirectory)
-                else -> { }
+                else -> {}
             }
             call.respondRedirect("./projects")
         }
@@ -161,13 +170,23 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
                 transaction {
                     classesList.addAll(
-                        TableClasses.select { TableClasses.deleted eq null and (TableClasses.filename neq null)}.orderBy(TableClasses.description).map
-                        { rs -> ClassData(rs[TableClasses.id].value, rs[TableClasses.description], rs[TableClasses.filename]) }
+                        TableClasses.select { TableClasses.deleted eq null and (TableClasses.filename neq null) }
+                            .orderBy(TableClasses.description).map
+                            { rs ->
+                                ClassData(
+                                    rs[TableClasses.id].value,
+                                    rs[TableClasses.description],
+                                    rs[TableClasses.filename]
+                                )
+                            }
                     )
                 }
-                call.respond(FreeMarkerContent("16_BTMetaData.ftl",
-                    mapOf("project" to project, "classesList" to classesList)
-                ))
+                call.respond(
+                    FreeMarkerContent(
+                        "16_BTMetaData.ftl",
+                        mapOf("project" to project, "classesList" to classesList)
+                    )
+                )
             }
         }
         post("/{projectId}/saveMetaData") {
@@ -175,7 +194,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             val projectsDataFolder = AdminServices.getProjectDataFolder(dataCacheDirectory, projectId)
             var fileName: String? = null
             var deleteMap = false
-            val project = ProjectData.getById(projectId)?:return@post
+            val project = ProjectData.getById(projectId) ?: return@post
             project.enabled = false
 
             call.receiveMultipart().forEachPart { part ->
@@ -186,9 +205,10 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                         if (part.name == "resource") project.resource = if (part.value == "") null else part.value
                         if (part.name == "epoch") project.epoch = if (part.value == "") null else part.value
                         if (part.name == "area") project.area = if (part.value == "") null else part.value
-                        if (part.name == "classId") project.classId = part.value?.toIntOrNull()?:-1
+                        if (part.name == "classId") project.classId = part.value?.toIntOrNull() ?: -1
                         if (part.name == "classInfo") project.classInfo = if (part.value == "") null else part.value
                     }
+
                     is PartData.FileItem -> {
                         fileName = part.originalFileName as String?
                         project.classMap = part.originalFileName as String?
@@ -198,6 +218,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                                     .writeBytes(part.streamProvider().readBytes())
                         }
                     }
+
                     else -> {}
                 }
             }
@@ -230,7 +251,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
                 ProjectData.getById(projectId)?.let { project ->
                     val url = "$collectoryUrl/dataResource/${project.resource}"
-                    val dataResourceExists = if (collectoryUrl != null && project.resource != null) isServiceReachable(url) else false
+                    val dataResourceExists =
+                        if (collectoryUrl != null && project.resource != null) isServiceReachable(url) else false
 
                     val mapper = jacksonObjectMapper()
                     val json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
@@ -253,7 +275,13 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             transaction {
                 classesList.addAll(
                     TableClasses.select { TableClasses.deleted eq null }.orderBy(TableClasses.description).map
-                    { rs -> ClassData(rs[TableClasses.id].value, rs[TableClasses.description], rs[TableClasses.filename]) }
+                    { rs ->
+                        ClassData(
+                            rs[TableClasses.id].value,
+                            rs[TableClasses.description],
+                            rs[TableClasses.filename]
+                        )
+                    }
                 )
             }
             call.respond(
@@ -269,8 +297,9 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "")
                     BiotopServices.classInsertOrUpdate(formParameters)
+
                 1 -> BiotopServices.classDelete(formParameters, dataCacheDirectory)
-                else -> { }
+                else -> {}
             }
             call.respondRedirect("/admin/biotop/classes")
         }
@@ -283,10 +312,11 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.receiveMultipart().forEachPart { part ->
                 when (part) {
                     is PartData.FileItem -> {
-                        fileName = part.originalFileName as String? ?:"noFilenamefound"
+                        fileName = part.originalFileName as String? ?: "noFilenamefound"
                         File(classesDataFolder.resolve(fileName!!).toString())
                             .writeBytes(part.streamProvider().readBytes())
                     }
+
                     else -> {}
                 }
             }
@@ -309,9 +339,12 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.parameters["classId"]?.toIntOrNull()?.let { classId ->
                 val classData: ClassData? = ClassData.getById(classId)
 
-                call.respond(FreeMarkerContent("20_BTClass.ftl",
-                    mapOf("classData" to classData)
-                ))
+                call.respond(
+                    FreeMarkerContent(
+                        "20_BTClass.ftl",
+                        mapOf("classData" to classData)
+                    )
+                )
             }
         }
 
@@ -322,12 +355,14 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 val indentMap = mutableMapOf<Int, String>()
 
                 val projectsList = transaction {
-                    TableProjects.select { TableProjects.deleted eq null and (TableProjects.classId eq classId)}.orderBy(TableProjects.name)
+                    TableProjects.select { TableProjects.deleted eq null and (TableProjects.classId eq classId) }
+                        .orderBy(TableProjects.name)
                         .map { ProjectData.mapRSToProjectData(it) }
                 }
 
                 transaction {
-                    TableHierarchy.select { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }.orderBy(TableHierarchy.sortCode)
+                    TableHierarchy.select { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }
+                        .orderBy(TableHierarchy.sortCode)
                         .forEach {
                             typeList.add(HierarchyData.mapRSToHierarchyData(it))
                             val cnt = it[TableHierarchy.levelNumber]
@@ -337,14 +372,19 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                                 indentMap[cnt] = nbsp
                             }
 
-                    }
+                        }
                 }
 
-                call.respond(FreeMarkerContent("21_BTClassHierarchy.ftl",
-                    mapOf("classData" to classData, "typeList" to typeList,
-                        "indentList" to indentMap.toSortedMap().values.toList(),
-                        "projectsList" to projectsList)
-                ))
+                call.respond(
+                    FreeMarkerContent(
+                        "21_BTClassHierarchy.ftl",
+                        mapOf(
+                            "classData" to classData, "typeList" to typeList,
+                            "indentList" to indentMap.toSortedMap().values.toList(),
+                            "projectsList" to projectsList
+                        )
+                    )
+                )
             }
         }
 
@@ -380,7 +420,11 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 ProjectData.getById(projectId)?.let { project ->
                     matchFeatures(config, project, BiotopServices.getLayerDataFromWFSService(project, config))
 
-                    val sld = StyleData(project, getHierarchyListFromDB(project), BiotopServices.DEFAULT_LAYER_COLOR).generateSLD()
+                    val sld = StyleData(
+                        project,
+                        getHierarchyListFromDB(project),
+                        BiotopServices.DEFAULT_LAYER_COLOR
+                    ).generateSLD()
                     geoServer.getStyles()?.let { styleList ->
                         if (!styleList.contains(project.geoServerStyleName))
                             geoServer.createStyle(project)
@@ -398,9 +442,10 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         }
         get("/{projectId}/types") {
 
-            val wmsUrl = "http://localhost:8081/geoserver/ECO/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&" +
-                    "LAYERS=my_ws_layer&exceptions=application/vnd.ogc.se_inimage&" +
-                    "my_cql_filter&SRS=EPSG:4326&WIDTH=768&HEIGHT=330&BBOX=9.129638671875,45.87890625,17.567138671875,49.50439453125"
+            val wmsUrl =
+                "http://localhost:8081/geoserver/ECO/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&" +
+                        "LAYERS=my_ws_layer&exceptions=application/vnd.ogc.se_inimage&" +
+                        "my_cql_filter&SRS=EPSG:4326&WIDTH=768&HEIGHT=330&BBOX=9.129638671875,45.87890625,17.567138671875,49.50439453125"
 
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
                 ProjectData.getById(projectId)?.let { project ->
@@ -422,18 +467,134 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     }
 
                     typeList.setCQLFilter(project.colTypesCode, project.colTypesCodeType)
-                    val checkUrl = wmsUrl.replace("my_ws_layer", "${project.geoserverWorkspace}:${project.geoserverLayer}")
-                    call.respond(FreeMarkerContent("22_BTProjectHierarchy.ftl",
-                    mapOf("project" to project, "typeList" to typeList,
-                        "indentList" to indentMap.toSortedMap().values.toList(),
-                        "checkUrl" to checkUrl
+                    val checkUrl =
+                        wmsUrl.replace("my_ws_layer", "${project.geoserverWorkspace}:${project.geoserverLayer}")
+                    call.respond(
+                        FreeMarkerContent(
+                            "22_BTProjectHierarchy.ftl",
+                            mapOf(
+                                "project" to project, "typeList" to typeList,
+                                "indentList" to indentMap.toSortedMap().values.toList(),
+                                "checkUrl" to checkUrl
+                            )
                         )
-                    ))
+                    )
                 }
             }
         }
 
+        get("/{projectId}/species") {
+            call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
+                val project: ProjectData? = ProjectData.getById(projectId)
+                val listOfCols = mutableListOf<String>()
+
+                if (project?.speciesFileName != null) {
+                    val file = AdminServices.getProjectDataFolder(dataCacheDirectory, projectId)
+                        .resolve(project.speciesFileName)
+                    file.useLines { it.firstOrNull() }?.split(";")?.let { it1 -> listOfCols.addAll(it1) }
+                }
+
+                /*val listOfFeatures = call.request.queryParameters["layer"]?.let { layer ->
+                    getListOfFeatures(layer, geoserverUrl, geoserverWorkspace).keys
+                } ?: emptyList()
+                val listOfLayers = if (project?.geoserverLayer == null) {
+                    getListOfLayers(geoserverUrl, geoserverWorkspace)
+                } else emptyList()
+
+                call.respond(FreeMarkerContent("17_BTGeoServer.ftl",
+                    mapOf("project" to project, "listOfLayers" to listOfLayers,
+                        "urlRedirect" to this.context.request.path(),
+                        "listOfFeatures" to listOfFeatures.sorted(),
+                        "selectedLayer" to call.request.queryParameters["layer"],
+                        "workspace" to geoserverWorkspace)
+                ))*/
+
+                call.respond(
+                    FreeMarkerContent(
+                        "18_BTArtenListe.ftl",
+                        mapOf(
+                            "project" to project, "listOfCols" to listOfCols,
+                            "urlRedirect" to this.context.request.path(),
+                        )
+                    )
+                )
+
+
+            }
+        }
+        post("/{projectId}/speciesFileUpload") {
+            val projectId = call.parameters["projectId"]?.toIntOrNull() ?: return@post
+            val projectDataFolder = AdminServices.getProjectDataFolder(dataCacheDirectory, projectId)
+            var fileName: String? = null
+
+            call.receiveMultipart().forEachPart { part ->
+                when (part) {
+                    is PartData.FileItem -> {
+                        fileName = part.originalFileName as String? ?: "noFilenamefound"
+                        File(projectDataFolder.resolve(fileName!!).toString())
+                            .writeBytes(part.streamProvider().readBytes())
+                    }
+
+                    else -> {}
+                }
+            }
+            // analyze csv file and return with message
+            var report = "No Report available!"
+            fileName?.let { fn ->
+                //report = BiotopServices.speciesCSVProcessing(projectDataFolder.resolve(fn).toString(), projectId)
+                transaction {
+                    TableProjects.update({ TableProjects.id eq projectId }) {
+                        it[TableProjects.speciesFileName] = fn
+                        it[TableProjects.updated] = LocalDateTime.now()
+                    }
+                }
+            }
+
+            call.respondRedirect("/admin/biotop/${projectId}/species")
+        }
+
+        post("/{projectId}/removeSpeciesFile") {
+            val projectId = call.parameters["projectId"]?.toIntOrNull() ?: return@post
+            val projectDataFolder = AdminServices.getProjectDataFolder(dataCacheDirectory, projectId)
+
+
+            call.respondRedirect("/admin/biotop/projects")
+
+        }
+
+        get("/{projectId}/speciesDetailsSave") {
+            val projectId = call.parameters["projectId"]?.toIntOrNull() ?: return@get
+
+            val project = ProjectData.getById(projectId)?:return@get
+            val speciesColId = call.request.queryParameters["speciesColId"].orEmpty()
+            val speciesColTaxonId = call.request.queryParameters["speciesColTaxonId"].orEmpty()
+            val speciesColTaxonName = call.request.queryParameters["speciesColTaxonName"].orEmpty()
+
+            val speciesColIdChanged = speciesColId == project.speciesColId
+            val speciesColTaxonIdChanged = speciesColTaxonId == project.speciesColTaxonId
+            val speciesColTaxonNameChanged = speciesColTaxonName == project.speciesColTaxonName
+
+            if (speciesColId.isNotEmpty() && speciesColTaxonId.isNotEmpty() && speciesColTaxonName.isNotEmpty() &&
+                (speciesColIdChanged || speciesColTaxonIdChanged || speciesColTaxonNameChanged)) {
+
+                transaction {
+                    TableProjects.update({ TableProjects.id eq projectId }) {
+                        it[TableProjects.speciesColId] = speciesColId
+                        it[TableProjects.speciesColTaxonId] = speciesColTaxonId
+                        it[TableProjects.speciesColTaxonName] = speciesColTaxonName
+                        it[TableProjects.updated] = LocalDateTime.now()
+                    }
+                }
+
+                ProjectData.getById(projectId)?.let { proj ->
+                    if (speciesColTaxonIdChanged || speciesColTaxonNameChanged)
+                        speciesRenewComplete(proj, dataCacheDirectory)
+                    else
+                        speciesRenewValues(proj, dataCacheDirectory)
+                }
+                call.respondRedirect("/admin/biotop/projects")
+            }
+
+        }
     }
-
-
 }

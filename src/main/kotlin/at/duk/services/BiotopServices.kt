@@ -21,9 +21,7 @@ package at.duk.services
 import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices.getProjectDataFolderName
-import at.duk.tables.biotop.TableClasses
-import at.duk.tables.biotop.TableHierarchy
-import at.duk.tables.biotop.TableProjects
+import at.duk.tables.biotop.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -77,7 +75,11 @@ object BiotopServices {
         return listOfLayers
     }
 
-    suspend fun getListOfFeatures(layer: String?, geoserverUrl: String?, geoserverWorkspace: String): Map<String, String> {
+    suspend fun getListOfFeatures(
+        layer: String?,
+        geoserverUrl: String?,
+        geoserverWorkspace: String
+    ): Map<String, String> {
         geoserverUrl?.let {
             layer?.let { name ->
                 val client = HttpClient(CIO)
@@ -92,11 +94,18 @@ object BiotopServices {
         }
         return emptyMap<String, String>()
     }
-    private suspend fun getListOfFeaturesSubOld(resp: String, geoserverUrl: String?, geoserverWorkspace: String): List<String> {
+
+    private suspend fun getListOfFeaturesSubOld(
+        resp: String,
+        geoserverUrl: String?,
+        geoserverWorkspace: String
+    ): List<String> {
         val listOfFeatures = mutableListOf<String>()
         val featureUrl = resp.split("@").first {
-            it.startsWith("class\":\"featureType\"")}.split("\"").first {
-            it.startsWith("http") }
+            it.startsWith("class\":\"featureType\"")
+        }.split("\"").first {
+            it.startsWith("http")
+        }
         geoserverUrl?.let {
             val client2 = HttpClient(CIO)
             val response2: HttpResponse = client2.request(featureUrl) {
@@ -120,8 +129,10 @@ object BiotopServices {
     private suspend fun getListOfFeaturesSub(resp: String, geoserverUrl: String?): Map<String, String> {
         val mapOfFeatures = mutableMapOf<String, String>()
         val featureUrl = resp.split("@").first {
-            it.startsWith("class\":\"featureType\"")}.split("\"").first {
-            it.startsWith("http") }
+            it.startsWith("class\":\"featureType\"")
+        }.split("\"").first {
+            it.startsWith("http")
+        }
         geoserverUrl?.let {
             val client2 = HttpClient(CIO)
             val response2: HttpResponse = client2.request(featureUrl) {
@@ -130,7 +141,7 @@ object BiotopServices {
             if (response2.status == HttpStatusCode.OK) {
                 return mapper.readTree(response2.bodyAsText()).path("featureType").path("attributes").path("attribute")
                     .associate { it.path("name").textValue() to it.path("binding").textValue() }
-                }
+            }
         }
         return mapOfFeatures
     }
@@ -171,6 +182,7 @@ object BiotopServices {
                 }
             }
         }
+
     fun classCSVProcessing(filePath: String, classId: Int): String {
         var report = "result of CSV-Import:\n"
         val content = File(filePath).readLines()
@@ -186,16 +198,16 @@ object BiotopServices {
         content.forEachIndexed { ind, line ->
             val eles = line.split(";")
             val key = eles[0]
-            if(items.containsKey(key))
+            if (items.containsKey(key))
                 report += "Schlüssel \"$key\" existiert mehrfach!"
-            if (ind > 0 && key[key.length-1] != '.') {
+            if (ind > 0 && key[key.length - 1] != '.') {
                 items[key] = Triple(eles[1], null, if (eles.size > 2) eles[2] else null)
                 key.split(".").forEach { if (it.length > longestKeyPart) longestKeyPart = it.length }
             }
         }
         // check
         items.forEach { (k, v) ->
-            if(k.contains("."))
+            if (k.contains("."))
                 items[k] = Triple(v.first, k.substring(0, k.lastIndexOf(".")), v.third)
             else
                 items[k] = Triple(v.first, "", v.third)
@@ -253,16 +265,16 @@ object BiotopServices {
         content.forEachIndexed { ind, line ->
             val eles = line.split(";")
             val key = eles[0]
-            if(items.containsKey(key))
+            if (items.containsKey(key))
                 report += "Schlüssel \"$key\" existiert mehrfach!"
-            if (ind > 0 && key[key.length-1] != '.') {
+            if (ind > 0 && key[key.length - 1] != '.') {
                 items[key] = Triple(eles[1], null, if (eles.size > 2) eles[2] else null)
                 key.split(".").forEach { if (it.length > longestKeyPart) longestKeyPart = it.length }
             }
         }
         // check
         items.forEach { (k, v) ->
-            if(k.contains("."))
+            if (k.contains("."))
                 items[k] = Triple(v.first, k.substring(0, k.lastIndexOf(".")), v.third)
             else
                 items[k] = Triple(v.first, "", v.third)
@@ -279,8 +291,8 @@ object BiotopServices {
             val keyMap = mutableMapOf<String, Int>()
             items.toSortedMap().forEach { (k, v) ->
                 val id = TableHierarchy.insertAndGetId {
-                    it[TableHierarchy.classId] = classId?:-1
-                    it[TableHierarchy.projectId] = projectId?:-1
+                    it[TableHierarchy.classId] = classId ?: -1
+                    it[TableHierarchy.projectId] = projectId ?: -1
                     it[TableHierarchy.keyCode] = k
                     it[TableHierarchy.description] = v.first
                     it[TableHierarchy.category] = v.third
@@ -319,6 +331,7 @@ object BiotopServices {
 
         return report
     }
+
     fun csvCheckCols(content: List<String>): Boolean {
         content.forEachIndexed { ind, line ->
             val eles = line.split(";")
@@ -352,6 +365,7 @@ object BiotopServices {
 
 
     }
+
     fun classDelete(formParameters: Parameters, dataCacheDirectory: String) = formParameters["mode"]?.let {
         formParameters["id"]?.toIntOrNull()?.let { classId ->
             classTypesDelete(classId, dataCacheDirectory)
@@ -405,7 +419,14 @@ object BiotopServices {
             val itemList = hierarchyList.filter { it.keyCode == compareKey }
             if (itemList.isEmpty()) {
                 needsRootItem = true
-                content.add("${EXT_ROOT_NODE}${compareKey.replace(".", "_")};$v")  // replace necessary to break hierarchy rule
+                content.add(
+                    "${EXT_ROOT_NODE}${
+                        compareKey.replace(
+                            ".",
+                            "_"
+                        )
+                    };$v"
+                )  // replace necessary to break hierarchy rule
             } else {
                 hierarchyList.first { it.keyCode == compareKey }.also {
                     it.hasData = true
@@ -415,6 +436,7 @@ object BiotopServices {
         }
         if (needsRootItem) content.add("${ROOT_NODE};Nicht zugeordnet")
     }
+
     private fun delegateHasDataFlag(hierarchyList: List<HierarchyData>, project: ProjectData) {
         transaction {
             hierarchyList.filter { it.hasData }.forEach {
@@ -432,9 +454,9 @@ object BiotopServices {
     }
 
     public fun getHierarchyListFromDB(project: ProjectData): List<HierarchyData> = transaction {
-            TableHierarchy.select { TableHierarchy.projectId eq project.id }.orderBy(TableHierarchy.sortCode)
-                .map { HierarchyData.mapRSToHierarchyData(it) }
-        }
+        TableHierarchy.select { TableHierarchy.projectId eq project.id }.orderBy(TableHierarchy.sortCode)
+            .map { HierarchyData.mapRSToHierarchyData(it) }
+    }
 
     private fun getHierarchyMapFromDBForClassId(classId: Int): Map<String, HierarchyData> = transaction {
         TableHierarchy.select { TableHierarchy.classId eq classId }.orderBy(TableHierarchy.sortCode)
@@ -447,6 +469,7 @@ object BiotopServices {
             tl.isLeaf = this.filter { tl.id == it.parentId }.isEmpty()
         }
     }
+
     fun List<HierarchyData>.setHasData() {
         val hasDataItems = this.filter { it.hasData }.toMutableList()
         hasDataItems.forEach {
@@ -484,6 +507,7 @@ object BiotopServices {
 
         return keyCodesList
     }
+
     fun List<HierarchyData>.setCQLFilter(colTypesCode: String?, colTypesCodeType: String?) {
         val numberOfDataLeaves = this.count { it.isLeaf && it.hasData }
         val stringDelim = if (colTypesCodeType == "java.lang.String") "'" else ""
@@ -493,11 +517,12 @@ object BiotopServices {
             if (kl.size == numberOfDataLeaves) // if node contains all subnodes, then do not save a cql-filter; the filter may contain to many characters for an URL-Parameter
                 hierarchyData.cqlQuery = null
             else
-                hierarchyData.cqlQuery = kl.joinToString(",", "$colTypesCode in (", ")") { "$stringDelim$it$stringDelim" }
+                hierarchyData.cqlQuery =
+                    kl.joinToString(",", "$colTypesCode in (", ")") { "$stringDelim$it$stringDelim" }
         }
 
         this.filter { it.isLeaf && it.hasData }.forEach {
-            it.cqlQuery = "$colTypesCode=$stringDelim${it.mappedKeyCode?:it.keyCode}$stringDelim"
+            it.cqlQuery = "$colTypesCode=$stringDelim${it.mappedKeyCode ?: it.keyCode}$stringDelim"
         }
         this.filter { !it.isLeaf && !it.hasData }.forEach {
             it.cqlQuery = null
@@ -512,7 +537,7 @@ object BiotopServices {
             it.setColors(getHierarchyMapFromDBForClassId(project.classId))
         }
         // set matchCode from matchTable
-        matchTable.forEach {(k, v) ->
+        matchTable.forEach { (k, v) ->
             hierarchyList.find { it.keyCode == v }?.also {
                 it.mappedKeyCode = k
             }
@@ -552,7 +577,7 @@ object BiotopServices {
     // for later use - if properties of a layer cannot be retrieved from WFS Service
     private fun getValuesFromDBF(project: ProjectData): Map<String, String> {
         val matchDict = mutableMapOf<String, String>()
-       /* val fis = FileInputStream(project.geoserverDBFfile)
+        /* val fis = FileInputStream(project.geoserverDBFfile)
         val dbfReader = DbaseFileReader(
             fis.channel,
             false, Charset.forName("ISO-8859-1")
@@ -588,7 +613,7 @@ object BiotopServices {
         val dict = mutableMapOf<String, String>()
         val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: ""
         val projectPath = getProjectDataFolderName(dataCacheDirectory, project.id)
-        if(project.hasMatchTable) {
+        if (project.hasMatchTable) {
             if (File(projectPath).resolve(project.classMap!!).exists()) {
                 val content = File(projectPath).resolve(project.classMap!!).readLines()
                 content.forEachIndexed { index, s ->
@@ -602,7 +627,7 @@ object BiotopServices {
         return dict
     }
 
-    suspend fun getLayerDataFromWFSService(project: ProjectData, config:ApplicationConfig): Map<String, String> {
+    suspend fun getLayerDataFromWFSService(project: ProjectData, config: ApplicationConfig): Map<String, String> {
         // http://127.0.0.1:8081/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=ECO:bundesland_wgs84_iso&propertyName=BL_KZ,BL
         val matchDict = mutableMapOf<String, String>()
         config.propertyOrNull("geoserver.url")?.getString()?.let { geoserverUrl ->
@@ -621,13 +646,87 @@ object BiotopServices {
                         matchDict[key] = value
                     }
                 }
-            } catch (ex: Exception) { println("Response of WFS Request could not be analyzed!\nresponse.bodyAsText()")  }
+            } catch (ex: Exception) {
+                println("Response of WFS Request could not be analyzed!\nresponse.bodyAsText()")
+            }
         }
         return matchDict
     }
 
     fun projectIsSynchronized(projectId: Int): Boolean = transaction {
-            TableHierarchy.select { TableHierarchy.projectId eq projectId }.count() > 0
+        TableHierarchy.select { TableHierarchy.projectId eq projectId }.count() > 0
+    }
+
+    fun speciesRenewComplete(project: ProjectData, dataCacheDirectory: String) {
+        if (project.speciesFileName == null) return
+        speciesRenewTaxon(project, dataCacheDirectory)
+        speciesRenewValues(project, dataCacheDirectory)
+    }
+
+    fun speciesRenewValues(project: ProjectData, dataCacheDirectory: String) {
+        transaction {
+            TableSpeciesGroups.deleteWhere { TableSpeciesGroups.projectId eq project.id }
+        }
+        val cols = speciesGetCSVCols(project, dataCacheDirectory)
+        val colIdIndex = cols?.indexOf(project.speciesColId) ?: -1
+        val colTaxonIdIndex = cols?.indexOf(project.speciesColTaxonId) ?: -1
+        if (colIdIndex == -1 || colTaxonIdIndex == -1) return
+
+        transaction {
+            AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(project.speciesFileName!!)
+                .forEachLine {
+                    val fields = it.split(";")
+                    val colId = fields[colIdIndex]
+                    val colTaxonId = fields[colTaxonIdIndex].toIntOrNull()
+                    if (colId != "" && colTaxonId != null) {
+                        TableSpeciesGroups.insert { ins ->
+                            ins[TableSpeciesGroups.projectId] = project.id
+                            ins[TableSpeciesGroups.taxonId] = colTaxonId
+                            ins[TableSpeciesGroups.groupCode] = colId
+                        }
+                    }
+                }
         }
 
+
+
+        // Import speciesFile and process groups
+    }
+
+    private fun speciesRenewTaxon(project:ProjectData, dataCacheDirectory: String) {
+        transaction {
+            TableSpeciesGroups.deleteWhere { TableSpeciesGroups.projectId eq project.id }
+            TableSpecies.deleteWhere { TableSpecies.projectId eq project.id }
+        }
+        // Import speciesFile and process taxon
+
+        val cols = speciesGetCSVCols(project, dataCacheDirectory)
+        val colTaxonIdIndex = cols?.indexOf(project.speciesColTaxonId) ?: -1
+        val colTaxonNameIndex = cols?.indexOf(project.speciesColTaxonName) ?: -1
+        if (colTaxonIdIndex == -1 || colTaxonNameIndex == -1) return
+
+        val listOfTaxonIds = mutableListOf<Int>()
+        transaction {
+            AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(project.speciesFileName!!)
+                .forEachLine {
+                    val fields = it.split(";")
+                    val colTaxonId = fields[colTaxonIdIndex].toIntOrNull()
+                    val colTaxonName = fields[colTaxonNameIndex]
+                    if ((colTaxonId != null) && (colTaxonName != "") && !listOfTaxonIds.contains(colTaxonId)) {
+                        TableSpecies.insert { ins ->
+                            ins[TableSpecies.projectId] = project.id
+                            ins[TableSpecies.taxonId] = colTaxonId
+                            ins[TableSpecies.description] = colTaxonName
+                        }
+                        listOfTaxonIds.add(colTaxonId)
+                    }
+                }
+        }
+    }
+
+
+    fun speciesGetCSVCols(project:ProjectData, dataCacheDirectory: String) =
+        (project.speciesFileName?.let {
+            AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it) })
+            ?.useLines { it.firstOrNull() }?.split(";")
 }

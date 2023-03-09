@@ -51,8 +51,9 @@ data class ProjectData(
     val colTypesDescription: String? = null,
     val colSpeciesCode: String? = null,
     val speciesFileName: String? = null,
-    val speciesColCodeName: String? = null,
-    val speciesColNameName: String? = null,
+    var speciesColId: String? = null,
+    var speciesColTaxonId: String? = null,
+    var speciesColTaxonName: String? = null,
     var hierarchyId: Int = -1,
 ) {
     val geoServerStyleName =  GEOSERVER_PROJECT_PREFIX + id
@@ -77,8 +78,9 @@ data class ProjectData(
                 rs[TableProjects.colTypesDescription],
                 rs[TableProjects.colSpeciesCode],
                 rs[TableProjects.speciesFileName],
-                rs[TableProjects.speciesColCodeName],
-                rs[TableProjects.speciesColNameName],
+                rs[TableProjects.speciesColId],
+                rs[TableProjects.speciesColTaxonId],
+                rs[TableProjects.speciesColTaxonName],
                 rs[TableProjects.hierarchyId],
             )
         }
