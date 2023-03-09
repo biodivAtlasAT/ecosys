@@ -271,6 +271,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
         get("/classes") {
             val classesList = mutableListOf<ClassData>()
+            val usedClassIds = mutableListOf<Int>()
 
             transaction {
                 classesList.addAll(
@@ -283,11 +284,12 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                         )
                     }
                 )
+                usedClassIds.addAll(TableProjects.select { TableProjects.deleted eq null }.map { rs -> rs[TableProjects.classId] }.distinct())
             }
             call.respond(
                 FreeMarkerContent(
                     "19_BTClasses.ftl",
-                    mapOf("result" to classesList, "maxCount" to classesList.size)
+                    mapOf("result" to classesList, "maxCount" to classesList.size, "used_class_ids" to usedClassIds)
                 )
             )
         }
@@ -339,10 +341,15 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.parameters["classId"]?.toIntOrNull()?.let { classId ->
                 val classData: ClassData? = ClassData.getById(classId)
 
+                val classIsInUse = transaction {
+                    TableProjects.select { TableProjects.deleted eq null and (TableProjects.classId eq classId) }
+                        .map { ProjectData.mapRSToProjectData(it) }.isNotEmpty()
+                }
+
                 call.respond(
                     FreeMarkerContent(
                         "20_BTClass.ftl",
-                        mapOf("classData" to classData)
+                        mapOf("classData" to classData, "classIsInUse" to classIsInUse)
                     )
                 )
             }

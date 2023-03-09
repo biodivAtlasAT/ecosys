@@ -360,10 +360,7 @@ object BiotopServices {
                 it[TableClasses.updated] = LocalDateTime.now()
             }
             File(AdminServices.getClassesDataFolderName(dataCacheDirectory, classId)).deleteRecursively()
-            // todo sld-file in geoserver löschen
         }
-
-
     }
 
     fun classDelete(formParameters: Parameters, dataCacheDirectory: String) = formParameters["mode"]?.let {

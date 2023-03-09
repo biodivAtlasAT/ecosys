@@ -42,7 +42,9 @@
                                 <a href="./classes/${prop.id}/types" class="btn btn-sm btn-outline-secondary" <#if !prop.filename?hasContent>disabled</#if>>Zuordnen</a>
                             </td>
                             <td>
-                                <button id= "btDel_${prop.id}" class="btn btn-sm btn-outline-danger" role="button" onclick='classDelete("${prop.id}");'>${wordDelete}</button>
+                                <#if !used_class_ids?seqContains(prop.id)>
+                                    <button id= "btDel_${prop.id}" class="btn btn-sm btn-outline-danger" role="button" onclick='classDelete("${prop.id}");'>${wordDelete}</button>
+                                </#if>
                             </td>
                         </tr>
                     </#list>
