@@ -551,3 +551,15 @@ function HSLToHex(h,s,l) {
 
     return "#" + r + g + b;
 }
+
+function checkFeatures() {
+    var typeFeature = document.getElementById("typeFeature").value;
+    var nameFeature = document.getElementById("nameFeature").value;
+    var saveButton = document.getElementById("saveButton")
+
+    console.log(typeFeature);
+    console.log(nameFeature);
+    if (typeFeature === "-1" || nameFeature === "-1") saveButton.classList.add("disabled");
+    if (typeFeature !== "-1" && nameFeature !== "-1") saveButton.classList.remove("disabled");
+
+}

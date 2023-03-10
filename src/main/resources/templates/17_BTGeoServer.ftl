@@ -42,7 +42,7 @@
                     <div class="col-md-3 m-2">
                         Spalte für Artenliste:
                     </div>
-                    <div class="col-md-4 m-2"><b>${project.colSpeciesCode}</b></div>
+                    <div class="col-md-4 m-2"><b><#if project.colTypesDescription="-1">nicht zugeordnet!<#else>${project.colSpeciesCode}</#if></b></div>
                 </div>
             </#if>
 
@@ -71,7 +71,7 @@
                         Spalte für Biotop-Typ:
                     </div>
                     <div class="col-md-4 m-2">
-                        <select name="typeFeature" id="typeFeature" required>
+                        <select name="typeFeature" id="typeFeature" required onchange="checkFeatures(); return false;">
                             <option value="-1">------------------</option>
                             <#list listOfFeatures as feature>
                                 <#if feature != "the_geom">
@@ -86,7 +86,22 @@
                         Spalte für Biotop-Bezeichnung:
                     </div>
                     <div class="col-md-4 m-2">
-                        <select name="nameFeature" id="nameFeature" required>
+                        <select name="nameFeature" id="nameFeature" required onchange="checkFeatures(); return false;">
+                            <option value="-1">------------------</option>
+                            <#list listOfFeatures as feature>
+                                <#if feature != "the_geom">
+                                    <option value="${feature}">${feature}</option>
+                                </#if>
+                            </#list>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 m-2">
+                        Spalte für Artenliste:
+                    </div>
+                    <div class="col-md-4 m-2">
+                        <select name="speciesFeature" id="speciesFeature" required>
                             <option value="-1">------------------</option>
                             <#list listOfFeatures as feature>
                                 <#if feature != "the_geom">
@@ -99,7 +114,7 @@
 
                 <div class="row">
                     <div class="col-md-3 m-2">
-                        <button type="submit">Speichern</button>
+                        <button id="saveButton" class="btn btn-sm btn-outline-primary disabled" type="submit">Speichern</button>
                     </div>
                 </div>
                 </form>

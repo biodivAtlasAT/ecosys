@@ -102,12 +102,13 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         }
         get("/{projectId}/saveGeoserverData") {
             val layer = call.request.queryParameters["layer"]
-            val typeFeature = call.request.queryParameters["typeFeature"]
-            val nameFeature = call.request.queryParameters["nameFeature"]
+            val typeFeature = call.request.queryParameters["typeFeature"]?:"-1"
+            val nameFeature = call.request.queryParameters["nameFeature"]?:"-1"
+            val speciesFeature = call.request.queryParameters["speciesFeature"]
             val projectId = call.parameters["projectId"]?.toIntOrNull()
             val workspace = call.request.queryParameters["workspace"]
 
-            if (projectId != null && layer != null && typeFeature != null && workspace != null) {
+            if (projectId != null && layer != null && typeFeature != "-1" && nameFeature != "-1" && workspace != null) {
                 val mapOfFeature = call.request.queryParameters["layer"]?.let { layer ->
                     getListOfFeatures(layer, geoserverUrl, workspace)
                 } ?: emptyMap()
@@ -119,6 +120,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                         it[TableProjects.colTypesCode] = typeFeature
                         it[TableProjects.colTypesCodeType] = mapOfFeature[typeFeature]
                         it[TableProjects.colTypesDescription] = nameFeature
+                        it[TableProjects.colSpeciesCode] = if (speciesFeature == "-1") null else speciesFeature
                         it[TableProjects.updated] = LocalDateTime.now()
                     }
                 }
