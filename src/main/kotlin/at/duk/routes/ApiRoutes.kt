@@ -33,8 +33,6 @@ fun Route.apiRouting(config: ApplicationConfig) {
 
     route("/api") {
         get("/check") {
-            // todo: for testing reasons only, can be removed in production
-            println(call.request.queryParameters["keyId"])
             val keyId = call.request.queryParameters["keyId"] ?: "empty"
             val layerId = call.request.queryParameters["layerId"]?.toIntOrNull() ?: -1
 
@@ -125,11 +123,23 @@ fun Route.apiRouting(config: ApplicationConfig) {
         get("/bt/projects/{projectId}/filter") {
             call.parameters["projectId"]?.toIntOrNull()?.let {
                 call.respondText(
-                    ApiServices.generateProjectFilterResponse(it, config), ContentType.parse("application/json"),
+                    ApiServices.generateProjectFilterResponse(it, config),
+                    ContentType.parse("application/json"),
                     HttpStatusCode.OK
                 )
             }
         }
 
+        get("/bt/projects/{projectId}/species/{speciesGroupId}") {
+            call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
+                call.parameters["speciesGroupId"]?.let {speciesGroupId ->
+                    call.respondText(
+                        ApiServices.generateProjectSpeciesResponse(speciesGroupId, projectId),
+                        ContentType.parse("application/json"),
+                        HttpStatusCode.OK
+                    )
+                }
+            }
+        }
     }
 }

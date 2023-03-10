@@ -21,11 +21,14 @@ package at.duk.services
 import at.duk.models.*
 import at.duk.models.biotop.HierarchyData
 import at.duk.models.biotop.ProjectData
+import at.duk.models.biotop.SpeciesData
 import at.duk.services.AdminServices.resolveSVGPath
 import at.duk.services.BiotopServices.setCQLFilter
 import at.duk.tables.*
 import at.duk.tables.biotop.TableHierarchy
 import at.duk.tables.biotop.TableProjects
+import at.duk.tables.biotop.TableSpecies
+import at.duk.tables.biotop.TableSpeciesGroups
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -36,9 +39,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.config.*
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.andWhere
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.StatementType
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.ResultSet
@@ -330,6 +332,32 @@ object ApiServices {
         ProjectData.getById(projectId)?.let { hierarchyList.setCQLFilter(it.colTypesCode, it.colTypesCodeType) }
 
         return mapper.writeValueAsString(EcosysProjectDataResponse(ResponseError(0, ""), hierarchyList))
+    }
+
+    suspend fun generateProjectSpeciesResponse(speciesGroupId: String, projectId: Int): String {
+        @Serializable
+        data class SpeciesGroup(
+            val id: String,
+            val list: List<SpeciesData>
+        )
+        data class EcosysProjectSpeciesDataResponse(val error: ResponseError, val speciesGroup: SpeciesGroup)
+
+        val speciesList = mutableListOf<SpeciesData>()
+
+        transaction {
+            val complexJoin = Join(
+                TableSpeciesGroups, TableSpecies,
+                onColumn = TableSpeciesGroups.taxonId, otherColumn = TableSpecies.taxonId,
+                joinType = JoinType.INNER,
+                additionalConstraint = { (TableSpeciesGroups.projectId eq projectId) and (TableSpeciesGroups.groupCode eq speciesGroupId) })
+
+            complexJoin.selectAll().orderBy(TableSpecies.description).forEach {rs ->
+                speciesList.add(
+                    SpeciesData(rs[TableSpecies.taxonId], rs[TableSpecies.description])
+                )
+            }
+        }
+        return mapper.writeValueAsString(EcosysProjectSpeciesDataResponse(ResponseError(0, ""), SpeciesGroup(speciesGroupId, speciesList)))
     }
 
 }
