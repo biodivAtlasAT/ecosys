@@ -180,3 +180,26 @@ paths:
           content:
             "application/json": {
             }
+  /api/bt/projects/{projectId}/species/{speciesGroupId}:
+    get:
+      tags: ["BIOTOP - Services"]
+      description: "Returns detailed data about the requested project."
+      parameters:
+        - name: "projectId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+        - name: "speciesGroupId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
+          and a <i>data</i> block. If the error number ist set to 0, then the response is valid.<br>
+          The <i>data</i> block contains a list of species (taxon id and description) for a specific group of a project."
+          content:
+            "application/json": {
+            }
