@@ -23,10 +23,6 @@ import at.duk.models.biotop.ProjectData
 import at.duk.services.AdminServices.getProjectDataFolderName
 import at.duk.tables.biotop.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.config.*
 import koodies.text.toLowerCase
@@ -40,6 +36,7 @@ object BiotopServices {
 
     private const val ROOT_NODE = "999"
     private const val EXT_ROOT_NODE = "$ROOT_NODE."
+    private const val ROOT_NODE_DESCRIPTION = "nicht zugeordnet"
 
     val mapper = jacksonObjectMapper()
 
@@ -56,96 +53,6 @@ object BiotopServices {
             }
         }
     }
-
-    suspend fun getListOfLayers(geoserverUrl: String?, geoserverWorkspace: String): List<String> {
-        val listOfLayers = mutableListOf<String>()
-        geoserverUrl?.let {
-            val client = HttpClient(CIO)
-            val url = "$geoserverUrl/rest/workspaces/$geoserverWorkspace/layers.json"
-            val response: HttpResponse = client.request(url) {
-                method = HttpMethod.Get
-            }
-            if (response.status == HttpStatusCode.OK) {
-                response.bodyAsText().split("\"").forEach {
-                    if (it.startsWith("http"))
-                        listOfLayers.add(it.split("/").last().replace(".json", ""))
-                }
-            }
-        }
-        return listOfLayers
-    }
-
-    suspend fun getListOfFeatures(
-        layer: String?,
-        geoserverUrl: String?,
-        geoserverWorkspace: String
-    ): Map<String, String> {
-        geoserverUrl?.let {
-            layer?.let { name ->
-                val client = HttpClient(CIO)
-                val url = "$geoserverUrl/rest/workspaces/$geoserverWorkspace/layers/$name.json"
-                val response: HttpResponse = client.request(url) {
-                    method = HttpMethod.Get
-                }
-                if (response.status == HttpStatusCode.OK) {
-                    return getListOfFeaturesSub(response.bodyAsText(), geoserverUrl)
-                }
-            }
-        }
-        return emptyMap<String, String>()
-    }
-
-    private suspend fun getListOfFeaturesSubOld(
-        resp: String,
-        geoserverUrl: String?,
-        geoserverWorkspace: String
-    ): List<String> {
-        val listOfFeatures = mutableListOf<String>()
-        val featureUrl = resp.split("@").first {
-            it.startsWith("class\":\"featureType\"")
-        }.split("\"").first {
-            it.startsWith("http")
-        }
-        geoserverUrl?.let {
-            val client2 = HttpClient(CIO)
-            val response2: HttpResponse = client2.request(featureUrl) {
-                method = HttpMethod.Get
-            }
-            if (response2.status == HttpStatusCode.OK) {
-                response2.bodyAsText().split("\"attribute\":").forEach {
-                    if (it.startsWith("[")) {
-                        it.split("name\":\"").forEach {
-                            val s = it.split("\"").first()
-                            if (!s.startsWith("[") && !s.contains("the_geom"))
-                                listOfFeatures.add(s)
-                        }
-                    }
-                }
-            }
-        }
-        return listOfFeatures
-    }
-
-    private suspend fun getListOfFeaturesSub(resp: String, geoserverUrl: String?): Map<String, String> {
-        val mapOfFeatures = mutableMapOf<String, String>()
-        val featureUrl = resp.split("@").first {
-            it.startsWith("class\":\"featureType\"")
-        }.split("\"").first {
-            it.startsWith("http")
-        }
-        geoserverUrl?.let {
-            val client2 = HttpClient(CIO)
-            val response2: HttpResponse = client2.request(featureUrl) {
-                method = HttpMethod.Get
-            }
-            if (response2.status == HttpStatusCode.OK) {
-                return mapper.readTree(response2.bodyAsText()).path("featureType").path("attributes").path("attribute")
-                    .associate { it.path("name").textValue() to it.path("binding").textValue() }
-            }
-        }
-        return mapOfFeatures
-    }
-
 
     fun projectInsertOrUpdate(formParameters: Parameters) =
         formParameters["name"]?.let { name ->
@@ -324,11 +231,6 @@ object BiotopServices {
                     }
             }
         }
-
-
-
-
-
         return report
     }
 
@@ -431,7 +333,7 @@ object BiotopServices {
                 }
             }
         }
-        if (needsRootItem) content.add("${ROOT_NODE};Nicht zugeordnet")
+        if (needsRootItem) content.add("${ROOT_NODE};${ROOT_NODE_DESCRIPTION}")
     }
 
     private fun delegateHasDataFlag(hierarchyList: List<HierarchyData>, project: ProjectData) {
@@ -459,7 +361,6 @@ object BiotopServices {
         TableHierarchy.select { TableHierarchy.classId eq classId }.orderBy(TableHierarchy.sortCode)
             .associate { HierarchyData.mapRSToHierarchyData(it).keyCode to HierarchyData.mapRSToHierarchyData(it) }
     }
-
 
     fun List<HierarchyData>.setIsLeaf() {
         this.forEach { tl ->
@@ -511,7 +412,8 @@ object BiotopServices {
 
         this.filter { !it.isLeaf }.forEach { hierarchyData ->
             val kl = getChildrenKeyCodes(this, hierarchyData)
-            if (kl.size == numberOfDataLeaves) // if node contains all subnodes, then do not save a cql-filter; the filter may contain to many characters for an URL-Parameter
+            if (kl.size == numberOfDataLeaves)  // if node contains all subnodes, then do not save a cql-filter;
+                                                // the filter may contain to many characters for an URL-Parameter
                 hierarchyData.cqlQuery = null
             else
                 hierarchyData.cqlQuery =
@@ -524,7 +426,6 @@ object BiotopServices {
         this.filter { !it.isLeaf && !it.hasData }.forEach {
             it.cqlQuery = null
         }
-
     }
 
     private fun matchFeaturesPost(project: ProjectData, matchTable: Map<String, String>) {
@@ -557,8 +458,6 @@ object BiotopServices {
                 }
             }
         }
-
-
     }
 
     private fun setHasDataRecursively(hd: HierarchyData, hierarchyList: List<HierarchyData>) {
@@ -568,42 +467,6 @@ object BiotopServices {
                 setHasDataRecursively(it, hierarchyList)
             }
         }
-    }
-
-
-    // for later use - if properties of a layer cannot be retrieved from WFS Service
-    private fun getValuesFromDBF(project: ProjectData): Map<String, String> {
-        val matchDict = mutableMapOf<String, String>()
-        /* val fis = FileInputStream(project.geoserverDBFfile)
-        val dbfReader = DbaseFileReader(
-            fis.channel,
-            false, Charset.forName("ISO-8859-1")
-        )
-
-        var keyColIndex = -1
-        var nameColIndex = -1
-        for(i in 0 until dbfReader.header.numFields) {
-            if (dbfReader.header.getFieldName(i) == project.colTypesCode)
-                keyColIndex = i
-            if (dbfReader.header.getFieldName(i) == project.colTypesDescription)
-                nameColIndex = i
-        }
-
-
-        if (keyColIndex != -1 && nameColIndex != -1) {
-            while (dbfReader.hasNext()) {
-                val fields = dbfReader.readEntry()
-                val key = fields[keyColIndex]?.toString()
-                val name = fields[nameColIndex]?.toString()
-                if (key != null && name != null)
-                    matchDict[key] = name
-               // println("$key: $name")
-            }
-        }
-        dbfReader.close()
-        fis.close()
-*/
-        return matchDict
     }
 
     private fun getMatchTable(config: ApplicationConfig, project: ProjectData): Map<String, String> {
@@ -624,31 +487,6 @@ object BiotopServices {
         return dict
     }
 
-    suspend fun getLayerDataFromWFSService(project: ProjectData, config: ApplicationConfig): Map<String, String> {
-        // http://127.0.0.1:8081/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=ECO:bundesland_wgs84_iso&propertyName=BL_KZ,BL
-        val matchDict = mutableMapOf<String, String>()
-        config.propertyOrNull("geoserver.url")?.getString()?.let { geoserverUrl ->
-            val client = HttpClient(CIO)
-            val url = "$geoserverUrl/wfs?service=wfs&version=2.0.0&request=GetFeature&outputFormat=json&" +
-                    "typeNames=${project.geoserverWorkspace}:${project.geoserverLayer}&propertyName=${project.colTypesCode},${project.colTypesDescription}"
-            val response: HttpResponse = client.request(url) {
-                method = HttpMethod.Get
-            }
-            try {
-                if (response.status == HttpStatusCode.OK) {
-                    mapper.readTree(response.bodyAsText()).path("features").forEach {
-                        val props = it.path("properties")
-                        val key = props[project.colTypesCode].asText() //.toString()
-                        val value = props[project.colTypesDescription].asText() // .toString()
-                        matchDict[key] = value
-                    }
-                }
-            } catch (ex: Exception) {
-                println("Response of WFS Request could not be analyzed!\nresponse.bodyAsText()")
-            }
-        }
-        return matchDict
-    }
 
     fun projectIsSynchronized(projectId: Int): Boolean = transaction {
         TableHierarchy.select { TableHierarchy.projectId eq projectId }.count() > 0
@@ -691,8 +529,6 @@ object BiotopServices {
             TableSpeciesGroups.deleteWhere { TableSpeciesGroups.projectId eq project.id }
             TableSpecies.deleteWhere { TableSpecies.projectId eq project.id }
         }
-        // Import speciesFile and process taxon
-
         val cols = speciesGetCSVCols(project, dataCacheDirectory)
         val colTaxonIdIndex = cols?.indexOf(project.speciesColTaxonId) ?: -1
         val colTaxonNameIndex = cols?.indexOf(project.speciesColTaxonName) ?: -1
@@ -716,7 +552,6 @@ object BiotopServices {
                 }
         }
     }
-
 
     private fun speciesGetCSVCols(project:ProjectData, dataCacheDirectory: String) =
         (project.speciesFileName?.let {
