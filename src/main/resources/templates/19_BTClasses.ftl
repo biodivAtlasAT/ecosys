@@ -2,9 +2,9 @@
 <#include "common/header.ftl">
 <body>
 <#assign naviSel = "19">
-<#assign wordSave = "Save">
-<#assign wordDelete = "Delete">
-<#assign wordEdit = "Edit">
+<#assign wordSave = "Speichern">
+<#assign wordDelete = "Löschen">
+<#assign wordEdit = "Bearbeiten">
 
 <#include "common/headline.ftl">
 <div class="row">
@@ -12,6 +12,16 @@
         <#include "common/navigation.ftl">
     </div>
     <div class="col-md-8 m-4">
+        <#if report?hasContent>
+            <div class="row">
+                <div class="row mt-4">
+                    <div class="col-md-8 m-2 alert alert-info" role="alert">
+                        ${report}
+                    </div>
+                </div>
+            </div>
+        </#if>
+
         <h1 class="text-primary">Klassen</h1>
         <div class="row">
             <div class="md-col-10">
@@ -39,7 +49,7 @@
                                 <a href="./classes/${prop.id}" class="btn btn-sm btn-outline-secondary">Daten</a>
                             </td>
                             <td class="text-center">
-                                <a href="./classes/${prop.id}/types" class="btn btn-sm btn-outline-secondary" <#if !prop.filename?hasContent>disabled</#if>>Zuordnen</a>
+                                <a href="./classes/${prop.id}/types" class="btn btn-sm btn-outline-secondary <#if !prop.filename?hasContent>disabled</#if>">Zuordnen</a>
                             </td>
                             <td>
                                 <#if !used_class_ids?seqContains(prop.id)>
@@ -53,8 +63,6 @@
                         <td>
                             <input type="text" class="noClass" name="name_-1" id="name_-1" value="" size="30" maxlength="128"  style="background-color: #CEE3F6">
                             <button id="bt_-1" style="margin-top:-4px" class="btn btn-sm btn-primary funcSave" role="button" onclick='classTypeEdit("-1", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordSave}</button>
-                        </td>
-                        <td>&nbsp;
                         </td>
                     </tr>
                     </tbody>

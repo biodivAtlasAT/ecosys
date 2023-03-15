@@ -360,7 +360,7 @@ function classTypeEdit(idx, maxCount, wordSave, wordEdit) {
         document.getElementById("bt_" + calcId).classList.remove('btn-primary');
         document.getElementById("bt_" + calcId).classList.add('btn-outline-primary');
         document.getElementById("bt_" + calcId).textContent = wordEdit;
-        if (calcId > -1)
+        if (calcId > -1 && document.getElementById("btDel_" + calcId) != null)
             document.getElementById("btDel_" + calcId).style.visibility = "visible";
 
     }
@@ -376,7 +376,7 @@ function classTypeEdit(idx, maxCount, wordSave, wordEdit) {
     document.getElementById(btEdit).classList.add('btn-primary')
     document.getElementById(btEdit).classList.add('funcSave')
 
-    if (idx > -1)
+    if (idx > -1 && document.getElementById("btDel_" + idx) != null)
         document.getElementById("btDel_"+idx).style.visibility = "hidden";
 }
 
@@ -562,4 +562,11 @@ function checkFeatures() {
     if (typeFeature === "-1" || nameFeature === "-1") saveButton.classList.add("disabled");
     if (typeFeature !== "-1" && nameFeature !== "-1") saveButton.classList.remove("disabled");
 
+}
+function checkFileInput() {
+    var filename = document.getElementById("filename").value;
+    if (filename !== "")
+        return true;
+    else
+        return false;
 }

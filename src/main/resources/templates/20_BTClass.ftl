@@ -37,14 +37,20 @@
         <#else>
             <form method="post" id="uploadSVG" enctype="multipart/form-data" action="./${classData.id}/classTypeUpload">
                 <div class="row">
-                    <div class="col-md-2 m-2">Datei (*.csv):</div>
+                    <div class="col-md-3 m-2">
+                        <a href="" onclick="return false;" style="text-decoration:none; color:darkgreen" data-toggle="tooltip"
+                           data-placement="top" title="CSV-Datei:
+1. Zeile: ID(hierarchisch mit Punkt getrennt);Name;Kategorie (optional)
+Folge-Zeilen z.B: 1.2.3;BT Kluftgrundwasser;Biotoptyp">&#x2754;</a>
+                        Datei (*.csv):
+                    </div>
                     <div class="col-md-7 m-2">
-                        <input type="file" size="32" maxlength="512" name="filename" accept=".csv">
+                        <input type="file" size="32" maxlength="512" name="filename" id="filename" accept=".csv">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2 m-2">
-                        <button type="submit" class="btn btn-sm btn-outline-secondary" >Speichern</button>
+                        <button type="submit" class="btn btn-sm btn-outline-secondary" onclick="return checkFileInput();" >Speichern</button>
                     </div>
                 </div>
             </form>

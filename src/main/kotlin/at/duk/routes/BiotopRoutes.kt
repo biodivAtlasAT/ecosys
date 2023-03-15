@@ -258,6 +258,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         get("/classes") {
             val classesList = mutableListOf<ClassData>()
             val usedClassIds = mutableListOf<Int>()
+            val report = call.request.queryParameters["report"]
 
             transaction {
                 classesList.addAll(
@@ -277,7 +278,10 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.respond(
                 FreeMarkerContent(
                     "19_BTClasses.ftl",
-                    mapOf("result" to classesList, "maxCount" to classesList.size, "used_class_ids" to usedClassIds)
+                    mapOf("result" to classesList, "maxCount" to classesList.size,
+                        "used_class_ids" to usedClassIds,
+                        "report" to report
+                    )
                 )
             )
         }
@@ -310,18 +314,22 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 }
             }
             // analyze csv file and return with message
-            var report = "No Report available!"
+            var report = "<h4>Die CSV-Datei wurde %myOKorNOT% verarbeitet!</h4>"
             fileName?.let { fn ->
-                report = BiotopServices.classCSVProcessing(classesDataFolder.resolve(fn).toString(), classId)
-                transaction {
-                    TableClasses.update({ TableClasses.id eq classId }) {
-                        it[TableClasses.filename] = fn
-                        it[TableClasses.updated] = LocalDateTime.now()
+                val rc = BiotopServices.classCSVProcessing(classesDataFolder.resolve(fn).toString(), classId)
+                report += rc.second
+                if (rc.first) {
+                    report = report.replace("%myOKorNOT%", "erfolgfreich")
+                    transaction {
+                        TableClasses.update({ TableClasses.id eq classId }) {
+                            it[TableClasses.filename] = fn
+                            it[TableClasses.updated] = LocalDateTime.now()
+                        }
                     }
-                }
+                } else report = report.replace("%myOKorNOT%", "NICHT")
             }
 
-            call.respondRedirect("/admin/biotop/classes")
+            call.respondRedirect("/admin/biotop/classes?report=$report")
         }
 
         get("/classes/{classId}") {

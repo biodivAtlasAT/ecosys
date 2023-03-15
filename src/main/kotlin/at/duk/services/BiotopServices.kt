@@ -90,15 +90,18 @@ object BiotopServices {
             }
         }
 
-    fun classCSVProcessing(filePath: String, classId: Int): String {
-        var report = "result of CSV-Import:\n"
+    fun classCSVProcessing(filePath: String, classId: Int): Pair<Boolean, String> {
+        var report = ""
         val content = File(filePath).readLines()
 
-        report += "Analyized lines: ${content.size}"
+        report += "<li>Analysierte Zeilen: ${content.size}</li>"
 
         // 1. check structure
         //    header and lines (id must contain . ); at least two columns
-        csvCheckCols(content)
+        if (!csvCheckCols(content)) {
+            report += "<li>ACHTUNG: Die Datei enthaelt eine nicht erlaubte Anzahl von Spalten oder unerlaubte Spaltennamen (nur erlaubt: ID, NAME)! </li>"
+            return Pair(false, report)
+        }
         // 2. generate data structure
         val items = mutableMapOf<String, Triple<String, String?, String?>>()
         var longestKeyPart = 1
@@ -106,7 +109,7 @@ object BiotopServices {
             val eles = line.split(";")
             val key = eles[0]
             if (items.containsKey(key))
-                report += "Schlüssel \"$key\" existiert mehrfach!"
+                report += "<li>ACHTUNG: Schluessel \"$key\" existiert mehrfach!</li>"
             if (ind > 0 && key[key.length - 1] != '.') {
                 items[key] = Triple(eles[1], null, if (eles.size > 2) eles[2] else null)
                 key.split(".").forEach { if (it.length > longestKeyPart) longestKeyPart = it.length }
@@ -119,7 +122,7 @@ object BiotopServices {
             else
                 items[k] = Triple(v.first, "", v.third)
         }
-        if (items.filterValues { it.second == null }.isNotEmpty()) report += "Items with no valid parent found!\n"
+        if (items.filterValues { it.second == null }.isNotEmpty()) report += "<li>ACHTUNG: Eintrag ohne gueltigen Vorgaenger gefunden!</li>"
 
         transaction {
             TableHierarchy.deleteWhere { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }
@@ -162,7 +165,7 @@ object BiotopServices {
                 }
             }
         }
-        return report
+        return Pair(true, report)
     }
 
     fun createHierarchieFromContent(content: List<String>, classId: Int?, projectId: Int?): String {
