@@ -2,9 +2,9 @@
 <#include "common/header.ftl">
 <body>
 <#assign naviSel = "15">
-<#assign wordSave = "Save">
-<#assign wordDelete = "Delete">
-<#assign wordEdit = "Edit">
+<#assign wordSave = "Speichern">
+<#assign wordDelete = "Löschen">
+<#assign wordEdit = "Bearbeiten">
 
 <#include "common/headline.ftl">
 <div class="row">
@@ -46,7 +46,7 @@
                                 <button id="bt_${prop.id}" class="btn btn-sm btn-outline-primary" style="margin-top:-4px" role="button" onclick='projectEdit("${prop.id}", ${maxCount}, "${wordSave}", "${wordEdit}");'>${wordEdit}</button>
                             </td>
                             <td class="text-center">
-                                <a href="./${prop.id}/metadata" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a href="./${prop.id}/metadata" class="btn btn-sm btn-outline-secondary">&#128393;</a>
                                 <a href="./${prop.id}/metadataJson" title="Metadaten anzeigen" class="btn btn-sm btn-outline-secondary" onclick='showMetaData("${prop.id}");'>&#x29DD;</a>
                             </td>
                             <td class="text-center">
@@ -55,7 +55,7 @@
                                 <a href="./${prop.id}/types" title="Filter anzeigen" class="btn btn-sm btn-outline-secondary <#if !prop.hasSyncWithClassification>disabled</#if>">&#9782;</a>
                             </td>
                             <td>
-                                <a href="./${prop.id}/species" class="btn btn-sm btn-outline-secondary">Arten</a>
+                                <a href="./${prop.id}/species" class="btn btn-sm btn-outline-secondary <#if !prop.colSpeciesCode?hasContent> disabled </#if>">Arten</a>
                             </td>
                             <td>
                                 <button id= "btDel_${prop.id}" title="${wordDelete}" class="btn btn-sm btn-outline-danger" role="button" onclick='projectDelete("${prop.id}");'>&#x2717;</button>

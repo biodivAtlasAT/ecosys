@@ -88,7 +88,7 @@
 
             <div class="row">
                 <div class="col-md-3 m-2">
-                    <button type="submit">Speichern</button>
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Speichern</button>
                 </div>
             </div>
             </form>

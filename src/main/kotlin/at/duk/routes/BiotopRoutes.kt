@@ -43,7 +43,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -64,6 +63,10 @@ fun Route.biotopRouting(config: ApplicationConfig) {
     route("/admin/biotop") {
         post("/{projectId}/removeGeoserverData") {
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
+                ProjectData.getById(projectId)?.let {
+                    BiotopServices.removeSpeciesFile(it, dataCacheDirectory)
+                }
+
                 transaction {
                     TableProjects.update({ TableProjects.id eq projectId }) {
                         it[TableProjects.geoserverLayer] = null
@@ -534,22 +537,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
         post("/{projectId}/removeSpeciesFile") {
             val projectId = call.parameters["projectId"]?.toIntOrNull() ?: return@post
-            val project = ProjectData.getById(projectId)
-
-            project?.speciesFileName?.let {
-                AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it).delete()
-            }
-
-            transaction {
-                TableSpeciesGroups.deleteWhere { TableSpeciesGroups.projectId eq projectId }
-                TableSpecies.deleteWhere { TableSpecies.projectId eq projectId }
-                TableProjects.update({ TableProjects.id eq projectId }) {
-                    it[TableProjects.speciesFileName] = null
-                    it[TableProjects.speciesColId] = null
-                    it[TableProjects.speciesColTaxonId] = null
-                    it[TableProjects.speciesColTaxonName] = null
-                    it[TableProjects.updated] = LocalDateTime.now()
-                }
+            ProjectData.getById(projectId)?.let {
+                BiotopServices.removeSpeciesFile(it, dataCacheDirectory)
             }
             call.respondRedirect("/admin/biotop/projects")
         }

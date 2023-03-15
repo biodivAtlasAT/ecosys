@@ -331,7 +331,8 @@ object BiotopServices {
                 )  // replace necessary to break hierarchy rule
             } else {
                 hierarchyList.first { it.keyCode == compareKey }.also {
-                    it.hasData = true
+                    if (it.isLeaf)
+                        it.hasData = true
                     content.add("${it.keyCode};${it.description}")
                 }
             }
@@ -419,8 +420,11 @@ object BiotopServices {
                                                 // the filter may contain to many characters for an URL-Parameter
                 hierarchyData.cqlQuery = null
             else
-                hierarchyData.cqlQuery =
-                    kl.joinToString(",", "$colTypesCode in (", ")") { "$stringDelim$it$stringDelim" }
+                if (kl.isEmpty())
+                    hierarchyData.cqlQuery = null
+                else
+                    hierarchyData.cqlQuery =
+                        kl.joinToString(",", "$colTypesCode in (", ")") { "$stringDelim$it$stringDelim" }
         }
 
         this.filter { it.isLeaf && it.hasData }.forEach {
@@ -560,4 +564,24 @@ object BiotopServices {
         (project.speciesFileName?.let {
             AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it) })
             ?.useLines { it.firstOrNull() }?.split(";")
+
+    fun removeSpeciesFile(project: ProjectData, dataCacheDirectory: String, ) {
+        project?.speciesFileName?.let {
+            AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it).delete()
+        }
+
+        transaction {
+            TableSpeciesGroups.deleteWhere { TableSpeciesGroups.projectId eq project.id }
+            TableSpecies.deleteWhere { TableSpecies.projectId eq project.id }
+            TableProjects.update({ TableProjects.id eq project.id }) {
+                it[TableProjects.speciesFileName] = null
+                it[TableProjects.speciesColId] = null
+                it[TableProjects.speciesColTaxonId] = null
+                it[TableProjects.speciesColTaxonName] = null
+                it[TableProjects.updated] = LocalDateTime.now()
+            }
+        }
+
+    }
+
 }

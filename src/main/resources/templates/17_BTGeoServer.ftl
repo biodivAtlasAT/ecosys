@@ -54,20 +54,19 @@
                     Geoserver-Layer:
                 </div>
                 <div class="col-md-4 m-2">
-                    <select name="layer" id="layer" required>
+                    <select name="layer" id="layer" required onchange="btRedirect('${urlRedirect}'); return false;">
                         <option value="-1">------------------</option>
                         <#list listOfLayers as layer>
                             <option value="${layer}" <#if selectedLayer?has_content && "${selectedLayer}" == "${layer}"> selected <#else></#if> >${layer}</option>
                         </#list>
                     </select>
                 </div>
-                <div class="col-md-2 m-2">
-                    <button type="button" onclick="btRedirect('${urlRedirect}'); return false;">Bestätigen</button>
-                </div>
             </div>
             <#if (listOfFeatures?size > 0)>
                 <div class="row">
                     <div class="col-md-3 m-2">
+                        <a href="" onclick="return false;" style="text-decoration:none; color:darkgreen" data-toggle="tooltip"
+                           data-placement="top" title="Spaltennamen des Vektorlayers (vom Geo Server), welcher die ID laut Klassifizierung festlegt!">&#x2754;</a>
                         Spalte für Biotop-Typ:
                     </div>
                     <div class="col-md-4 m-2">
@@ -83,6 +82,8 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3 m-2">
+                        <a href="" onclick="return false;" style="text-decoration:none; color:darkgreen" data-toggle="tooltip"
+                           data-placement="top" title="Spaltennamen des Vektorlayers (vom Geo Server), welcher den Namen laut Klassifizierung festlegt!">&#x2754;</a>
                         Spalte für Biotop-Bezeichnung:
                     </div>
                     <div class="col-md-4 m-2">
@@ -98,6 +99,8 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3 m-2">
+                        <a href="" onclick="return false;" style="text-decoration:none; color:darkgreen" data-toggle="tooltip"
+                           data-placement="top" title="Spaltennamen des Vektorlayers (vom Geo Server), welcher die Spalte für die Artenliste bezeichnet!">&#x2754;</a>
                         Spalte für Artenliste:
                     </div>
                     <div class="col-md-4 m-2">

@@ -37,7 +37,7 @@ data class StyleData(val project: ProjectData, val hierarchyList: List<Hierarchy
     fun generateSLD(): String {
         val sb = StringBuilder(HEADER)
 
-        hierarchyList.filter { it.isLeaf }.forEach {
+        hierarchyList.filter { it.isLeaf && it.hasData }.forEach {
             val key = it.mappedKeyCode?:it.keyCode
             val color = it.color?:defaultColor
             val rule = RULE.replace("myTitle",it.description)
