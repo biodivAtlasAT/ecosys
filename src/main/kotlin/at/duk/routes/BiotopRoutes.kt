@@ -242,9 +242,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     it[TableProjects.epoch] = project.epoch
                     it[TableProjects.area] = project.area
                     it[TableProjects.classId] = project.classId
-                    it[TableProjects.classInfo] = null
-                    if (project.classInfo != "" && project.classId == -1)
-                        it[TableProjects.classInfo] = project.classInfo
+                    it[TableProjects.classInfo] = if (project.classInfo.isNullOrEmpty()) null else project.classInfo
                     it[TableProjects.classMap] = project.classMap
                     it[TableProjects.updated] = LocalDateTime.now()
                 }
