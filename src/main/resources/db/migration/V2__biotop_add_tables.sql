@@ -87,3 +87,15 @@ alter table IF EXISTS public.raster_data
     add COLUMN IF NOT EXISTS geoserver_layer_name character varying(128) default null;
 alter table IF EXISTS public.raster_data
     add COLUMN IF NOT EXISTS geoserver_working_space character varying(32) default null;
+
+create index bt_speciesgroups_project_id_group_code_index
+    on bt_speciesgroups (project_id, group_code);
+
+create index bt_species_project_id_taxon_id_index
+    on bt_species (project_id, taxon_id);
+
+create index bt_hierarchy_project_id_index
+    on bt_hierarchy (project_id);
+
+create index bt_hierarchy_class_id_index
+    on bt_hierarchy (class_id);
