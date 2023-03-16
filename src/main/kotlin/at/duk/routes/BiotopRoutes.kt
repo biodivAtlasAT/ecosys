@@ -223,7 +223,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
             var report = "<h4>Die CSV-Datei wurde %myOKorNOT% verarbeitet!</h4>"
             var rc: Boolean? = null
-            if (!deleteMap && fileName != null) {
+            if (!deleteMap && fileName != null && fileName != "") {
                 val ret = CSVChecker(project, dataCacheDirectory, fileName!!).checkStructure(2, 2, emptyList())
                 rc = ret.first
                 report += ret.second.joinToString(prefix = "<ul>", postfix = "</ul>", separator = "") {

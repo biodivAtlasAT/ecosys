@@ -45,7 +45,6 @@ data class ProjectData(
     var classMap: String? = null,
     val geoserverWorkspace: String? = null,
     val geoserverLayer: String? = null,
-    var geoserverDBFfile: String? = null,
     val colTypesCode: String? = null,
     val colTypesCodeType: String? = null,
     val colTypesDescription: String? = null,
@@ -54,7 +53,6 @@ data class ProjectData(
     var speciesColId: String? = null,
     var speciesColTaxonId: String? = null,
     var speciesColTaxonName: String? = null,
-    var hierarchyId: Int = -1,
 ) {
     val geoServerStyleName =  GEOSERVER_PROJECT_PREFIX + id
 
@@ -72,7 +70,6 @@ data class ProjectData(
                 rs[TableProjects.classMap],
                 rs[TableProjects.geoserverWorkspace],
                 rs[TableProjects.geoserverLayer],
-                rs[TableProjects.geoserverDBFfile],
                 rs[TableProjects.colTypesCode],
                 rs[TableProjects.colTypesCodeType],
                 rs[TableProjects.colTypesDescription],
@@ -81,7 +78,6 @@ data class ProjectData(
                 rs[TableProjects.speciesColId],
                 rs[TableProjects.speciesColTaxonId],
                 rs[TableProjects.speciesColTaxonName],
-                rs[TableProjects.hierarchyId],
             )
         }
         fun getById(id: Int): ProjectData? {

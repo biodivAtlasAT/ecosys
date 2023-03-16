@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS public.BT_projects
     class_map character varying(128),
     geoserver_workspace character varying(128),
     geoserver_layer character varying(128),
-    geoserver_dbf_file character varying(256),
 	col_types_code character varying(64),
     col_types_code_type character varying(64),
     col_types_description character varying(128),
@@ -20,8 +19,6 @@ CREATE TABLE IF NOT EXISTS public.BT_projects
     species_col_id character varying(64),
     species_col_taxon_id character varying(64),
     species_col_taxon_name character varying(64),
-    hierarchy_id integer NOT NULL DEFAULT -1,
-    hierarchy_name  character varying(64),  -- when specified as "Sonstige"
     created timestamp without time zone NOT NULL,
     updated timestamp without time zone DEFAULT null,
     deleted timestamp with time zone DEFAULT null,
@@ -87,6 +84,6 @@ create index IF NOT EXISTS projects_index1
     on public.BT_species (project_id);
 
 alter table IF EXISTS public.raster_data
-    add geoserver_layer_name character varying(128) default null;
+    add COLUMN IF NOT EXISTS geoserver_layer_name character varying(128) default null;
 alter table IF EXISTS public.raster_data
-    add geoserver_working_space character varying(32) default null;
+    add COLUMN IF NOT EXISTS geoserver_working_space character varying(32) default null;
