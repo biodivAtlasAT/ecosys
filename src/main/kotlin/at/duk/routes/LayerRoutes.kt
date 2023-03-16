@@ -118,9 +118,6 @@ fun Route.layerRouting(config: ApplicationConfig) {
                             val properties: Properties = mapper.readValue(x)
                             val jsonCoordinates: SpatialLayerPart = mapper.readValue(rs.getString("geom"))
                             features.add(Feature("Feature", properties, jsonCoordinates))
-
-                            println("----------------------")
-                            println(properties)
                         }
                     }
                 }

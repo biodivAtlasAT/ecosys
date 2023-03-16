@@ -9,8 +9,11 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.config.*
+import org.slf4j.LoggerFactory
 
 class GeoServerService(config: ApplicationConfig) {
+    val logger: ch.qos.logback.classic.Logger = LoggerFactory.getLogger(at.duk.services.LayerServices::class.java)
+            as ch.qos.logback.classic.Logger
 
     private var geoserverUrl = ""
     private var workspace = ""
@@ -163,7 +166,7 @@ class GeoServerService(config: ApplicationConfig) {
                 }
             }
         } catch (ex: Exception) {
-            println("Response of WFS Request could not be analyzed!\nresponse.bodyAsText()")
+            logger.warn("Response of WFS Request could not be analyzed!\n${response.bodyAsText()}")
         }
         return matchDict
     }
