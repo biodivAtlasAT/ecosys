@@ -180,6 +180,25 @@ paths:
           content:
             "application/json": {
             }
+  /api/bt/projects/{id}/filter:
+    get:
+      tags: ["BIOTOP - Services"]
+      description: "Returns the hierarchy in linear mode."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "200":
+          description: "Returns json data containing an <i>error</i> block (no = error number, msg = error message) 
+          and a <i>data</i> block. If the error number ist set to 0, then the response is valid.<br>
+          The <i>data</i> block contains the hierarchical data of the filter tree and can be directly used without
+          processing a parent hierarchy."
+          content:
+            "application/json": {
+            }
   /api/bt/projects/{projectId}/species/{speciesGroupId}:
     get:
       tags: ["BIOTOP - Services"]
