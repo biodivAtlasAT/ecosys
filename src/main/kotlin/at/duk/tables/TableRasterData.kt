@@ -33,4 +33,6 @@ object TableRasterData : IntIdTable("raster_data") {
         val uploadedRasterDataId: Column<Int?> = integer("uploaded_raster_data_id").nullable()
         val statistics: Column<String?> = varchar("statistics", 128).nullable()
         val srid: Column<String> = varchar("srid", 128).default("")
+        val geoserverLayerName: Column<String?> = varchar("geoserver_layer_name", 128).nullable()
+        val geoserverWorkingSpace: Column<String?> = varchar("geoserver_working_space", 32).nullable()
 }

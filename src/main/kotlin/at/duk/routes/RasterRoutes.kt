@@ -233,6 +233,12 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             val packageId = call.request.queryParameters["packageId"]?.toIntOrNull() ?: -1
             val serviceId = call.request.queryParameters["serviceId"]?.toIntOrNull() ?: -1
             val dimension = call.request.queryParameters["dimension"] ?: ""
+            var geoserverLayerName = call.request.queryParameters["geoserverLayerName"]
+            if (geoserverLayerName.isNullOrEmpty()) geoserverLayerName = null
+            val geoserverWorkingSpace = if (geoserverLayerName.isNullOrEmpty())
+                null
+            else
+                config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
 
             if (id > -1 && packageId > -1 && serviceId > -1)
                 transaction {
@@ -242,6 +248,8 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                         it[TableRasterData.serviceId] = serviceId
                         it[TableRasterData.dimension] = dimension
                         it[TableRasterData.dataComplete] = true
+                        it[TableRasterData.geoserverLayerName] = geoserverLayerName
+                        it[TableRasterData.geoserverWorkingSpace] = geoserverWorkingSpace
                     }
                 }
 

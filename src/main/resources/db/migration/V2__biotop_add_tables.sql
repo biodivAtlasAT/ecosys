@@ -85,3 +85,8 @@ ALTER TABLE IF EXISTS public.BT_Species
 
 create index IF NOT EXISTS projects_index1
     on public.BT_species (project_id);
+
+alter table IF EXISTS public.raster_data
+    add geoserver_layer_name character varying(128) default null;
+alter table IF EXISTS public.raster_data
+    add geoserver_working_space character varying(32) default null;

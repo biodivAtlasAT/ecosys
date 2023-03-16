@@ -86,6 +86,14 @@
         </div>
         <div class="row">
             <div class="col-md-2 m-2">
+                Geoserver Layer:
+            </div>
+            <div class="col-md-6 m-2">
+                <input type="text" size="40" maxlength="128" name="geoserverLayerName" value="<#if geoserver_layer_name?has_content>${geoserver_layer_name}<#else></#if>">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 m-2">
                 <input type="submit" class="btn btn-sm btn-outline-primary" value="Speichern" onclick="return submit08check('${combinations}');">
             </div>
         </div>

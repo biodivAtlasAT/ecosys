@@ -28,7 +28,7 @@ import kotlinx.serialization.Serializable
 data class RasterDataResponse(val data: MutableList<RasterServiceVals>)
 
 @Serializable
-data class RasterServiceVals(val id: Int, val vals: MutableList<RasterServiceVal>, val svg: String, val dim: String)
+data class RasterServiceVals(val id: Int, val vals: MutableList<RasterServiceVal>, val svg: String, val dim: String, val geoserverLayerName: String?)
 
 @Serializable
 data class RasterServiceValsSingle(val id: Int, val vals: RasterServiceVal, val svg: String, val dim: String)
@@ -36,7 +36,7 @@ data class RasterServiceValsSingle(val id: Int, val vals: RasterServiceVal, val 
 @Serializable
 @Suppress("ConstructorParameterNaming")
 data class RasterServiceVal(
-    @JsonProperty val `val`: Double?, @JsonIgnore val statistics: String, @JsonIgnore val dimension: String
+    @JsonProperty val `val`: Double?, @JsonIgnore val statistics: String, @JsonIgnore val dimension: String, @JsonIgnore val geoserverLayerName: String?
     ) {
 
     @JsonProperty var quantil: Int? = null
