@@ -115,6 +115,7 @@ object ApiServices {
         var dimension: String
         var rasterId: Int
         var geoerverLayerName: String
+        var geoserverWorkingSpace: String
 
         // for each service in the named package
         transaction {
@@ -126,12 +127,13 @@ object ApiServices {
                     dimension = row[TableRasterData.dimension].toString()
                     statistics = row[TableRasterData.statistics].toString()
                     geoerverLayerName = row[TableRasterData.geoserverLayerName].toString()
+                    geoserverWorkingSpace = row[TableRasterData.geoserverWorkingSpace].toString()
                 }
                 val avg = getAveragePerRaster(layerDetailsId, rasterId)
                 // val avg = rasterId?.let { it1 -> getAveragePerRaster(layerDetailsId, it1) }
                 rasterServiceValsSingle.add(
                     RasterServiceValsSingle(
-                        it.id, RasterServiceVal(avg, statistics, dimension, geoerverLayerName), it.svgPath ?: "", dimension
+                        it.id, RasterServiceVal(avg, statistics, dimension, geoerverLayerName, geoserverWorkingSpace), it.svgPath ?: "", dimension
                     )
                 )
             }
@@ -211,7 +213,8 @@ object ApiServices {
                         lastServiceId = rs.getInt("service_id")
                     }
                     val v = if (rs.getObject("v") == null) null else rs.getDouble("v")
-                    lastListofPoints.add(RasterServiceVal(v, rs.getString("statistics"), rs.getString("dimension"), rs.getString("geoserver_layer_name")))
+                    lastListofPoints.add(RasterServiceVal(v, rs.getString("statistics"),
+                        rs.getString("dimension"), rs.getString("geoserver_layer_name"), rs.getString("geoserver_working_space")))
                 }
                 if (lastServiceId != -1)
                     result[lastServiceId] = lastListofPoints.toMutableList()
@@ -223,7 +226,7 @@ object ApiServices {
                     serviceList.add(
                         RasterServiceVals(
                             it[TableServices.id].value, l, resolveSVGPath(it[TableServices.svgPath]),
-                            l.first().dimension, l.first().geoserverLayerName
+                            l.first().dimension, l.first().geoserverLayerName, l.first().geoserverWorkingSpace
                         )
                     )
                 }
@@ -254,7 +257,7 @@ object ApiServices {
         val selStmtList = mutableListOf<String>()
         rasterDataRequest.coordsList.forEachIndexed { index, pair ->
             selStmtList.add(
-                "Select $index as pointId, dimension, statistics, id, geoserver_layer_name, service_id, " +
+                "Select $index as pointId, dimension, statistics, id, geoserver_layer_name, geoserver_working_space, service_id, " +
                     "ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(${pair.first}, ${pair.second}), 4326), " +
                     "ST_SRID(rast))) as v from raster_data where package_id = ${rasterDataRequest.packageID} " +
                     "and data_complete is true and service_id in " +
