@@ -13,14 +13,14 @@
     </div>
     <div class="col-md-8 m-4">
         <h1 class="text-primary">Projekte</h1>
-        <#if errorList?size != 0>
-            <div class="alert alert-danger" role="alert">
-                <ul>
-                <#list errorList as msg>
-                    <li>${msg}</li>
-                </#list>
-                </ul>
+        <#if report?hasContent>
+        <div class="row">
+            <div class="row mt-4">
+                <div class="col-md-8 m-2 alert alert-info" role="alert">
+                    ${report}
+                </div>
             </div>
+        </div>
         </#if>
         <div class="row">
             <div class="md-col-10">

@@ -500,7 +500,6 @@ object BiotopServices {
     }
 
     fun speciesRenewComplete(project: ProjectData, dataCacheDirectory: String) {
-        if (project.speciesFileName == null) return
         speciesRenewTaxon(project, dataCacheDirectory)
         speciesRenewValues(project, dataCacheDirectory)
     }

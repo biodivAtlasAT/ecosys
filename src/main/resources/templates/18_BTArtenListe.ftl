@@ -29,6 +29,8 @@
             </div>
             <div class="row">
                 <div class="col-md-3 m-2">
+                    <a href="" onclick="return false;" style="text-decoration:none; color:darkgreen" data-toggle="tooltip"
+                       data-placement="top" title="Spalte die der Spalte im Vektorlayer (Geo Server) entspricht!">&#x2754;</a>
                     Artenspalte in Projekt:
                 </div>
                 <div class="col-md-4 m-2">
@@ -46,6 +48,8 @@
             </div>
             <div class="row">
                 <div class="col-md-3 m-2">
+                    <a href="" onclick="return false;" style="text-decoration:none; color:darkgreen" data-toggle="tooltip"
+                       data-placement="top" title="Spalte (ID) der vorkommenden Art. Inhalt MUSS numerisch sein!">&#x2754;</a>
                     Taxon ID (unique):
                 </div>
                 <div class="col-md-4 m-2">
@@ -63,6 +67,8 @@
             </div>
             <div class="row">
                 <div class="col-md-3 m-2">
+                    <a href="" onclick="return false;" style="text-decoration:none; color:darkgreen" data-toggle="tooltip"
+                       data-placement="top" title="Spaltennamen für die gwünschte Bezeichnung der Art!">&#x2754;</a>
                     Taxon Name:
                 </div>
                 <div class="col-md-4 m-2">
@@ -89,7 +95,13 @@
             <form name="speciesFileUpload" method="POST" action="./speciesFileUpload"  enctype="multipart/form-data">
             <div class="row mt-4">
                 <div class="row">
-                    <div class="col-md-2 m-2">Datei (*.csv):</div>
+                    <div class="col-md-2 m-2">
+                        <a href="" onclick="return false;" style="text-decoration:none; color:darkgreen" data-toggle="tooltip"
+                           data-placement="top" title="CSV-Datei mit mindestens 3 Spalten (1. Zeile enthält beliebige Spaltennamen):
+- Artenspalte in Projekt: Inhalt wie im Vektorlayer und der zugeordneten Spalte im Geoserver
+- Taxon-ID: muss numerisch sein!
+- Taxon-Name: beliebiger Text">&#x2754;</a>
+                        Datei (*.csv):</div>
                     <div class="col-md-7 m-2">
                         <input type="file" size="32" maxlength="512" name="filename" accept=".csv">
                     </div>

@@ -34,6 +34,7 @@ import at.duk.services.BiotopServices.speciesRenewComplete
 import at.duk.services.BiotopServices.speciesRenewValues
 import at.duk.services.GeoServerService
 import at.duk.tables.biotop.*
+import at.duk.utils.CSVChecker
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -86,11 +87,12 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                         .orderBy(TableProjects.name)
                         .map { ProjectData.mapRSToProjectData(it) }
             }
+            val report = call.request.queryParameters["report"]
             call.respond(
                 FreeMarkerContent(
                     "15_BTProjects.ftl",
                     mapOf(
-                        "result" to projectsList, "maxCount" to projectsList.size, "errorList" to listOf<String>(),
+                        "result" to projectsList, "maxCount" to projectsList.size, "report" to report,
                     )
                 )
             )
@@ -218,6 +220,21 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 project.classMap = null
                 projectsDataFolder.deleteRecursively()
             }
+
+            var report = "<h4>Die CSV-Datei wurde %myOKorNOT% verarbeitet!</h4>"
+            var rc: Boolean? = null
+            if (!deleteMap && fileName != null) {
+                val ret = CSVChecker(project, dataCacheDirectory, fileName!!).checkStructure(2, 2, emptyList())
+                rc = ret.first
+                report += ret.second.joinToString(prefix = "<ul>", postfix = "</ul>", separator = "") {
+                    "<li>$it</li>"
+                }
+                if(!rc) {
+                    project.classMap = null
+                    report = report.replace("%myOKorNOT%", "NICHT")
+                } else
+                    report = report.replace("%myOKorNOT%", "erfolgreich")
+            }
             transaction {
                 TableProjects.update({ TableProjects.id eq projectId }) {
                     it[TableProjects.enabled] = project.enabled
@@ -232,8 +249,10 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     it[TableProjects.updated] = LocalDateTime.now()
                 }
             }
-
-            call.respondRedirect("/admin/biotop/projects")
+            if (rc == null)
+                call.respondRedirect("/admin/biotop/projects")
+            else
+                call.respondRedirect("/admin/biotop/projects?report=$report")
         }
         get("/{projectId}/metadataJson") {
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
@@ -546,6 +565,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         get("/{projectId}/speciesDetailsSave") {
             val projectId = call.parameters["projectId"]?.toIntOrNull() ?: return@get
 
+            var report = "<h4>Die CSV-Datei wurde %myOKorNOT% verarbeitet!</h4>"
+            var rc: Boolean? = null
             val project = ProjectData.getById(projectId)?:return@get
             val speciesColId = call.request.queryParameters["speciesColId"].orEmpty()
             val speciesColTaxonId = call.request.queryParameters["speciesColTaxonId"].orEmpty()
@@ -568,13 +589,29 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 }
 
                 ProjectData.getById(projectId)?.let { proj ->
-                    if (speciesColTaxonIdChanged || speciesColTaxonNameChanged)
-                        speciesRenewComplete(proj, dataCacheDirectory)
-                    else
-                        speciesRenewValues(proj, dataCacheDirectory)
+                    if (proj.speciesFileName != null && proj.speciesColTaxonId != null) {
+                        val ret = CSVChecker(project, dataCacheDirectory, proj.speciesFileName).checkStructure(3, 99, listOf( Pair(proj.speciesColTaxonId!!, "INT")))
+                        rc = ret.first
+                        report += ret.second.joinToString(prefix = "<ul>", postfix = "</ul>", separator = "") {
+                            "<li>$it</li>"
+                        }
+                        if (ret.first) {
+                            if (speciesColTaxonIdChanged || speciesColTaxonNameChanged)
+                                speciesRenewComplete(proj, dataCacheDirectory)
+                            else
+                                speciesRenewValues(proj, dataCacheDirectory)
+                        }
+                    }
                 }
+                report = if (rc == true)
+                    report.replace("%myOKorNOT%", "erfolgreich")
+                else
+                    report.replace("%myOKorNOT%", "NICHT")
             }
-            call.respondRedirect("/admin/biotop/projects")
+            if (rc == null)
+                call.respondRedirect("/admin/biotop/projects")
+            else
+                call.respondRedirect("/admin/biotop/projects?report=$report")
         }
     }
 }
