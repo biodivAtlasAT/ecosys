@@ -2,9 +2,9 @@
 <#include "common/header.ftl">
 <body>
 <#assign naviSel = "2">
-<#assign wordSave = "Save">
-<#assign wordDelete = "Delete">
-<#assign wordEdit = "Edit">
+<#assign wordSave = "Speichern">
+<#assign wordDelete = "Löschen">
+<#assign wordEdit = "Bearbeiten">
 
 <#include "common/headline.ftl">
 <div class="row">
