@@ -18,20 +18,10 @@
  */
 package at.duk.models.biotop
 
-import at.duk.tables.biotop.TableClasses
 import at.duk.tables.biotop.TableHierarchy
-import at.duk.tables.biotop.TableProjects
-import at.duk.tables.biotop.TableProjects.default
-import at.duk.tables.biotop.TableProjects.nullable
 import com.fasterxml.jackson.annotation.JsonIgnore
-import koodies.docker.Docker
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.IntegerColumnType
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @Serializable
 data class HierarchyData(
@@ -49,8 +39,11 @@ data class HierarchyData(
     var isLeaf: Boolean,
     var hasData: Boolean,
 ) {
-    constructor(parentId: Int, levelNumber: Int, projectId: Int, keyCode: String, sortCode: String, description: String): this(
-        -1, parentId, levelNumber, projectId, -1, keyCode, null, sortCode, description, null, null, false, false
+    constructor(
+        parentId: Int, levelNumber: Int, projectId: Int, keyCode: String, sortCode: String, description: String
+    ) : this(
+        -1, parentId, levelNumber, projectId, -1, keyCode,
+        null, sortCode, description, null, null, false, false
     )
 
     // necessary becaus Apache Freemarker cannot check properties with is....

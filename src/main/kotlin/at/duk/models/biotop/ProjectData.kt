@@ -20,14 +20,8 @@ package at.duk.models.biotop
 
 import at.duk.services.BiotopServices.projectIsSynchronized
 import at.duk.tables.biotop.TableProjects
-import at.duk.tables.biotop.TableProjects.default
-import at.duk.tables.biotop.TableProjects.nullable
-import koodies.docker.Docker
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.IntegerColumnType
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -54,9 +48,9 @@ data class ProjectData(
     var speciesColTaxonId: String? = null,
     var speciesColTaxonName: String? = null,
 ) {
-    val geoServerStyleName =  GEOSERVER_PROJECT_PREFIX + id
+    val geoServerStyleName = GEOSERVER_PROJECT_PREFIX + id
 
-    companion object{
+    companion object {
         public fun mapRSToProjectData(rs: ResultRow): ProjectData {
             return ProjectData(
                 rs[TableProjects.id].value,

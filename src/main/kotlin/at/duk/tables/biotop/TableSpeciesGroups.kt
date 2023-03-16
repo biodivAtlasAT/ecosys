@@ -18,11 +18,8 @@
  */
 package at.duk.tables.biotop
 
-import at.duk.tables.biotop.TableProjects.default
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.javatime.datetime
-import java.time.LocalDateTime
 
 object TableSpeciesGroups : IntIdTable("bt_speciesgroups") {
     var projectId: Column<Int> = integer("project_id").default(-1)

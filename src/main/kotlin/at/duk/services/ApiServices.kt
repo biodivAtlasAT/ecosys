@@ -45,7 +45,6 @@ import org.jetbrains.exposed.sql.statements.StatementType
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.ResultSet
 
-
 object ApiServices {
     private val mapper = jacksonObjectMapper()
 
@@ -132,7 +131,8 @@ object ApiServices {
                 // val avg = rasterId?.let { it1 -> getAveragePerRaster(layerDetailsId, it1) }
                 rasterServiceValsSingle.add(
                     RasterServiceValsSingle(
-                        it.id, RasterServiceVal(avg, statistics, dimension, geoerverLayerName, geoserverWorkingSpace), it.svgPath ?: "", dimension
+                        it.id, RasterServiceVal(avg, statistics, dimension, geoerverLayerName, geoserverWorkingSpace),
+                        it.svgPath ?: "", dimension
                     )
                 )
             }
@@ -212,8 +212,14 @@ object ApiServices {
                         lastServiceId = rs.getInt("service_id")
                     }
                     val v = if (rs.getObject("v") == null) null else rs.getDouble("v")
-                    lastListofPoints.add(RasterServiceVal(v, rs.getString("statistics"),
-                        rs.getString("dimension"), rs.getString("geoserver_layer_name"), rs.getString("geoserver_working_space")))
+                    lastListofPoints.add(
+                        RasterServiceVal(
+                            v, rs.getString("statistics"),
+                            rs.getString("dimension"),
+                            rs.getString("geoserver_layer_name"),
+                            rs.getString("geoserver_working_space")
+                        )
+                    )
                 }
                 if (lastServiceId != -1)
                     result[lastServiceId] = lastListofPoints.toMutableList()
@@ -256,7 +262,8 @@ object ApiServices {
         val selStmtList = mutableListOf<String>()
         rasterDataRequest.coordsList.forEachIndexed { index, pair ->
             selStmtList.add(
-                "Select $index as pointId, dimension, statistics, id, geoserver_layer_name, geoserver_working_space, service_id, " +
+                "Select $index as pointId, dimension, statistics, id, geoserver_layer_name, geoserver_working_space, " +
+                        "service_id, " +
                     "ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(${pair.first}, ${pair.second}), 4326), " +
                     "ST_SRID(rast))) as v from raster_data where package_id = ${rasterDataRequest.packageID} " +
                     "and data_complete is true and service_id in " +
@@ -278,7 +285,8 @@ object ApiServices {
         val projectList = emptyList<ProjectTemp>().toMutableList()
 
         transaction {
-            TableProjects.select { TableProjects.deleted eq null }.andWhere { TableProjects.enabled eq true } .forEach { rs ->
+            TableProjects.select { TableProjects.deleted eq null }
+                .andWhere { TableProjects.enabled eq true }.forEach { rs ->
                 projectList.add(
                     ProjectTemp(rs[TableProjects.id].value, rs[TableProjects.name])
                 )
@@ -292,11 +300,13 @@ object ApiServices {
         data class EcosysProjectDataResponse(val error: ResponseError, val projects: ProjectData?)
 
         val project = ProjectData.getById(projectId)
-            ?: return mapper.writeValueAsString(EcosysProjectDataResponse(ResponseError(1, "No project found for this id"), null))
+            ?: return mapper.writeValueAsString(
+                EcosysProjectDataResponse(ResponseError(1, "No project found for this id"), null)
+            )
 
         // merge project data with data from data resource from Atlas
         var dataResource: JsonNode? = null
-        if(project.resource != "" && project.resource != null) {
+        if (project.resource != "" && project.resource != null) {
             val client = HttpClient(CIO)
             val url = "$collectoryUrl/dataResource/${project.resource}"
             val response: HttpResponse = client.request(url) {
@@ -321,8 +331,7 @@ object ApiServices {
         return node.toString()
     }
 
-
-    suspend fun generateProjectFilterResponse(projectId: Int, config: ApplicationConfig): String {
+    suspend fun generateProjectFilterResponse(projectId: Int): String {
         data class EcosysProjectDataResponse(val error: ResponseError, val filter: List<HierarchyData>)
 
         val hierarchyList = mutableListOf<HierarchyData>()
@@ -353,15 +362,22 @@ object ApiServices {
                 TableSpeciesGroups, TableSpecies,
                 onColumn = TableSpeciesGroups.taxonId, otherColumn = TableSpecies.taxonId,
                 joinType = JoinType.INNER,
-                additionalConstraint = { (TableSpeciesGroups.projectId eq projectId) and (TableSpeciesGroups.groupCode eq speciesGroupId) })
+                additionalConstraint = {
+                    (TableSpeciesGroups.projectId eq projectId) and (TableSpeciesGroups.groupCode eq speciesGroupId)
+                }
+            )
 
-            complexJoin.selectAll().orderBy(TableSpecies.description).forEach {rs ->
+            complexJoin.selectAll().orderBy(TableSpecies.description).forEach { rs ->
                 speciesList.add(
                     SpeciesData(rs[TableSpecies.taxonId], rs[TableSpecies.description])
                 )
             }
         }
-        return mapper.writeValueAsString(EcosysProjectSpeciesDataResponse(ResponseError(0, ""), SpeciesGroup(speciesGroupId, speciesList)))
+        return mapper.writeValueAsString(
+            EcosysProjectSpeciesDataResponse(
+                ResponseError(0, ""),
+                SpeciesGroup(speciesGroupId, speciesList)
+            )
+        )
     }
-
 }

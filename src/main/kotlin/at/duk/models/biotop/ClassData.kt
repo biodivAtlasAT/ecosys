@@ -19,15 +19,8 @@
 package at.duk.models.biotop
 
 import at.duk.tables.biotop.TableClasses
-import at.duk.tables.biotop.TableProjects
-import at.duk.tables.biotop.TableProjects.default
-import at.duk.tables.biotop.TableProjects.nullable
-import koodies.docker.Docker
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.IntegerColumnType
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -37,8 +30,8 @@ data class ClassData(
     val description: String,
     val filename: String?
 ) {
-    constructor(id: Int, description: String): this(id, description, null)
-    companion object{
+    constructor(id: Int, description: String) : this(id, description, null)
+    companion object {
         private fun mapRSToClassData(rs: ResultRow): ClassData {
             return ClassData(
                 rs[TableClasses.id].value,

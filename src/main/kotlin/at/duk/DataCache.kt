@@ -45,7 +45,12 @@ object DataCache {
             if (response.status == HttpStatusCode.OK)
                 File(cachePath.resolve("navigation.html").toString())
                     .writeText(
-                        generateBody(response.bodyAsText(), it.getString(), config.propertyOrNull("ktor.api.url"), config.propertyOrNull("geoserver.url"))
+                        generateBody(
+                            response.bodyAsText(),
+                            it.getString(),
+                            config.propertyOrNull("ktor.api.url"),
+                            config.propertyOrNull("geoserver.url")
+                        )
                     )
         }
     }

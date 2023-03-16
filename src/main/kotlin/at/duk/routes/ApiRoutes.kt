@@ -123,7 +123,7 @@ fun Route.apiRouting(config: ApplicationConfig) {
         get("/bt/projects/{projectId}/filter") {
             call.parameters["projectId"]?.toIntOrNull()?.let {
                 call.respondText(
-                    ApiServices.generateProjectFilterResponse(it, config),
+                    ApiServices.generateProjectFilterResponse(it),
                     ContentType.parse("application/json"),
                     HttpStatusCode.OK
                 )
@@ -132,7 +132,7 @@ fun Route.apiRouting(config: ApplicationConfig) {
 
         get("/bt/projects/{projectId}/species/{speciesGroupId}") {
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
-                call.parameters["speciesGroupId"]?.let {speciesGroupId ->
+                call.parameters["speciesGroupId"]?.let { speciesGroupId ->
                     call.respondText(
                         ApiServices.generateProjectSpeciesResponse(speciesGroupId, projectId),
                         ContentType.parse("application/json"),

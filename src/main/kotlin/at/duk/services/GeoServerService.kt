@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2022 Danube University Krems
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * License-Filename: LICENSE
+ */
 package at.duk.services
 
 import at.duk.models.biotop.ProjectData
@@ -27,9 +45,9 @@ class GeoServerService(config: ApplicationConfig) {
         password = config.propertyOrNull("geoserver.password")?.getString() ?: ""
         workspace = config.propertyOrNull("geoserver.workspace")?.getString() ?: ""
         geoserverUrl = config.propertyOrNull("geoserver.url")?.getString() ?: ""
-        isConfigured = username.isNotBlank() && password.isNotBlank() && workspace.isNotBlank() && geoserverUrl.isNotBlank()
+        isConfigured = username.isNotBlank() && password.isNotBlank() && workspace.isNotBlank() &&
+                geoserverUrl.isNotBlank()
     }
-
 
     // create style
     suspend fun createStyle(project: ProjectData): Boolean {
@@ -40,7 +58,10 @@ class GeoServerService(config: ApplicationConfig) {
             basicAuth(username, password)
             method = HttpMethod.Post
             header(HttpHeaders.ContentType, "text/xml")
-            setBody("<style><name>${project.geoServerStyleName}</name><workspace>$workspace</workspace><filename>${project.geoServerStyleName}.sld</filename></style>")
+            setBody(
+                "<style><name>${project.geoServerStyleName}</name>" +
+                    "<workspace>$workspace</workspace><filename>${project.geoServerStyleName}.sld</filename></style>"
+            )
         }.status == HttpStatusCode.Created
     }
 
@@ -65,7 +86,7 @@ class GeoServerService(config: ApplicationConfig) {
         if (!isConfigured) return false
         val client = HttpClient(CIO)
         val response: HttpResponse = client.submitForm(
-            url = geoserverUrl + "/rest/workspaces/${workspace}/styles/${project.geoServerStyleName}",
+            url = geoserverUrl + "/rest/workspaces/$workspace/styles/${project.geoServerStyleName}",
         ) {
             basicAuth(username, password)
             setBody(sld)
@@ -89,7 +110,6 @@ class GeoServerService(config: ApplicationConfig) {
         }
         return response.status == HttpStatusCode.OK
     }
-
 
     suspend fun getListOfLayers(): List<String> {
         if (!isConfigured) return emptyList()
@@ -139,7 +159,8 @@ class GeoServerService(config: ApplicationConfig) {
             basicAuth(username, password)
         }
         if (response2.status == HttpStatusCode.OK) {
-            return BiotopServices.mapper.readTree(response2.bodyAsText()).path("featureType").path("attributes").path("attribute")
+            return BiotopServices.mapper.readTree(response2.bodyAsText()).path("featureType")
+                .path("attributes").path("attribute")
                 .associate { it.path("name").textValue() to it.path("binding").textValue() }
         }
         return mapOfFeatures
@@ -151,7 +172,8 @@ class GeoServerService(config: ApplicationConfig) {
         val matchDict = mutableMapOf<String, String>()
         val client = HttpClient(CIO)
         val url = "$geoserverUrl/wfs?service=wfs&version=2.0.0&request=GetFeature&outputFormat=json&" +
-                "typeNames=${project.geoserverWorkspace}:${project.geoserverLayer}&propertyName=${project.colTypesCode},${project.colTypesDescription}"
+                "typeNames=${project.geoserverWorkspace}:${project.geoserverLayer}&" +
+                "propertyName=${project.colTypesCode},${project.colTypesDescription}"
         val response: HttpResponse = client.request(url) {
             method = HttpMethod.Get
             basicAuth(username, password)
@@ -160,8 +182,8 @@ class GeoServerService(config: ApplicationConfig) {
             if (response.status == HttpStatusCode.OK) {
                 BiotopServices.mapper.readTree(response.bodyAsText()).path("features").forEach {
                     val props = it.path("properties")
-                    val key = props[project.colTypesCode].asText() //.toString()
-                    val value = props[project.colTypesDescription].asText() // .toString()
+                    val key = props[project.colTypesCode].asText()
+                    val value = props[project.colTypesDescription].asText()
                     matchDict[key] = value
                 }
             }
@@ -170,6 +192,4 @@ class GeoServerService(config: ApplicationConfig) {
         }
         return matchDict
     }
-
-
 }

@@ -20,8 +20,6 @@ package at.duk.tables.biotop
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.javatime.datetime
-import java.time.LocalDateTime
 
 object TableHierarchy : IntIdTable("bt_hierarchy") {
     var parentId: Column<Int> = integer("parent_id").default(-1)

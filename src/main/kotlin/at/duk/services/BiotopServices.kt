@@ -99,7 +99,8 @@ object BiotopServices {
         // 1. check structure
         //    header and lines (id must contain . ); at least two columns
         if (!csvCheckCols(content)) {
-            report += "<li>ACHTUNG: Die Datei enthaelt eine nicht erlaubte Anzahl von Spalten oder unerlaubte Spaltennamen (nur erlaubt: ID, NAME)! </li>"
+            report += "<li>ACHTUNG: Die Datei enthaelt eine nicht erlaubte Anzahl von Spalten oder unerlaubte " +
+                    "Spaltennamen (nur erlaubt: ID, NAME)! </li>"
             return Pair(false, report)
         }
         // 2. generate data structure
@@ -122,7 +123,8 @@ object BiotopServices {
             else
                 items[k] = Triple(v.first, "", v.third)
         }
-        if (items.filterValues { it.second == null }.isNotEmpty()) report += "<li>ACHTUNG: Eintrag ohne gueltigen Vorgaenger gefunden!</li>"
+        if (items.filterValues { it.second == null }.isNotEmpty())
+            report += "<li>ACHTUNG: Eintrag ohne gueltigen Vorgaenger gefunden!</li>"
 
         transaction {
             TableHierarchy.deleteWhere { TableHierarchy.classId eq classId and (TableHierarchy.projectId eq -1) }
@@ -133,7 +135,6 @@ object BiotopServices {
                     it[TableHierarchy.keyCode] = k
                     it[TableHierarchy.description] = v.first
                     it[TableHierarchy.category] = v.third
-                    val x = k.count { letter -> letter == '.' }
                     it[TableHierarchy.levelNumber] = k.count { letter -> letter == '.' }
                     it[TableHierarchy.sortCode] = getSortCode(k, longestKeyPart)
                 }
@@ -206,7 +207,6 @@ object BiotopServices {
                     it[TableHierarchy.keyCode] = k
                     it[TableHierarchy.description] = v.first
                     it[TableHierarchy.category] = v.third
-                    val x = k.count { letter -> letter == '.' }
                     it[TableHierarchy.levelNumber] = k.count { letter -> letter == '.' }
                     it[TableHierarchy.sortCode] = getSortCode(k, longestKeyPart)
                 }
@@ -285,7 +285,7 @@ object BiotopServices {
 
     fun matchFeatures(config: ApplicationConfig, project: ProjectData, matchDict: Map<String, String>) {
         val hierarchyList = mutableListOf<HierarchyData>()
-        val content = mutableListOf<String>()  // imitates the lines of an uploaded file
+        val content = mutableListOf<String>() // imitates the lines of an uploaded file
 
         // Prepare Hierarchy as csv-file to use the same import mechanism
         content.add("id;name")
@@ -328,7 +328,7 @@ object BiotopServices {
                             "_"
                         )
                     };$v"
-                )  // replace necessary to break hierarchy rule
+                ) // replace necessary to break hierarchy rule
             } else {
                 hierarchyList.first { it.keyCode == compareKey }.also {
                     if (it.isLeaf)
@@ -337,19 +337,26 @@ object BiotopServices {
                 }
             }
         }
-        if (needsRootItem) content.add("${ROOT_NODE};${ROOT_NODE_DESCRIPTION}")
+        if (needsRootItem) content.add("$ROOT_NODE;$ROOT_NODE_DESCRIPTION")
     }
 
     private fun delegateHasDataFlag(hierarchyList: List<HierarchyData>, project: ProjectData) {
         transaction {
             hierarchyList.filter { it.hasData }.forEach {
-                TableHierarchy.update({ TableHierarchy.keyCode eq it.keyCode and (TableHierarchy.projectId eq project.id) }) {
+                TableHierarchy.update({
+                    TableHierarchy.keyCode eq it.keyCode and (TableHierarchy.projectId eq project.id)
+                }) {
                     it[TableHierarchy.hasData] = true
                 }
             }
             TableHierarchy.select { TableHierarchy.projectId eq project.id and (TableHierarchy.keyCode eq ROOT_NODE) }
                 .forEach { rs ->
-                    TableHierarchy.update({ TableHierarchy.parentId eq rs[TableHierarchy.id].value and (TableHierarchy.projectId eq project.id) }) {
+                    TableHierarchy.update(
+                        {
+                            TableHierarchy.parentId eq rs[TableHierarchy.id].value and
+                                    (TableHierarchy.projectId eq project.id)
+                        }
+                    ) {
                         it[TableHierarchy.hasData] = true
                     }
                 }
@@ -401,8 +408,7 @@ object BiotopServices {
             if (inside) {
                 if (it.levelNumber <= actLevel)
                     inside = false
-                else
-                    if (it.hasData && it.isLeaf)
+                else if (it.hasData && it.isLeaf)
                         keyCodesList.add(it.mappedKeyCode ?: it.keyCode)
             }
         }
@@ -416,11 +422,10 @@ object BiotopServices {
 
         this.filter { !it.isLeaf }.forEach { hierarchyData ->
             val kl = getChildrenKeyCodes(this, hierarchyData)
-            if (kl.size == numberOfDataLeaves)  // if node contains all subnodes, then do not save a cql-filter;
+            if (kl.size == numberOfDataLeaves) // if node contains all subnodes, then do not save a cql-filter;
                                                 // the filter may contain to many characters for an URL-Parameter
                 hierarchyData.cqlQuery = null
-            else
-                if (kl.isEmpty())
+            else if (kl.isEmpty())
                     hierarchyData.cqlQuery = null
                 else
                     hierarchyData.cqlQuery =
@@ -494,7 +499,6 @@ object BiotopServices {
         return dict
     }
 
-
     fun projectIsSynchronized(projectId: Int): Boolean = transaction {
         TableHierarchy.select { TableHierarchy.projectId eq projectId }.count() > 0
     }
@@ -530,7 +534,7 @@ object BiotopServices {
         }
     }
 
-    private fun speciesRenewTaxon(project:ProjectData, dataCacheDirectory: String) {
+    private fun speciesRenewTaxon(project: ProjectData, dataCacheDirectory: String) {
         transaction {
             TableSpeciesGroups.deleteWhere { TableSpeciesGroups.projectId eq project.id }
             TableSpecies.deleteWhere { TableSpecies.projectId eq project.id }
@@ -559,12 +563,14 @@ object BiotopServices {
         }
     }
 
-    private fun speciesGetCSVCols(project:ProjectData, dataCacheDirectory: String) =
-        (project.speciesFileName?.let {
-            AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it) })
-            ?.useLines { it.firstOrNull() }?.split(";")
+    private fun speciesGetCSVCols(project: ProjectData, dataCacheDirectory: String) =
+        (
+                project.speciesFileName?.let {
+            AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it)
+        }
+                )?.useLines { it.firstOrNull() }?.split(";")
 
-    fun removeSpeciesFile(project: ProjectData, dataCacheDirectory: String, ) {
+    fun removeSpeciesFile(project: ProjectData, dataCacheDirectory: String) {
         project?.speciesFileName?.let {
             AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it).delete()
         }
@@ -580,7 +586,5 @@ object BiotopServices {
                 it[TableProjects.updated] = LocalDateTime.now()
             }
         }
-
     }
-
 }

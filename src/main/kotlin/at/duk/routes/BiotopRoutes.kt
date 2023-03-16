@@ -51,12 +51,10 @@ import java.io.*
 import java.nio.file.Paths
 import java.time.LocalDateTime
 
-
 fun Route.biotopRouting(config: ApplicationConfig) {
     val geoServer = GeoServerService(config)
 
     val geoserverWorkspace = config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
-    val geoserverUrl = config.propertyOrNull("geoserver.url")?.getString()
     val collectoryUrl = config.propertyOrNull("atlas.collectory")?.getString()
     val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
     Paths.get("").toAbsolutePath().toString()
@@ -99,8 +97,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         }
         get("/{projectId}/saveGeoserverData") {
             val layer = call.request.queryParameters["layer"]
-            val typeFeature = call.request.queryParameters["typeFeature"]?:"-1"
-            val nameFeature = call.request.queryParameters["nameFeature"]?:"-1"
+            val typeFeature = call.request.queryParameters["typeFeature"] ?: "-1"
+            val nameFeature = call.request.queryParameters["nameFeature"] ?: "-1"
             val speciesFeature = call.request.queryParameters["speciesFeature"]
             val projectId = call.parameters["projectId"]?.toIntOrNull()
             val workspace = call.request.queryParameters["workspace"]
@@ -229,7 +227,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 report += ret.second.joinToString(prefix = "<ul>", postfix = "</ul>", separator = "") {
                     "<li>$it</li>"
                 }
-                if(!rc) {
+                if (!rc) {
                     project.classMap = null
                     report = report.replace("%myOKorNOT%", "NICHT")
                 } else
@@ -291,14 +289,18 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                         )
                     }
                 )
-                usedClassIds.addAll(TableProjects.select { TableProjects.deleted eq null }
+                usedClassIds.addAll(
+                    TableProjects.select { TableProjects.deleted eq null }
                     .map { rs -> rs[TableProjects.classId] }
-                    .distinct())
+                    .distinct()
+                )
             }
             call.respond(
                 FreeMarkerContent(
                     "19_BTClasses.ftl",
-                    mapOf("result" to classesList, "maxCount" to classesList.size,
+                    mapOf(
+                        "result" to classesList,
+                        "maxCount" to classesList.size,
                         "used_class_ids" to usedClassIds,
                         "report" to report
                     )
@@ -391,7 +393,6 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                                 for (i in 0..cnt) nbsp += "&nbsp;&nbsp;"
                                 indentMap[cnt] = nbsp
                             }
-
                         }
                 }
 
@@ -415,7 +416,9 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     formParameters.forEach { s, strings ->
                         val pos = s.indexOf("_")
                         val keyCode = s.substring(pos + 1)
-                        TableHierarchy.update({ TableHierarchy.classId eq classId and (TableHierarchy.keyCode eq keyCode) }) {
+                        TableHierarchy.update({
+                            TableHierarchy.classId eq classId and (TableHierarchy.keyCode eq keyCode)
+                        }) {
                             it[TableHierarchy.color] = strings[0]
                         }
                     }
@@ -463,9 +466,11 @@ fun Route.biotopRouting(config: ApplicationConfig) {
         get("/{projectId}/types") {
 
             val wmsUrl =
-                "http://localhost:8081/geoserver/ECO/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&" +
+                "http://localhost:8081/geoserver/ECO/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=" +
+                        "image/png&TRANSPARENT=true&STYLES&" +
                         "LAYERS=my_ws_layer&exceptions=application/vnd.ogc.se_inimage&" +
-                        "my_cql_filter&SRS=EPSG:4326&WIDTH=768&HEIGHT=330&BBOX=9.129638671875,45.87890625,17.567138671875,49.50439453125"
+                        "my_cql_filter&SRS=EPSG:4326&WIDTH=768&HEIGHT=330&" +
+                        "BBOX=9.129638671875,45.87890625,17.567138671875,49.50439453125"
 
             call.parameters["projectId"]?.toIntOrNull()?.let { projectId ->
                 ProjectData.getById(projectId)?.let { project ->
@@ -482,7 +487,6 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                                     for (i in 0..cnt) nbsp += "&nbsp;&nbsp;"
                                     indentMap[cnt] = nbsp
                                 }
-
                             }
                     }
 
@@ -549,7 +553,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     }
                 }
             }
-            call.respondRedirect("/admin/biotop/${projectId}/species")
+            call.respondRedirect("/admin/biotop/$projectId/species")
         }
 
         post("/{projectId}/removeSpeciesFile") {
@@ -565,7 +569,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
             var report = "<h4>Die CSV-Datei wurde %myOKorNOT% verarbeitet!</h4>"
             var rc: Boolean? = null
-            val project = ProjectData.getById(projectId)?:return@get
+            val project = ProjectData.getById(projectId) ?: return@get
             val speciesColId = call.request.queryParameters["speciesColId"].orEmpty()
             val speciesColTaxonId = call.request.queryParameters["speciesColTaxonId"].orEmpty()
             val speciesColTaxonName = call.request.queryParameters["speciesColTaxonName"].orEmpty()
@@ -575,7 +579,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             val speciesColTaxonNameChanged = speciesColTaxonName != project.speciesColTaxonName
 
             if (speciesColId.isNotEmpty() && speciesColTaxonId.isNotEmpty() && speciesColTaxonName.isNotEmpty() &&
-                (speciesColIdChanged || speciesColTaxonIdChanged || speciesColTaxonNameChanged)) {
+                (speciesColIdChanged || speciesColTaxonIdChanged || speciesColTaxonNameChanged)
+                ) {
 
                 transaction {
                     TableProjects.update({ TableProjects.id eq projectId }) {
@@ -588,7 +593,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
                 ProjectData.getById(projectId)?.let { proj ->
                     if (proj.speciesFileName != null && proj.speciesColTaxonId != null) {
-                        val ret = CSVChecker(project, dataCacheDirectory, proj.speciesFileName).checkStructure(3, 99, listOf( Pair(proj.speciesColTaxonId!!, "INT")))
+                        val ret = CSVChecker(project, dataCacheDirectory, proj.speciesFileName)
+                            .checkStructure(3, 99, listOf(Pair(proj.speciesColTaxonId!!, "INT")))
                         rc = ret.first
                         report += ret.second.joinToString(prefix = "<ul>", postfix = "</ul>", separator = "") {
                             "<li>$it</li>"
