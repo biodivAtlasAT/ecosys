@@ -267,7 +267,6 @@ function rasterDelete(idx) {
 }
 
 function addRefreshToHead() {
-    console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
     const meta = document.createElement('meta');
     meta.httpEquiv = "refresh";
     meta.content = "2";
@@ -412,30 +411,20 @@ function deleteBTMap() {
 }
 
 function colorMe(ele, keyCode) {
-    console.log(ele.value);
     if(ele.value !== "") {
-        console.log("color_"+keyCode);
-        console.log(document.getElementById("color_"+keyCode));
         document.getElementById("color_"+keyCode).style.backgroundColor = ele.value;
-
     }
-
 }
 
 function delegateToChildren(keyCode) {
     sp = keyCode.split(".");
     liste = document.getElementsByClassName("class_"+sp[0]);
-    console.log(liste.length)
 
     color = document.getElementById("colCode_"+sp[0]).value; // = hex value of color of root node
     if (color === "") return;
 
     // color = "#FF0000";
     const [hsl_h, hsl_s, hsl_l] = hexToHSL(color);
-    console.log(color);
-    console.log(hsl_h);
-    console.log(hsl_s);
-    console.log(hsl_l);
     min_l = 20;
     max_l = 90;
     stepWidth = (max_l - min_l) / liste.length;
@@ -445,7 +434,6 @@ function delegateToChildren(keyCode) {
     for (i = 0; i < liste.length; i++) {
         id = liste[i].id;
         if (id === "colCode_"+sp[0]) continue;
-        console.log(id);
         //dummy set
         newColor = HSLToHex(hsl_h, actual_s, actual_l);
         document.getElementById(id).value = newColor;
@@ -557,8 +545,6 @@ function checkFeatures() {
     var nameFeature = document.getElementById("nameFeature").value;
     var saveButton = document.getElementById("saveButton")
 
-    console.log(typeFeature);
-    console.log(nameFeature);
     if (typeFeature === "-1" || nameFeature === "-1") saveButton.classList.add("disabled");
     if (typeFeature !== "-1" && nameFeature !== "-1") saveButton.classList.remove("disabled");
 
