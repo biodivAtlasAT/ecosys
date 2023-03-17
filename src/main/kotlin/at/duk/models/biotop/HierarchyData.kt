@@ -22,7 +22,7 @@ import at.duk.tables.biotop.TableHierarchy
 import com.fasterxml.jackson.annotation.JsonIgnore
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ResultRow
-
+// g
 @Serializable
 data class HierarchyData(
     val id: Int,
