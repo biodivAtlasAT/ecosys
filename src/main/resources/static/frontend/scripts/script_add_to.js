@@ -10,12 +10,12 @@ var chk_map = 0;
 var it_0 = 0;
 var it_m = 0;
 var chk_cl = 0;
-var chk_quint = 1;
 var chk_pconn = 0;
 var chk_pcSet = 0;
 var chk_eSys = 0;
 var chk_lMode = 0;
 var str_bBox = "";
+var chk_quint = 0;
 var submESys = $('#id_submEsys');
 var bt_ecosysCB = $('#id_btnecosys');
 var bt_Layermode = $('#id_btnLayer');
@@ -49,8 +49,6 @@ var iter_eSys = 0;
 var iter_lMode = 0;
 var prevZoom = 0;
 var ly_ecosys;
-var popupMap = new Array();
-var polygonLayer = new Array();
 
 var info_icon = $('#info_icon').append('<svg id="ic_info" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">\n' +
     '  <circle cy="24" cx="24" r="24" fill="#36c"/>\n' +
@@ -66,7 +64,7 @@ var do_translate = function () {
         $(this).i18n();
     });
 }
-func_init_i18n = function () {
+func_init_i18n = function() {
     $.i18n().load({
         'en': url_i18n + 'messages.json',
         'de_AT': url_i18n + 'messages_de_AT.json'
@@ -78,12 +76,11 @@ func_init_i18n = function () {
     });
 }
 func_init_i18n();
-
 $('button').attrchange({
     trackValues: true, /* Default to false, if set to true the event object is
                 updated with old and new value.*/
     callback: function (event) {
-        if (event['newValue'].length > 1) {
+        if(event['newValue'].length > 1) {
             //console.log($(event['target']));
             $("html").attr("lang", location.href.split('lang=')[1]);
             $.i18n().locale = location.href.split('lang=')[1];
@@ -103,15 +100,6 @@ $('button').attrchange({
         //Triggered when the selected elements attribute is added/updated/removed
     }
 });
-func_cbClick = function () {
-    map.closePopup();
-
-};
-$("#sortable").sortable(
-    function() {
-        map.closePopup();
-    }
-);
 $.ajax({
     url: url_ecosys + url_pathPackages,
     headers: {"Accept": "application/json"},
@@ -146,12 +134,10 @@ $.ajax({
     //data: JSON.stringify({"packageID":opt_packageID.val()}),
     success: function (resp) {
         console.log(resp);
-        $("#sortable").children().remove();
         $.each(resp.services, function (index, item) { // Iterates through a collection
-            $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_wrapEsys ui-state-default'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + "' id='id_esys_" + item.id + "' type='checkbox' style='float: left' onclick='func_cbClick();'></input><div id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></li>");
+            $(".cl_ecosys").append("<div class='cl_wrapEsys'><input class='cl_cbEsys' id='id_esys_" + item.id + "' type='checkbox' style='float: left'></input><div id='id_divName_" + item.id + "' style='float: left' data-i18n='"+ item.name +"'>" + item.name + "</div></div>");
         });
-        //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
-        map.closePopup();
+        $(".cl_ecosys").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
     }
 });
 $('#id_mapLayer').change(function () {
@@ -173,7 +159,7 @@ opt_packageID.on('change', function () {
         success: function (resp) {
             console.log(resp);
             $.each(resp.services, function (index, item) { // Iterates through a collection
-                $(".cl_ecosys").append("<div class='cl_wrapEsys'><input class='cl_cbEsys cl_cbNR_" + index + "' id='id_esys_" + item.id + "' type='checkbox' style='float: left' onclick='func_cbClick();'></input><div style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div>");
+                $(".cl_ecosys").append("<div class='cl_wrapEsys'><input class='cl_cbEsys' id='id_esys_" + item.id + "' type='checkbox' style='float: left'></input><div style='float: left' data-i18n='"+ item.name +"'>" + item.name + "</div></div>");
             });
             $(".cl_ecosys").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
         }
@@ -220,31 +206,21 @@ func_updatePolyLine = function () {
     }
     func_reqSpecies();
 }
-
-function toFixedTrunc(x, n) {
-    x = Math.floor(x * Math.pow(10.0, n)) / Math.pow(10.0, n);
-    return x;
-}
-
 func_reqEcosys = function (m_th, m_id) {
     $('.cl_esysInf').children().remove();
     var reqMarker = new Array();
     var reqEcosys = new Array();
-    var reqHashID = new Array();
-    var reqRefID = new Array();
+    var servName = new Array();
     var tmpLatLng = new Array();
     var jsonReq = new Array();
-    var tmpMarker = new Array();
     filteredmarker = m_th.filter(x => x !== undefined);
     if (filteredmarker.length) {
         for (it_e = 0; it_e < m_th.length; it_e++) {
             if (m_th[it_e] != undefined) {
                 if (m_th.length > 1 && m_id === undefined) {
-                    reqHashID.push(new Object([{lat: toFixedTrunc(m_th[it_e].getLatLng().lat, 6)}, {lng: toFixedTrunc(m_th[it_e].getLatLng().lng, 6)}]));
                     reqMarker.push('(' + parseFloat(m_th[it_e].getLatLng().lng) + '/' + parseFloat(m_th[it_e].getLatLng().lat) + ')');
                 }
                 if (m_th.length === 1 && m_id !== undefined) {
-                    reqHashID.push(new Object([{lat: toFixedTrunc(m_th[it_e].getLatLng().lat, 6)}, {lng: toFixedTrunc(m_th[it_e].getLatLng().lng, 6)}]));
                     reqMarker.push('(' + parseFloat(m_th[it_e].getLatLng().lng) + '/' + parseFloat(m_th[it_e].getLatLng().lat) + ')');
                 }
             }
@@ -254,11 +230,10 @@ func_reqEcosys = function (m_th, m_id) {
         }
         if (reqMarker.length) {
             if (chk_pcSet === 0) {
-                var it_r = 0;
                 reqEcosys = new Array();
-                ecosysName = new Array();
+                servName = new Array();
                 $(".cl_cbEsys:checkbox:checked").each(function (iter, item) {
-                    ecosysName.push($('#id_divName_' + item.id.split('_')[2]).html());
+                    servName.push($('#id_divName_' + item.id.split('_')[2]).html());
                     reqEcosys.push(item.id.split('_')[2]);
                 });
                 packageID = opt_packageID.val();
@@ -278,112 +253,80 @@ func_reqEcosys = function (m_th, m_id) {
                         type: 'POST',
                         success: function (resp) {
                             // into request and use response formated
-                            var it_d = 0;
                             var qtArr = new Array();
-                            var absData = new Array();
-                            //$('#id_esysInf_' + it_e).append("<div id='id_reqInf_" + it_e + "'>" + marker[it_e].getLatLng() + "</div>");
-                            d3.select('#id_esysInf_' + m_id)
-                                .append('div')
-                                .attr('id', 'id_chr_' + m_id)
-                                .attr('class', 'cl_chr cl_row');
-                            var svgLArr = new Array();
-                            for (it_d = 0; it_d < resp['data'].length; it_d++) {
-                                for (it_f = 0; it_f < resp['data'].length; it_f++) {
-                                    if (parseInt(reqEcosys[it_d]) === resp['data'][it_f]['id']) {
-                                        absData.push(resp['data'][it_f]);
-                                        svgLArr.push(resp['data'][it_f]['svg']);
-                                        continue;
-                                    }
-                                }
-                            }
-                            var quantArr = new Array();
-                            var elemAObj = new Object();
-                            for (it_d = 0; it_d < absData.length; it_d++) {
-                                d3.select('#id_chr_' + m_id)
+                            for (it_e = 0; it_e < marker.length; it_e++) {
+                                //$('#id_esysInf_' + it_e).append("<div id='id_reqInf_" + it_e + "'>" + marker[it_e].getLatLng() + "</div>");
+                                d3.select('#id_esysInf_' + it_e)
                                     .append('div')
-                                    .attr('id', 'id_descr_' + it_d)
-                                    .attr('class', 'cl_descr cl_column cl_table_' + it_d)
-                                    .attr('data-i18n', ecosysName[it_d])
-                                    .html(ecosysName[it_d]);
-                                d3.select('#id_chr_' + m_id)
-                                    .append('div')
-                                    .attr('id', 'id_chrIcons_' + it_d)
-                                    .attr('class', 'cl_fixedW cl_column');
-                                d3.select('#id_chr_' + m_id)
-                                    .append('div')
-                                    .attr('id', 'id_value_' + it_d)
-                                    .attr('class', 'cl_value cl_column cl_table_' + it_d)
-                                    .html('<div>' + absData[it_d]['vals'][0]['val'] + '</div>');
-                                d3.select('#id_chr_' + m_id)
-                                    .append('div')
-                                    .attr('id', 'id_dimension_' + it_d)
-                                    .attr('class', 'cl_dimension cl_column cl_table_' + it_d)
-                                    .html('<div>' + absData[it_d]['dim'] + '</div>');
-                                $.ajax({
-                                    url: url_ecosys + svgLArr[it_d],
-                                    dataType: "xml",
-                                    type: 'GET',
-                                    async: false,
-                                    success: function (data) {
-                                        quantArr.push(data);
-                                    }
-                                });
-                            }
-                            for (it_d = 0; it_d < quantArr.length; it_d++) {
-                                    quantArr[it_d].getElementsByTagName("svg")[0].removeAttribute('id');
-                                    quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("width", "75");
-                                    quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("height", "75");
-                                    for (it_t = 0; it_t < $(quantArr[it_d].getElementsByTagName("svg")[0]).children().length; it_t++) {
-                                        if ($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class') !== null) {
-                                            for (it_h = 0; it_h < quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class')).length; it_h++) {
-                                                //console.log(quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class'))[it_h]);
-                                                elemObj = quantArr[it_d].getElementsByTagName("style")[0];
-                                                for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
-                                                    //console.log( elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''));
-                                                    if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
-                                                        quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].setAttribute('style', elemObj.innerHTML.split('}')[it_r].split('{')[1]);
-                                                    }
-                                                }
-                                                for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
-                                                    if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
-                                                        quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].removeAttribute('class');
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
-                                        quantArr[it_d].getElementsByTagName("style")[0].remove();
-                                    }
-                                    for (it_s = 0; it_s < absData[it_d]['vals'][0]['quantil']; it_s++) {
+                                    .attr('id', 'id_chr_' + it_e)
+                                    .attr('class', 'cl_chr cl_row');
+                                for(it_d = 0; it_d < resp['data'].length; it_d++) {
+                                    d3.select('#id_chr_' + it_e)
+                                        .append('div')
+                                        .attr('id', 'id_descr_' + it_d)
+                                        .attr('class', 'cl_descr cl_column cl_table_' + it_d)
+                                        .attr('data-i18n', 'Erleben der Natur')
+                                        .html(servName[it_d]); // <- variable mit Name der Ösl
+                                    console.log(resp['data'][it_d]);
+                                    d3.select('#id_chr_' + it_e)
+                                        .append('div')
+                                        .attr('id', 'id_chrIcons_' + it_d)
+                                        .attr('class', 'cl_fixedW cl_column')
+                                    for (it_s = 0; it_s < resp['data'][it_d]['vals'][0]['quantil']; it_s++) {
+                                        var quantil = resp['data'][it_d]['vals'][0]['quantil'];
+                                        var id_resp = resp['data'][it_d]['id'];
                                         d3.select('#id_chrIcons_' + it_d)
                                             .append('div')
                                             .attr('class', 'cl_quint')
-                                            .attr('id', 'id_quint_' + it_d + '_' + it_s)
-                                            .html(new XMLSerializer().serializeToString(quantArr[it_d]));
-                                    }
+                                            .attr('id', 'id_quint_' + id_resp + '_' + it_s);
+                                        $.ajax(
+                                            {
+                                                url: url_ecosys + resp['data'][it_d]['svg'],
+                                                dataType: 'html',
+                                                type: 'GET',
+                                                success: function (d_svg) {
+                                                        for (it_o = 0; it_o < quantil; it_o++) {
+                                                            d3.select('#id_quint_' + id_resp + '_' + it_o)
+                                                                .html('<div class="cl_qtArr">' + d_svg + '</div>');
+                                                        }
+                                                }
+                                            });
+                                        }
+                                        d3.select('#id_chr_' + it_e)
+                                            .append('div')
+                                            .attr('id', 'id_value_' + it_d)
+                                            .attr('class', 'cl_value cl_column cl_table_' + it_d)
+                                            .html('<div>' + resp['data'][it_d]['vals'][0]['val'] + '</div>');
+                                        d3.select('#id_chr_' + it_e)
+                                            .append('div')
+                                            .attr('id', 'id_dimension_' + it_d)
+                                            .attr('class', 'cl_dimension cl_column cl_table_' + it_d)
+                                            .html('<div>' + resp['data'][it_d]['dim'] + '</div>');
+                                }
                             }
                         }
                     });
                 }
-                if (chk_pconn === 1) {
+                if(chk_pconn === 1) {
                     chk_pcSet = 1;
                 }
             }
             if (chk_pcSet === 1) {
                 reqEcosys = new Array();
                 $(".cl_cbEsys:checkbox:checked").each(function (iter, item) {
+                    console.log('inner');
                     reqEcosys.push(item.id.split('_')[2]);
                 });
                 packageID = opt_packageID.val();
                 services = reqEcosys;
+
                 const latlngs = func_connectTheDots(filteredmarker).map((point) => L.latLng(point));
                 const lengths = L.GeometryUtil.accumulatedLengths(latlngs);
                 // Reduce all lengths to a single total length
                 const totalLength = lengths.reduce((a, b) => a + b, 0);
 
                 // Get number of points based on desired interval and total length
-                const interval = 3000;
+                const interval = 1000; // 1000m
                 const totalPoints = Math.floor(totalLength / interval);
 
                 // Get rations of each point along the polyline
@@ -403,15 +346,14 @@ func_reqEcosys = function (m_th, m_id) {
                 for (it_e = 0; it_e < points.length; it_e++) {
                     if (points[it_e] != undefined) {
                         if (points.length > 1 && m_id === undefined) {
-                            reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
                             reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
                         }
                         if (points.length === 1 && m_id !== undefined) {
-                            reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
                             reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
                         }
                     }
                 }
+
                 coords = reqMarker;
 
 
@@ -421,9 +363,9 @@ func_reqEcosys = function (m_th, m_id) {
                         dataType: "json",
                         type: 'POST',
                         success: function (resp) {
+                            var absData = new Array();
                             // into request and use response formated
                             console.log(resp);
-                            var absData = new Array();
                             for (it_e = 0; it_e < marker.length; it_e++) {
                                 $('#id_esysInf_' + it_e).append("<div id='id_reqInf_" + it_e + "'>" + marker[it_e].getLatLng() + "</div>");
                             }
@@ -491,24 +433,6 @@ func_switchMod = function () {
     }
 }
 /*
-func_mpClick = function () {
-    var it_x = 0;
-    if ($('input.cl_cbEsys:checked').length !== 0) {
-        if (marker.length > 0) {
-            $('.cl_esysInf').children().remove();
-            for (it_r = 0; it_r < marker.length; it_r++) {
-                if (marker[it_r]._map.hasLayer(marker[it_r]._popup)) {
-                    marker[it_r].fire('click');
-                }
-            }
-            map.closePopup();
-        }
-    } else {
-        map.closePopup();
-    }
-}
-*/
-/*
 func_getPolygonBounds = function() {
     map.eachLayer(function (layer) {
         if (layer instanceof L.Polygon && !(layer instanceof L.Rectangle)) {
@@ -518,72 +442,70 @@ func_getPolygonBounds = function() {
     })
 }
  */
-//bt_Layermode.on('click', function () {
-//if (chk_lMode === 0) {
-$.ajax({
-    url: url_ecosys + url_pathLayers,
-    headers: {"Accept": "application/json"},
-    type: 'GET',
-    dataType: "json",
-    crossDomain: true,
-    beforeSend: function (xhr) {
-        xhr.withCredentials = true;
-    },
-    success: function (resp) {
-        $("#id_addLayer option").remove(); // Remove all <option> child tags.
-        $("#id_addLayer").append("<option class='cl_option' id='id_defLy' selected='true' value='noL'>Kein Layer</option>");
-        $("#id_defLy").attr('data-i18n', 'Kein Layer');
-        $.each(resp.layers, function (index, item) { // Iterates through a collection
-            $("#id_addLayer").append( // Append an object to the inside of the select box
-                $("<option></option>") // Yes you can do this.
-                    .text(item.name)
-                    .val(item.id)
-            );
+bt_Layermode.on('click', function () {
+    if (chk_lMode === 0) {
+        $.ajax({
+            url: url_ecosys + url_pathLayers,
+            headers: {"Accept": "application/json"},
+            type: 'GET',
+            dataType: "json",
+            crossDomain: true,
+            beforeSend: function (xhr) {
+                xhr.withCredentials = true;
+            },
+            success: function (resp) {
+                $("#id_addLayer option").remove(); // Remove all <option> child tags.
+                $("#id_addLayer").append("<option class='cl_option' id='id_defLy' selected='true' disabled></option>");
+                $("#id_defLy").text('Layer auswählen');
+                $("#id_defLy").attr('data-i18n', 'Layer auswählen');
+                $.each(resp.layers, function (index, item) { // Iterates through a collection
+                    $("#id_addLayer").append( // Append an object to the inside of the select box
+                        $("<option></option>") // Yes you can do this.
+                            .text(item.name)
+                            .val(item.id)
+                    );
+                });
+                do_translate();
+            }
         });
-        do_translate();
+        bt_Layermode.html('Markermodus auswählen');
+        bt_Layermode.attr('data-i18n','Markermodus auswählen');
+            $('#id_mod_1').css('display', 'none');
+        $('#id_mod_2').css('display', 'block');
+        func_switchMod();
+        cnt_map.animate({
+            'height': '100%'
+        }, 100);
+        cnt_info.animate({
+            'height': '0%',
+        }, 100);
+        bt_close_mark.html('Minimaps öffnen');
+        bt_close_mark.attr('data-i18n', 'Minimaps öffnen');
+        info.hide();
+        $('.cl_footer').css('margin-top', '0%');
+        it_mmBt = ++it_mmBt % 2;
     }
+    if (chk_lMode === 1) {
+        bt_Layermode.html('Layermodus auswählen');
+        bt_Layermode.attr('data-i18n', 'Layermodus auswählen');
+        $('#id_mod_1').css('display', 'block');
+        $('#id_mod_2').css('display', 'none');
+        func_switchMod();
+        bt_close_mark.click();
+    }
+    chk_lMode = ++iter_lMode % 2;
 });
-//bt_Layermode.html('Markermodus auswählen');
-//bt_Layermode.attr('data-i18n', 'Markermodus auswählen');
-$('#id_mod_1').css('display', 'none');
-$('#id_mod_2').css('display', 'block');
-func_switchMod();
-/*
-cnt_map.animate({
-    'height': '100%'
-}, 100);
-cnt_info.animate({
-    'height': '0%',
-}, 100);
-
- */
-bt_close_mark.html('Minimaps öffnen');
-bt_close_mark.attr('data-i18n', 'Minimaps öffnen');
-//info.hide();
-$('.cl_footer').css('margin-top', '0%');
-it_mmBt = ++it_mmBt % 2;
-//}
-//if (chk_lMode === 1) {
-//bt_Layermode.html('Layermodus auswählen');
-//bt_Layermode.attr('data-i18n', 'Layermodus auswählen');
-$('#id_mod_1').css('display', 'block');
-//$('#id_mod_2').css('display', 'none');
-//func_switchMod();
-//bt_close_mark.click();
-//}
-chk_lMode = ++iter_lMode % 2;
-//});
 bt_ecosysCB.on('click', function () {
     if (chk_eSys === 0) {
         map.closePopup();
         bt_ecosysCB.html('Ökosystemleistungen schließen');
         bt_ecosysCB.attr('data-i18n', 'Ökosystemleistungen schließen');
-        //$('.cl_ecosys').css('visibility', 'visible');
+        $('.cl_ecosys').css('visibility', 'visible');
     }
     if (chk_eSys === 1) {
         bt_ecosysCB.html('Ökosystemleistungen auswählen');
         bt_ecosysCB.attr('data-i18n', 'Ökosystemleistungen auswählen');
-        //$('.cl_ecosys').css('visibility', 'hidden');
+        $('.cl_ecosys').css('visibility', 'hidden');
     }
     chk_eSys = ++iter_eSys % 2;
 });
@@ -594,9 +516,8 @@ id_newMark.hover(function () {
     $(this).css('cursor', 'auto');
 });
  */
-id_newMark.on('click', function (e) {
+id_newMark.on('click', function (e1) {
     chk_cl = 0;
-    map.closePopup();
     bt_close_mark.css('display', 'block');
     if (it_mmBt == 1) {
         cnt_map.animate({
@@ -620,7 +541,6 @@ id_newMark.on('click', function (e) {
         bt_close_mark.attr('data-i18n', 'Minimaps schließen');
         info.show();
     }
-    var tt_0 = it_0;
     let svgEmb = '<svg id=\"Ebene_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"100px\" viewBox=\"0 0 1000 1000\" xml:space=\"preserve\"><style type=\"text/css\">.st0{fill:#FF3333;}.cl_nrT{font-size:20em;fill:#FF3333;}</style><g><text x=\"65%\" y=\"95%\" id=\"id_markNr_' + it_0 + '\" class=\"cl_nrT\">' + it_0 + '</text><path id=\"id_path\" class=\"st0\" d=\"M500,42.7c162.1,0,294,131.9,294,294c0,51.6-13.7,102.4-39.5,147L500,924.7l-254.5-441c-25.8-44.6-39.5-95.4-39.5-147C206,174.5,337.9,42.7,500,42.7L500,42.7z M500,451c63,0,114.3-51.3,114.3-114.3S563,222.4,500,222.4s-114.3,51.3-114.3,114.3S437,451,500,451z M500,10c-180.4,0-326.7,146.3-326.7,326.7c0,59.6,16,115.3,43.9,163.3L500,990l282.8-490c27.8-48.1,43.9-103.8,43.9-163.3C826.6,156.3,680.4,10,500,10L500,10L500,10z M500,418.3c-45.1,0-81.7-36.5-81.7-81.6s36.6-81.6,81.7-81.6s81.6,36.6,81.6,81.6C581.7,381.8,545.1,418.3,500,418.3L500,418.3z\"/></g></svg>';
     marker[it_0] = L.marker([marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lat + 0.05 : 48.3805228, marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lng + 0.05 : 15.9558588], {
         clickable: true,
@@ -629,16 +549,15 @@ id_newMark.on('click', function (e) {
             html: svgEmb,
             iconSize: [30, 30],
             iconAnchor: [15, 30],
-            popupAnchor: [0, -50]
+            popupAnchor: [0, -80]
         })
     }).on('dragstart', function (e) {
     }).on('drag', function (e) {
         chk_cl = 0;
-        //$('.markers').change();
+        $('.markers').change();
     }).on('drop', function (e) {
         chk_cl = 1;
         $('.markers').change();
-
     }).on('dragend', function (e) {
         chk_cl = 2;
         $('.markers').change();
@@ -665,10 +584,8 @@ id_newMark.on('click', function (e) {
         point[it_0] = map.layerPointToLatLng(point[it_0]);
         p_point[it_0] = point[it_0];
         // page 14 Map.locate <watch, enableHighAccuracy, maxZoom>
-        var popupHtml = "<div class='cl_popup' id='id_popup_" + it_0 + "'><div class=\"cl_headID\">ID " + it_0 + " Coords: " + p_point[it_0] + "</div><div class='cl_esysInf' id='id_esysInf_" + it_0 + "'></div></div>";
-        marker[it_0].addTo(map).bindPopup(popupHtml);
-
-        info.append('<div class="markers" id="marker_' + it_0 + '" onchange="func_updateID($(this))"><div class="minimapNr">ID<br>' + it_0 + '</div><button onclick="func_delMark($(this).parent())" type="button" class="cl_delMark" id="del_mark_' + it_0 + '"data-i18n="Marker löschen">Marker löschen</button><div class="cl_mark" id="id_mark_' + it_0 + '">Lat: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_0].lat + '" onchange="func_nPosLatLng(' + it_0 + ');"></input> Lng: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_0].lng + '" onchange="func_nPosLatLng(' + it_0 + ');"></input></div><div class="cl_cntInf"></div><div class="cl_popupmap" id="popup-map_' + it_0 + '"></div><div class="cl_minimap" id="minimap_' + it_0 + '"></div></div></div></div>');
+        marker[it_0].addTo(map).bindPopup("<div class='cl_popup' id='id_popup_" + it_0 + "'><div class=\"cl_headID\">ID " + it_0 + " Coords: " + p_point[it_0] + "</div><div class='cl_esysInf' id='id_esysInf_" + it_0 + "'></div></div>");
+        info.append('<div class="markers" id="marker_' + it_0 + '" onchange="func_updateID($(this))"><div class="minimapNr">ID<br>' + it_0 + '</div><button onclick="func_delMark($(this).parent())" type="button" class="cl_delMark" id="del_mark_' + it_0 + '"data-i18n="Marker löschen">Marker löschen</button><div class="cl_mark" id="id_mark_' + it_0 + '">Lat: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_0].lat + '" onchange="func_nPosLatLng(' + it_0 + ');"></input> Lng: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_0].lng + '" onchange="func_nPosLatLng(' + it_0 + ');"></input></div><div class="cl_cntInf"></div><div class="cl_minimap" id="minimap_' + it_0 + '"></div></div></div></div>');
         minimapArr[it_0] = L.map('minimap_' + it_0, {
             doubleClickZoom: false,
             closePopupOnClick: false,
@@ -682,6 +599,7 @@ id_newMark.on('click', function (e) {
             center: [48.3805228, 15.9558588],
             zoom: 19
         });
+
         popupArr[it_0] = L.popup({
             closeOnClick: false,
             autoClose: false
@@ -709,56 +627,9 @@ id_newMark.on('click', function (e) {
                 alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
                 bt_ecosysCB.click();
             } else {
-                filteredmarker = marker.filter(x => x !== undefined);
-                for (it_r = 0; it_r < filteredmarker.length; it_r++) {
-                    filteredmarker[it_r].fire('dragend');
-                }
+                //func_reqEcosys();
             }
             //func_reqSpecies();
-        }
-        if (ly_ecosys !== undefined) {
-            var latlng = marker[tt_0].getLatLng();
-            var bbox = map.getBounds().toBBoxString();
-            var size = map.getSize();
-            var pixelPosition = map.latLngToLayerPoint(marker[tt_0].getLatLng());
-            var x = size.x * (pixelPosition.x / size.x);
-            var y = size.y * (pixelPosition.y / size.y);
-            var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&bbox=" + bbox + "&width=" + size.x + "&height=" + size.y + "&x=" + x + "&y=" + y + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
-            $.ajax({
-                url: url,
-                success: function (data) {
-
-                    // Get the feature that was clicked
-                    console.log(data);
-                    var clickedFeature = data.features[0];
-                    console.log(clickedFeature);
-
-                    // Create a new map object within the popup
-                    if (popupMap[tt_0] != undefined) popupMap[tt_0].remove();
-                    popupMap[tt_0] = L.map('popup-map_' + tt_0, {
-                        dragging: false,
-                        zoomControl: false
-                    }).setView(latlng, 6);
-
-                    // Create a marker at the clicked point
-
-                    // Add a TileLayer to the popup map
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-                    }).addTo(popupMap[tt_0]);
-
-                    if (clickedFeature !== undefined) {
-                        // Create a GeoJSON layer for the clicked polygon
-                        polygonLayer[tt_0] = L.geoJSON(clickedFeature.geometry).addTo(popupMap[tt_0]);
-
-                        // Fit the map view to the extent of the polygon layer
-                        popupMap[tt_0].fitBounds(polygonLayer[tt_0].getBounds());
-                    }
-                }
-            });
-            $('.cl_popupmap').css('display', 'block');
-        } else {
-            $('.cl_popupmap').css('display', 'none');
         }
     }
     if (chk_pconn === 1) {
@@ -892,33 +763,19 @@ func_addDistances = function (m_th) {
     }
     return res;
 }
-d3.selection.prototype.moveToBack = function () {
-    return this.each(function () {
+d3.selection.prototype.moveToBack = function() {
+    return this.each(function() {
         var firstChild = this.parentNode.firstChild;
         if (firstChild) {
             this.parentNode.insertBefore(this, firstChild);
         }
     });
 };
-d3.selection.prototype.moveToFront = function () {
-    return this.each(function () {
+d3.selection.prototype.moveToFront = function() {
+    return this.each(function(){
         this.parentNode.appendChild(this);
     });
 };
-
-function func_toggleMarkers() {
-    for (var i = 0; i < markers.length; i++) {
-        var marker = markers[i];
-        if (marker.isVisible()) {
-            marker.setOpacity(0); // hide the marker
-            marker.setVisible(false);
-        } else {
-            marker.setOpacity(1); // show the marker
-            marker.setVisible(true);
-        }
-    }
-}
-
 func_initChart = function (data, p_hashID, p_refID, chk_quint) {
     if ($(".cl_svg").length > 0) {
         $(".cl_svg").remove();
@@ -927,7 +784,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint) {
     if (filteredmarker.length > 1) {
         var div_nav = d3.select("#id_nav");
         var svg = new Array();
-        var margin = {top: 20, right: 20, bottom: 20, left: 20}, width = 600, height = 320;
+        var margin = {top: 40, right: 40, bottom: 40, left: 40}, width = 600, height = 340;
         var xScale = [];
         var yScale = [];
         var xAxis = [];
@@ -937,31 +794,16 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint) {
         var yStep = [];
         var yMax = [];
         distance = func_addDistances(marker); // Array of points
-        var cntID = new Array();
-        for (it_o = 0; it_o < p_refID.length; it_o++) {
-            cntID[it_o] = 0;
-        }
-        console.log(p_hashID.length);
-        for (it_m = 0; it_m < p_hashID.length; it_m++) {
-            console.log(p_hashID[it_m] + 'compared');
-            for (it_o = 0; it_o < p_refID.length; it_o++) {
-                console.log(p_refID[it_o] + 'this');
-                if ((Math.abs(p_hashID[it_m][0]['lat'] - p_refID[it_o][0]['lat']) <= 0.01) && Math.abs(p_hashID[it_m][1]['lng'] - p_refID[it_o][1]['lng']) <= 0.01) {
-                    cntID[it_o] = 1;
-                    break;
-                }
-            }
-        }
-        for (it_d = 0; it_d < data.length; it_d++) {
+        for(it_d = 0; it_d < data.length; it_d++) {
             xAxis[it_d] = [];
             yAxis[it_d] = [];
             xStep[it_d] = [];
             yStep[it_d] = [];
             yMax[it_d] = 5;
             for (it_n = 0; it_n < data[0]['vals'].length; it_n++) {
-                xStep[it_d][it_n] = it_n * (distance * 0.001 / (data[0]['vals'].length)); //
+                xStep[it_d][it_n] = it_n * (distance / (data[0]['vals'].length)); //
             }
-            if (chk_quint === 0) {
+            if(chk_quint === 0) {
                 for (it_n = 0; it_n < data[it_d]['vals'].length; it_n++) {
                     yStep[it_d][it_n] = data[it_d]['vals'][it_n]['val'];
                     if (yMax[it_d] <= yStep[it_d][it_n]) {
@@ -969,29 +811,29 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint) {
                     }
                 }
             }
-            if (chk_quint === 1) {
+            if(chk_quint === 1) {
                 for (it_n = 0; it_n < data[it_d]['vals'].length; it_n++) {
                     yStep[it_d][it_n] = data[it_d]['vals'][it_n]['quantil'];
                 }
             }
             console.log(yMax[it_d]);
-            xScale[it_d] = d3.scaleLinear().domain([0, distance * 0.001]).range([0, width - margin.left - margin.right]);
+            xScale[it_d] = d3.scaleLinear().domain([0, distance]).range([0, width - margin.left - margin.right]);
             yScale[it_d] = d3.scaleLinear().domain([0, yMax[it_d]]).range([height - margin.top - margin.bottom, 0]);
             xAxis[it_d] = d3.axisBottom(xScale[it_d]).ticks(10);
-            yAxis[it_d] = d3.axisRight(yScale[it_d]).ticks(10);
+            yAxis[it_d] = d3.axisRight(yScale[it_d]).ticks(5);
 
             div_nav
                 .append("svg")
                 .attr("id", "id_svg_e_" + it_d)
                 .attr("class", "cl_svg")
-                .attr('viewBox', '0 0 ' + (width + margin.left + margin.right) + ' ' + (height + margin.top + margin.bottom))
-                .append("g");
+                .attr('viewBox', '0 0 ' + (width + margin.left + margin.right) + ' ' + (height + margin.top + margin.bottom));
 
             svg[it_d] = d3.select('#id_svg_e_' + it_d);
 
+            console.log($('#id_divName_' + data[it_d]['id']).html());
             svg[it_d].append('text')
                 .attr('dx', margin.left)
-                .attr('dy', 12)
+                .attr('dy', 14)
                 .attr('stroke', '#222222')
                 .attr('font-style', 'italic')
                 .text($('#id_divName_' + data[it_d]['id']).html());
@@ -1020,15 +862,11 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint) {
                     .attr('display', 'none')
                     .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
                     .attr('y', -3 + yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
-                    .attr('dy', 32)
-                    .attr('dx', 3)
                     .attr('width', xScale[it_d](xStep[it_d][1]))
                     .attr("height", 60)
-                    .attr('font-size', 30)
-                    .attr('stroke', '#111111')
-                    .attr('fill', '#111111')
+                    .attr('stroke', '#222222')
                     .attr('font-style', 'italic')
-                    .text(yStep[it_d][it_n])
+                    .text(data[it_d]['vals'][it_n]['val'])
             }
             svg[it_d].append("g")
                 .attr('id', 'id_grLine_' + it_d)
@@ -1051,63 +889,38 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint) {
             // Add Y axis
             svg[it_d].append("g")
                 .attr('id', 'id_grRect_' + it_d)
-
             for (it_n = 0; it_n < data[it_d]['vals'].length; it_n++) {
-                // function(d), not just line function
+                    // function(d), not just line function
                 //console.log(xStep[it_d][it_n]);
                 //console.log(yStep[it_d][it_n]);
-                if (cntID[it_n] === 1) {
-                    d3.selectAll('#id_grRect_' + it_d)
-                        .append("rect")
-                        .attr("class", "cl_Rects")
-                        .attr('id', 'id_bar_' + it_d + '_' + it_n)
-                        .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                        .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
-                        .attr('width', xScale[it_d](xStep[it_d][1]))
-                        .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
-                        .attr('y_value', yStep[it_d][it_n])
-                        .attr('fill', '#aa2222')
-                        .on('mouseover', function () {
-                            var tmp = $(this).attr('id');
-                            $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
-                            $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
-                            d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('fill', '#aa2222');
-                            d3.select('#id_grRect_' + tmp.split('_')[2]).moveToBack();
+                d3.selectAll('#id_grRect_' + it_d)
+                    .append("rect")
+                    .attr("class", "cl_Rects")
+                    .attr('id', 'id_bar_' + it_d + '_' + it_n)
+                    .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
+                    .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
+                    .attr('width', xScale[it_d](xStep[it_d][1]))
+                    .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
+                    .attr('y_value',  yStep[it_d][it_n])
+                    .attr('fill', '#aaaaaa')
+                    .on('mouseover', function() {
+                        var tmp = $(this).attr('id');
+                        for(it_t = 0; it_t < data.length; it_t++) {
+                            $('#id_text_' + it_t + '_' + tmp.split('_')[3]).attr('display', 'block');
+                            $('#id_line_' + it_t + '_' + tmp.split('_')[3]).attr('display', 'block');
+                            d3.select('#id_bar_' + it_t + '_' + tmp.split('_')[3]).attr('fill', '#aa2222');
+                        }
+                        d3.select('#id_grRect_' + tmp.split('_')[2]).moveToBack();
 
-                        })
-                        .on('mouseout', function () {
-                            var tmp = $(this).attr('id');
-                            $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
-                            $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
-                            d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('fill', '#aa2222');
-                        });
-                }
-                if (cntID[it_n] === 0) {
-                    d3.selectAll('#id_grRect_' + it_d)
-                        .append("rect")
-                        .attr("class", "cl_Rects")
-                        .attr('id', 'id_bar_' + it_d + '_' + it_n)
-                        .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                        .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
-                        .attr('width', xScale[it_d](xStep[it_d][1]))
-                        .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
-                        .attr('y_value', yStep[it_d][it_n])
-                        .attr('fill', '#aaaaaa')
-                        .on('mouseover', function () {
-                            var tmp = $(this).attr('id');
-                            $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
-                            $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
-                            d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('fill', '#aa2222');
-                            d3.select('#id_grRect_' + tmp.split('_')[2]).moveToBack();
-
-                        })
-                        .on('mouseout', function () {
-                            var tmp = $(this).attr('id');
-                            $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
-                            $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
-                            d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('fill', '#aaaaaa');
-                        });
-                }
+                    })
+                    .on('mouseout', function() {
+                        var tmp = $(this).attr('id');
+                        for(it_t = 0; it_t < data.length; it_t++) {
+                            $('#id_text_' + it_t + '_' + tmp.split('_')[3]).attr('display', 'none');
+                            $('#id_line_' + it_t + '_' + tmp.split('_')[3]).attr('display', 'none');
+                            d3.select('#id_bar_' + it_t + '_' + tmp.split('_')[3]).attr('fill', '#aaaaaa');
+                        }
+                    });
             }
             res = 0.0;
         }
@@ -1147,7 +960,7 @@ func_delMark = function (th) {
         if (id_MarkerConn.val() === 'Verbindung setzen') {
             it_infBt = ++it_infBt % 2
         }
-        chk_pconn = 0;
+        chk_pconn = ++iter_conn % 2;
     }
 
     /*
@@ -1164,8 +977,6 @@ func_delMark = function (th) {
     filteredPoint = point.filter(x => x !== undefined);
     filteredp_Point = p_point.filter(x => x !== undefined);
     filteredllBounds = llBounds.filter(x => x !== undefined);
-    filteredpopupMap = popupMap.filter(x => x !== undefined);
-    filteredpolygonLayer = polygonLayer.filter(x => x !== undefined);
 
     for (it_r = 0; it_r < filteredmarker.length; it_r++) {
         map.removeLayer(filteredmarker[it_r]);
@@ -1176,8 +987,6 @@ func_delMark = function (th) {
     p_point = new Array();
     llBounds = new Array();
     minimapArr = new Array();
-    popupMap = new Array();
-    polygonLayer = new Array();
 
     info.children().remove();
     for (it_r = 0; it_r < filteredmarker.length; it_r++) {
@@ -1189,12 +998,12 @@ func_delMark = function (th) {
                 html: svgEmb,
                 iconSize: [30, 30],
                 iconAnchor: [15, 30],
-                popupAnchor: [0, -50]
+                popupAnchor: [0, -80]
             })
         }).on('dragstart', function (e) {
         }).on('drag', function (e) {
             chk_cl = 0;
-            //$('.markers').change();
+            $('.markers').change();
         }).on('drop', function (e) {
             chk_cl = 1;
             $('.markers').change();
@@ -1226,7 +1035,7 @@ func_delMark = function (th) {
         p_point[it_r] = point[it_r];
         // page 14 Map.locate <watch, enableHighAccuracy, maxZoom>
         marker[it_r].addTo(map).bindPopup("<div class='cl_popup' id='id_popup_" + it_r + "'><div class=\"cl_headID\">ID " + it_r + " Coords: " + p_point[it_r] + "</div><div class='cl_esysInf' id='id_esysInf_" + it_r + "'></div></div>");
-        info.append('<div class="markers" id="marker_' + it_r + '" onchange="func_updateID($(this))"><div class="minimapNr">ID<br> ' + it_r + '</div><button onclick="func_delMark($(this).parent())" type="button" class="cl_delMark" id="del_mark_' + it_r + '"data-i18n="Marker löschen">Marker löschen</button><div class="cl_mark" id="id_mark_' + it_r + '">Lat: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_r].lat + '" onchange="func_nPosLatLng(' + it_r + ');"></input> Lng: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_r].lng + '" onchange="func_nPosLatLng(' + it_r + ');"></input></div><div class="cl_cntInf"></div><div class="cl_popupmap" id="popup-map_' + it_r + '"></div><div class="cl_minimap" id="minimap_' + it_r + '"></div></div></div></div>');
+        info.append('<div class="markers" id="marker_' + it_r + '" onchange="func_updateID($(this))"><div class="minimapNr">ID<br> ' + it_r + '</div><button onclick="func_delMark($(this).parent())" type="button" class="cl_delMark" id="del_mark_' + it_r + '"data-i18n="Marker löschen">Marker löschen</button><div class="cl_mark" id="id_mark_' + it_r + '">Lat: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_r].lat + '" onchange="func_nPosLatLng(' + it_r + ');"></input> Lng: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_r].lng + '" onchange="func_nPosLatLng(' + it_r + ');"></input></div><div class="cl_cntInf"></div><div class="cl_minimap" id="minimap_' + it_r + '"></div></div></div></div>');
         minimapArr[it_r] = L.map('minimap_' + it_r, {
             doubleClickZoom: false,
             closePopupOnClick: false,
@@ -1240,6 +1049,7 @@ func_delMark = function (th) {
             center: [p_point[it_r].lat, p_point[it_r].lng],
             zoom: 19
         });
+
         popupArr[it_r] = L.popup({
             closeOnClick: false,
             autoClose: false
@@ -1271,7 +1081,6 @@ func_delMark = function (th) {
             }
             //func_reqSpecies();
         }
-        filteredmarker[it_r].fire('dragend');
     }
     if (chk_pconn === 1) {
         func_updatePolyLine();
@@ -1330,102 +1139,7 @@ func_updateID = function (tmpT) {
 
     marker[parseInt(tmpT.attr('id').split('_')[1])].bindPopup("<div class='cl_popup' id='id_popup_" + parseInt(tmpT.attr('id').split('_')[1]) + "'><div id='id_coords'><div class=\"cl_headID\">ID " + parseInt(tmpT.attr('id').split('_')[1]) + " Coords: " + p_point[parseInt(tmpT.attr('id').split('_')[1])] + "</div><div class='cl_esysInf' id='id_esysInf_" + parseInt(tmpT.attr('id').split('_')[1]) + "'></div></div>");
     minimapArr[parseInt(tmpT.attr('id').split('_')[1])].setView(point[parseInt(tmpT.attr('id').split('_')[1])], 19);
-
-    var tt_0 = parseInt(tmpT.attr('id').split('_')[1]);
-    if (ly_ecosys !== undefined) {
-        // Assuming you have a Leaflet map object named "map"
-        var latlng = p_point[tt_0];
-        var pt = map.latLngToContainerPoint(latlng);
-        var size = map.getSize();
-        var params = {
-            request: 'GetFeatureInfo',
-            service: 'WMS',
-            version: '1.1.1',
-            layers: ly_ecosys.wmsParams.layers,
-            styles: '',
-            bbox: map.getBounds().toBBoxString(),
-            width: size.x,
-            height: size.y,
-            format: 'image/png',
-            transparent: true,
-            query_layers: ly_ecosys.wmsParams.layers,
-            info_format: 'application/json',
-            feature_count: 1,
-            x: Math.round(pt.x),
-            y: Math.round(pt.y)
-        };
-
-        var url = 'https://spatial.biodiversityatlas.at/geoserver/ALA/wms?' + Object.keys(params).map(function (key) {
-            return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
-        }).join('&');
-        /*
-        var latlng = marker[tt_0].getLatLng();
-        var bbox = map.getBounds().toBBoxString();
-        var size = map.getSize();
-        var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
-         */
-        $.ajax({
-            url: url,
-            success: function (data) {
-
-                // Get the feature that was clicked
-                console.log(data);
-                var clickedFeature = data.features[0];
-
-                // Create a new map object within the popup
-                if (popupMap[tt_0] != undefined) popupMap[tt_0].remove();
-                popupMap[tt_0] = L.map('popup-map_' + tt_0, {
-                    dragging: false,
-                    zoomControl: false
-                }).setView(latlng, 6);
-
-                // Create a marker at the clicked point
-
-                // Add a TileLayer to the popup map
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-                }).addTo(popupMap[tt_0]);
-
-                L.marker(marker[tt_0].getLatLng(), {
-                    clickable: false,
-                    draggable: false,
-                    icon: L.divIcon({
-                        html: "<svg width='30' height='30'> <circle cx='14' cy='14' r='12' fill='none' stroke='#ff0000' stroke-width='3' /> </svg>",
-                        iconSize: [30, 30],
-                        iconAnchor: [0, 0],
-                        popupAnchor: [-15, -15]
-                    })
-                }).addTo(popupMap[tt_0]);
-
-                // Create a GeoJSON layer for the clicked polygon
-                if (clickedFeature !== undefined) {
-                    polygonLayer[tt_0] = L.geoJSON(clickedFeature.geometry).addTo(popupMap[tt_0]);
-
-                    // Fit the map view to the extent of the polygon layer
-                    popupMap[tt_0].fitBounds(polygonLayer[tt_0].getBounds());
-                    console.log("update");
-                }
-            }
-        });
-        $('.cl_popupmap').css('display', 'block');
-    } else {
-        $('.cl_popupmap').css('display', 'none');
-    }
 };
-latlngToTilePixel = function (latlng, crs, zoom, tileSize, pixelOrigin) {
-    var point = new Object();
-    const layerPoint = crs.latLngToPoint(latlng, zoom).floor()
-    const tile = layerPoint.divideBy(tileSize).floor()
-    const tileCorner = tile.multiplyBy(tileSize).subtract(pixelOrigin)
-    const tilePixel = layerPoint.subtract(pixelOrigin).subtract(tileCorner)
-    console.log(layerPoint);
-    console.log(tile);
-    console.log(tileCorner);
-    console.log(tilePixel);
-    point.x = tile;
-    point.y = tilePixel;
-    return point;
-}
 func_nPosLatLng = function (id_val) {
     marker[id_val].setLatLng(L.latLng($('#id_lat_' + id_val).val(), $('#id_lng_' + id_val).val()));
     if (chk_pconn === 1) {
@@ -1441,7 +1155,7 @@ func_submEsys = function () {
         alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
     }
 };
-func_selectQ = function () {
+func_selectQ = function() {
     func_reqEcosys(marker);
 };
 info_icon.on('click', function (e) {
@@ -1517,11 +1231,12 @@ map.locate({
 });
 map.on('popupopen', function (e) {
     if (!$(".cl_cbEsys:checkbox:checked").length) {
+        e.target.closePopup();
         alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
         bt_ecosysCB.click();
     } else {
+        console.log($(e.popup._content).attr('id').split('_')[2]);
         chk_pcSet = 0;
-        console.log("hallo");
         func_reqEcosys(new Array(marker[$(e.popup._content).attr('id').split('_')[2]]), $(e.popup._content).attr('id').split('_')[2]);
     }
     func_reqSpecies();
@@ -1541,7 +1256,7 @@ map.on('locationerror', function(e) {
 
  */
 func_initMap = function () {
-    if (LayerMap !== undefined) {
+    if(LayerMap !== undefined) {
         map.removeLayer(LayerMap);
     }
     $('#ic_info').attr('visibility', 'hidden');
@@ -1566,42 +1281,42 @@ func_initMap = function () {
                 attribution: '&copy; ' + mapLink + ', ' + wholink
             }).addTo(map);
     }
-    if (ly_ecosys !== undefined) {
+    if(ly_ecosys !== undefined) {
         var layer_name = $('#id_addLayer option:selected').text();
-        if ($('#id_addLayer option:selected').val() === 'noL') {
-            map.removeLayer(ly_ecosys);
-        }
         ly_ecosys = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ALA/wms', {
             format: 'image/svg',
-            opacity: 0.3,
+            transparent: true,
             layers: "ALA:" + layer_name
         });
         ly_ecosys.addTo(map);
     }
-
-    $('#id_addLayer').change(function () {
-        if (ly_ecosys !== undefined) {
-            map.removeLayer(ly_ecosys);
-        }
+    $('#id_addLayer').change(function() {
         var layer_name = $('#id_addLayer option:selected').text();
         ly_ecosys = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ALA/wms', {
             format: 'image/svg',
-            opacity: 0.3,
+            transparent: true,
             layers: "ALA:" + layer_name
         });
         ly_ecosys.addTo(map);
-        if (ly_ecosys !== undefined) {
-            filteredmarker = marker.filter(x => x !== undefined);
-            for (it_r = 0; it_r < filteredmarker.length; it_r++) {
-                filteredmarker[it_r].fire('dragend');
-            }
-        }
-
-    });    /*
-    var it_p = 0;
-    map.on('click', function (e) {
     });
+}
+if(chk_lMode === 0) {
+    map.on('click', function (e) {
+        var latlng = e.latlng;
+        var bbox = map.getBounds().toBBoxString();
+        var size = map.getSize();
+        var x = Math.round(size.x * (e.containerPoint.x / size.x));
+        var y = Math.round(size.y * (e.containerPoint.y / size.y));
 
-     */
-
+        var url = ly_ecosys._url + "?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&bbox=" + bbox + "&width=" + size.x + "&height=" + size.y + "&x=" + x + "&y=" + y + "&info_format=application/json&srs=EPSG:4326&format=image/png";
+        console.log(ly_ecosys.wmsParams.layers);
+        $.ajax({
+            url: url,
+            success: function (data) {
+                console.log(data);
+                // Display the information in a popup or alert
+                // ...
+            }
+        });
+    });
 }

@@ -10,8 +10,10 @@
     <title>Ökosysteme und Lebensraumtypen</title>
 
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" type="text/css" href="styles/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="styles/leaflet.css" />
     <link rel="profile" href="https://gmpg.org/xfn/11">
+    <title>Biodiversitäts-Atlas Österreich &#8211; Frei zugängliches Onlineportal zur Entdeckung der Vielfalt an Organismen und Lebensräumen in Österreich</title>
     <meta name="robots" content="noindex,nofollow">
     <!--<link rel='dns-prefetch' href='//fonts.googleapis.com' />-->
     <link rel='dns-prefetch' href='//use.fontawesome.com' />
@@ -20,6 +22,7 @@
     <link rel="alternate" type="application/rss+xml" title="Biodiversitäts-Atlas Österreich &raquo; Feed" href="https://biodiversityatlas.at/feed/" />
     <link rel="alternate" type="application/rss+xml" title="Biodiversitäts-Atlas Österreich &raquo; Kommentar-Feed" href="https://biodiversityatlas.at/comments/feed/" />
     <script type="text/javascript" src="scripts/jQuery.js"></script>
+    <script type="text/javascript" src="scripts/jQuery-ui.js"></script>
     <script type="text/javascript" src="scripts/attrchange.js"></script>
     <script type="text/javascript" src="scripts/jquery.i18n.js"></script>
     <script src="scripts/CLDRPluralRuleParser.js"></script>
@@ -39,11 +42,11 @@
 <!-- Container ecosys servcies -->
 <div id="cnt_id">
     <div id="id_mainNav">
-        <button class="cl_button" type="button" id="id_btnLayer" data-i18n="Layermodus auswählen">Layermodus auswählen</button>
-        <button class="cl_button" type="button" id="id_btnecosys" data-i18n="Ökosystemleistungen auswählen">Ökosystemleistungen auswählen</button>
+        <!--<button class="cl_button" type="button" id="id_btnLayer" data-i18n="Layermodus auswählen"></button>--->
+        <!--<button class="cl_button" type="button" id="id_btnecosys" data-i18n="Ökosystemleistungen auswählen"></button>-->
         <div id="id_mod_1">
-            <button class="cl_button" type="button" id="id_btnNewMark" data-i18n="Marker setzen">Marker setzen</button>
-            <button class="cl_button" type="button" id="id_btnMarkConn" data-i18n="Verbindung setzen">Verbindung setzen</button>
+            <button class="cl_button" type="button" id="id_btnNewMark" data-i18n="Marker setzen"></button>
+            <button class="cl_button" type="button" id="id_btnMarkConn" data-i18n="Verbindung setzen"></button>
         </div>
         <div  id="id_mod_2">
             <select class="cl_select" id="id_addLayer">
@@ -57,29 +60,58 @@
             <option class="cl_option" data-i18n="Topographiekarte" value="1">Topographiekarte</option>
             <option class="cl_option" data-i18n="Satelitenkarte" value="2">Satelitenkarte</option>
         </select>
-        <div class="cl_ecosys">
-        </div>
     </div>
     <div id="cnt_main">
         <div id="info_icon"></div>
         <div id="cnt_map">
+            <div id="eSys">
+                <div class="cl_descrH"><b>Ökosystemleistungen auswählen</b></div>
+                <div class="cl_ecosys">
+                    <ul id='sortable'></ul>
+                </div>
+            </div>
             <div id="map"></div>
         </div>
         <div id="cnt_info">
-            <button type="button" class="cl_button" id="bt_close_mark" data-i18n="Minimaps schließen">Minimaps schließen</button>
+            <button type="button" class="cl_button" id="bt_close_mark" data-i18n="Minimaps schließen"></button>
             <div id="info">
             </div>
         </div>
     </div>
     <div id="cnt_nav">
+        <select id="id_viewQ" onchange="func_selectQ()">
+            <option data-i18n="Quintile" value="1">Quintile</option>
+            <option data-i18n="Absolutwert" value="0">Absolutwert</option>
+        </select>
         <div id="id_nav" class="cl_nav">
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    var url_ecosys = "https://127.0.0.1:8080/";
-    var url_geoserver = "not set!";
+    var url_ecosys = "https://ecosys.biodivdev.at/";
     var url_i18n = "i18n/";
+    $("#sortable").sortable(
+        {
+            roup: 'serialization',
+            onDrop: function () {
+                var it_x = 0;
+                if ($('input.cl_cbEsys:checked').length !== 0) {
+                    if (marker.length > 0) {
+                        $('.cl_esysInf').children().remove();
+                        for (it_r = 0; it_r < marker.length; it_r++) {
+                            if (popupArr[it_r].isOpen()) {
+                                it_x = it_r;
+                                break;
+                            }
+                        }
+                        map.closePopup();
+                        marker[it_x].fire('click');
+                    }
+                } else {
+                    map.closePopup();
+                }
+            }
+        });
 </script>
 <script type="text/javascript" src="scripts/script.js"></script>
 </body>

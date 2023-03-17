@@ -1,9 +1,20 @@
-html, body, #map {
+html, body {
     height: 100%;
 }
 body {
     padding: 0;
     margin: 0;
+}
+#map {
+    position: relative;
+    float: left;
+    width: 77%;
+    height: 100%;
+}
+#eSys {
+    position: relative;
+    width: 23%;
+    float: left;
 }
 #id_welcome {
     color: #cccccc;
@@ -11,6 +22,7 @@ body {
 .cl_wrapEsys {
     position: relative;
     height: 2em;
+    margin-right: 1em;
 }
 .minimapNr {
     position: absolute;
@@ -39,6 +51,11 @@ body {
     margin-top: 3.4em;
     width: 13em;
 }
+.cl_descrH {
+    position: relative;
+    margin-top: 1em;
+    margin-left: 1em;
+}
 .cl_dimension {
     position: relative;
     margin-top: 3.4em;
@@ -51,7 +68,8 @@ body {
 }
 .cl_qtArr {
     position: relative;
-    margin-left: 1.2em;
+    float: left;
+    margin-left: 0.2em;
     margin-top: 1.75em;
 }
 .cl_column {
@@ -62,17 +80,25 @@ body {
 }
 .cl_ecosys {
     position: relative;
-    visibility: hidden;
+    /* visibility: hidden; */
     background-color: rgba(255, 255, 255, 255);
-    top: 3em;
-    left: 8em;
-    width: 70em;
-    height: 50em;
-    z-index: 1000;
+    top: 1em;
+    width: 100%;
+    height: 100%;
     overflow-y: scroll;
+}
+.cl_popupmap {
+    position: relative;
+    float: left;
+    top: -3em;
+    height: 17em;
+    width: 17em;
+    margin-left: 2.4em;
+    margin-right: 2.4em;
 }
 .cl_minimap {
     position: relative;
+    float: left;
     top: -3em;
     height: 17em;
     width: 17em;
