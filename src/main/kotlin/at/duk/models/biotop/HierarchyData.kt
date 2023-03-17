@@ -28,16 +28,16 @@ data class HierarchyData(
     val id: Int,
     val parentId: Int,
     val levelNumber: Int,
-    val projectId: Int?,
-    val classId: Int?,
-    val keyCode: String,
-    var mappedKeyCode: String?,
-    val sortCode: String?,
+    @JsonIgnore val projectId: Int?,
+    @JsonIgnore val classId: Int?,
+    @JsonIgnore val keyCode: String,
+    @JsonIgnore var mappedKeyCode: String?,
+    @JsonIgnore val sortCode: String?,
     val description: String,
-    val category: String?,
+    @JsonIgnore val category: String?,
     var color: String?,
     var isLeaf: Boolean,
-    var hasData: Boolean,
+    @JsonIgnore var hasData: Boolean,
 ) {
     constructor(
         parentId: Int, levelNumber: Int, projectId: Int, keyCode: String, sortCode: String, description: String
