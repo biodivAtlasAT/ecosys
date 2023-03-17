@@ -55,6 +55,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
     val geoServer = GeoServerService(config)
 
     val geoserverWorkspace = config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
+    val geoserverUrl = config.propertyOrNull("geoserver.url")?.getString() ?: ""
     val collectoryUrl = config.propertyOrNull("atlas.collectory")?.getString()
     val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
     Paths.get("").toAbsolutePath().toString()
@@ -464,9 +465,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             }
         }
         get("/{projectId}/types") {
-
             val wmsUrl =
-                "http://localhost:8081/geoserver/ECO/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=" +
+                "$geoserverUrl/$geoserverWorkspace/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=" +
                         "image/png&TRANSPARENT=true&STYLES&" +
                         "LAYERS=my_ws_layer&exceptions=application/vnd.ogc.se_inimage&" +
                         "my_cql_filter&SRS=EPSG:4326&WIDTH=768&HEIGHT=330&" +
