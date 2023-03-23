@@ -100,6 +100,7 @@ dependencies {
     implementation("org.jetbrains:kotlin-css-jvm:1.0.0-pre.129-kotlin-1.4.20")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-sessions:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("org.jsoup:jsoup:$jsoupVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")

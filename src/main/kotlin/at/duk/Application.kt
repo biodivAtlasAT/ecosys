@@ -23,11 +23,15 @@ import at.duk.plugins.configureTemplating
 import at.duk.plugins.configureSerialization
 import at.duk.services.LayerServices
 import at.duk.services.LayerServices.getDataCacheSyncDirectory
+import at.duk.utils.CasChecker
+import at.duk.utils.CasConfig
+import at.duk.utils.UserSession
 import freemarker.cache.ClassTemplateLoader
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.sessions.*
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import java.io.File
@@ -36,6 +40,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 const val DUMMY_SVG_PATH = "static/svg/dummy.svg"
+
 
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
@@ -59,6 +64,23 @@ fun Application.module() {
 
     val database = AppDataBase(environment.config)
     database.init()
+
+    install(Sessions) {
+        cookie<UserSession>("JSESSIONID", directorySessionStorage(File("build/.sessions"))) {
+            cookie.path = "/"
+            cookie.maxAgeInSeconds = 0  // session cookie
+        }
+    }
+
+    val casConfig = CasConfig(environment.config)
+    val alaCASPlugin = createApplicationPlugin(name = "AlaCASPlugin") {
+        println("AlaCASPlugin is installed! ")
+        if (casConfig.enabled) {
+            onCall { call -> CasChecker.Auth(call, casConfig) }
+        }
+    }
+    install(alaCASPlugin)
+
     install(CORS) {
         anyHost()
         allowHeader(HttpHeaders.AccessControlAllowOrigin)
@@ -67,6 +89,7 @@ fun Application.module() {
     install(FreeMarker) {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
     }
+
     configureRouting()
     configureTemplating()
     configureSerialization()
