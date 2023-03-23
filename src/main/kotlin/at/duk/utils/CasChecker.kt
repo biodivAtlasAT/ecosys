@@ -9,6 +9,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
+import kotlinx.css.a
 import org.w3c.dom.Document
 import org.xml.sax.InputSource
 import java.io.StringReader
@@ -21,23 +22,15 @@ object CasChecker {
             val pos = uri.indexOf("?")
             val newUri = if (pos > 0) uri.substring(0, pos) else uri
 
-            val neededRoles = mutableListOf<String>()
+            val neededRoles = casConfig.protectedRoutes.filterKeys { k -> newUri.startsWith(k) }
+                                    .takeIf { it.isNotEmpty() }?.values?.first()
 
-            casConfig.protectedRoutes.filterKeys { k ->
-                newUri.startsWith(k)
-            }.also {
-                if (!it.isNullOrEmpty())
-                    neededRoles.addAll(it.values.first())
-            }
-
-            if (neededRoles.isNotEmpty()) {
-                //val necessaryRoles = casConfig.protectedRoutes[newUri]
-                val necessaryRoles = neededRoles
+            if (!neededRoles.isNullOrEmpty()) {
                 if (call.request.queryParameters.contains("ticket")) {
                     val ticket = call.parameters["ticket"]
-                    var origin = "$scheme://$host:$port$newUri"
+                    var origin = "$scheme://$serverHost:$serverPort$newUri"
                     if (casConfig.behindAProxy)
-                        origin = "https://$host$newUri"
+                        origin = "https://$serverHost$newUri"
 
                     val client = HttpClient(CIO)
                     val response: HttpResponse = client.request {
@@ -49,6 +42,17 @@ object CasChecker {
                         val builder = factory.newDocumentBuilder()
                         println(response.bodyAsText())
                         val doc = builder.parse(InputSource(StringReader(response.bodyAsText()))) as Document
+
+                        doc.getElementsByTagName("cas:authenticationFailure")?.let {
+                            if (it.length != 0) {
+                                val authFailure = it.item(0).firstChild.nodeValue
+                                println(authFailure)
+                                val serv = if (casConfig.behindAProxy) "https://$serverHost" else "$scheme://$serverHost:$serverPort"
+                                call.respondRedirect("$serv/notAuthorized1", false)
+                                return@apply
+                            }
+                        }
+
                         val firstname = doc.getElementsByTagName("cas:firstname").item(0).firstChild.nodeValue
                         val lastname = doc.getElementsByTagName("cas:lastname").item(0).firstChild.nodeValue
                         val user = doc.getElementsByTagName("cas:user").item(0).firstChild.nodeValue
@@ -56,8 +60,8 @@ object CasChecker {
                         val userSession =
                             UserSession("JSESSIONID", "$ticket", firstname, lastname, user, authority.split(","))
                         call.sessions.set(userSession)
-                        val serv = if (casConfig.behindAProxy) "https://$host" else "$scheme://$host:$port"
-                        if (necessaryRoles?.intersect(userSession.roles.toSet())?.size == 0)
+                        val serv = if (casConfig.behindAProxy) "https://$serverHost" else "$scheme://$serverHost:$serverPort"
+                        if (neededRoles.intersect(userSession.roles.toSet()).isEmpty())
                             call.respondRedirect("$serv/notAuthorized", false)
                         else {
                             call.respondRedirect("$serv$newUri", false)
@@ -69,17 +73,17 @@ object CasChecker {
                 if (!inCycle) {
                     var alreadyRedir = false
                     if (call.request.cookies["JSESSIONID"] == null) {
-                        var url = "${casConfig.redirectToLoginUrl}?service=$scheme://$host:$port$uri"
+                        var url = "${casConfig.redirectToLoginUrl}?service=$scheme://$serverHost:$serverPort$uri"
                         if (casConfig.behindAProxy)
-                            url = "${casConfig.redirectToLoginUrl}?service=https://$host$uri"
+                            url = "${casConfig.redirectToLoginUrl}?service=https://$serverHost$uri"
                         call.respondRedirect(url, false)
                         alreadyRedir = true
                     }
 
                     if (!alreadyRedir) {
                         val userSession = call.sessions.get<UserSession>()
-                        if (necessaryRoles != null && userSession?.roles?.intersect(necessaryRoles.toSet())?.size == 0) {
-                            val serv = if (casConfig.behindAProxy) "https://$host" else "$scheme://$host:$port"
+                        if (neededRoles != null && userSession?.roles?.intersect(neededRoles.toSet())?.size == 0) {
+                            val serv = if (casConfig.behindAProxy) "https://$serverHost" else "$scheme://$serverHost:$serverPort"
                             call.respondRedirect("$serv/notAuthorized", false)
                         }
                     }
@@ -87,4 +91,14 @@ object CasChecker {
             }
         }
     }
+
+    suspend fun AlaLogout(casConfig: CasConfig) {
+        val client = HttpClient(CIO)
+        val response: HttpResponse = client.request {
+            url(casConfig.logoutUrl)
+        }
+
+        println(response)
+    }
+
 }

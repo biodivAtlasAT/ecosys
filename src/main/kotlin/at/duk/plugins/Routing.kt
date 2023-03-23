@@ -19,12 +19,16 @@
 package at.duk.plugins
 
 import at.duk.routes.*
+import at.duk.utils.CasChecker
+import at.duk.utils.CasConfig
+import at.duk.utils.UserSession
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.swagger.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import java.io.File
 import java.nio.file.Paths
 
@@ -76,5 +80,21 @@ fun Application.configureRouting() {
             )
             call.respondFile(file)
         }
+
+        get("/notAuthorized") {
+            call.respondText("Not authorized!")
+        }
+
+        get("/logout") {
+            val casConfig = CasConfig(config)
+            //CasChecker.AlaLogout(casConfig)
+            val userSession = call.sessions.get<UserSession>()
+            if (userSession != null)
+                call.sessions.clear<UserSession>()
+
+
+            call.respondRedirect(casConfig.logoutUrl)
+        }
+
     }
 }

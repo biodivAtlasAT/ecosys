@@ -8,7 +8,8 @@ class CasConfig(config: ApplicationConfig) {
     val enabled = config.propertyOrNull("cas.enabled")?.getString().toBoolean()
     val protectedRoutes: MutableMap<String, List<String>> = mutableMapOf()
     val behindAProxy = config.propertyOrNull("cas.behindAProxy")?.getString().toBoolean()
-
+    val logoutDestinationUrl = config.propertyOrNull("cas.logoutDestinationUrl")?.getString() ?: ""
+    val logoutUrl = config.propertyOrNull("cas.logoutUrl")?.getString() ?: ""
     init {
         config.configList("cas.protectedRoutes").forEach { applicationConfig ->
             applicationConfig.keys().forEach {
