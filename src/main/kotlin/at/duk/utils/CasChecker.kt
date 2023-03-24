@@ -22,8 +22,10 @@ object CasChecker {
             val pos = uri.indexOf("?")
             val newUri = if (pos > 0) uri.substring(0, pos) else uri
 
-            val neededRoles = casConfig.protectedRoutes.filterKeys { k -> newUri.startsWith(k) }
-                                    .takeIf { it.isNotEmpty() }?.values?.first()
+            val neededRoles = casConfig.protectedRoutes
+                                .toSortedMap(compareBy<String> { it.length * -1 }.thenBy { it })
+                                .filterKeys { k -> newUri.startsWith(k) }
+                                .takeIf { it.isNotEmpty() }?.values?.first()
 
             if (!neededRoles.isNullOrEmpty()) {
                 if (call.request.queryParameters.contains("ticket")) {
