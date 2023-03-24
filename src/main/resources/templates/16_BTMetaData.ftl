@@ -72,7 +72,10 @@
             <div class="row">
                 <div class="col-md-3 m-2">&nbsp;</div>
                 <div class="col-md-1 m-2">
-                    Map:
+                    <a href="" onclick="return false;" style="text-decoration:none; color:darkgreen" data-toggle="tooltip"
+                       data-placement="top" title="CSV-Datei:
+1. Zeile (Spaltennamen irrelevant): ID Geoserver Feature;ID Klassifizierung
+Folge-Zeilen z.B: B.2.1.5;1.4.4.1">&#x2754;</a>Map:
                 </div>
                 <div class="col-md-6 m-2">
                     <div class="col-md-6 m-2">
