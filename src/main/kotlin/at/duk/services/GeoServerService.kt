@@ -166,6 +166,7 @@ class GeoServerService(config: ApplicationConfig) {
         return mapOfFeatures
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     suspend fun getLayerDataFromWFSService(project: ProjectData): Map<String, String> {
         if (!isConfigured) return emptyMap()
         // http://127.0.0.1:8081/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=ECO:bundesland_wgs84_iso&propertyName=BL_KZ,BL

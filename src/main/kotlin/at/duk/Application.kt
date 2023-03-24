@@ -41,7 +41,6 @@ import java.nio.file.Paths
 
 const val DUMMY_SVG_PATH = "static/svg/dummy.svg"
 
-
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
 
@@ -68,7 +67,7 @@ fun Application.module() {
     install(Sessions) {
         cookie<UserSession>("JSESSIONID", directorySessionStorage(File("build/.sessions"))) {
             cookie.path = "/"
-            cookie.maxAgeInSeconds = 0  // session cookie
+            cookie.maxAgeInSeconds = 0 // session cookie
         }
     }
 
@@ -76,7 +75,7 @@ fun Application.module() {
     val alaCASPlugin = createApplicationPlugin(name = "AlaCASPlugin") {
         println("AlaCASPlugin is installed! ")
         if (casConfig.enabled) {
-            onCall { call -> CasChecker.Auth(call, casConfig) }
+            onCall { call -> CasChecker.authenticate(call, casConfig) }
         }
     }
     install(alaCASPlugin)

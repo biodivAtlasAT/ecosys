@@ -20,7 +20,7 @@ complexity:
     threshold: 10
   TooManyFunctions:
     thresholdInClasses: 19
-    thresholdInObjects: 14
+    thresholdInObjects: 15
 
 # Formatting rules are implemented via the ktlint plugin. As ktlint does not allow exceptions, we need to disable
 # respective rules completely.
@@ -85,4 +85,8 @@ style:
       io.ktor.serialization.kotlinx.json.*,
       io.ktor.server.http.content.*,
       io.ktor.*,
+      at.duk.routes.*,
+      at.duk.models.*,
+      at.duk.tables.*,
+      java.io.*,
       '

@@ -45,6 +45,7 @@ import org.jetbrains.exposed.sql.statements.StatementType
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.ResultSet
 
+@Suppress("TooManyFunctions")
 object ApiServices {
     private val mapper = jacksonObjectMapper()
 

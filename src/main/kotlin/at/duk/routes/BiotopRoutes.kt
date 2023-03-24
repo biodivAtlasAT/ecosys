@@ -51,6 +51,7 @@ import java.io.*
 import java.nio.file.Paths
 import java.time.LocalDateTime
 
+@Suppress("LongMethod", "ComplexMethod")
 fun Route.biotopRouting(config: ApplicationConfig) {
     val geoServer = GeoServerService(config)
 
@@ -104,9 +105,10 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             val projectId = call.parameters["projectId"]?.toIntOrNull()
             val workspace = call.request.queryParameters["workspace"]
 
+            @Suppress("ComplexCondition")
             if (projectId != null && layer != null && typeFeature != "-1" && nameFeature != "-1" && workspace != null) {
-                val mapOfFeature = call.request.queryParameters["layer"]?.let { layer ->
-                        geoServer.getListOfFeatures(layer)
+                val mapOfFeature = call.request.queryParameters["layer"]?.let { lay ->
+                        geoServer.getListOfFeatures(lay)
                     } ?: emptyMap()
 
                 transaction {
@@ -197,13 +199,13 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                         if (part.name == "resource") project.resource = if (part.value == "") null else part.value
                         if (part.name == "epoch") project.epoch = if (part.value == "") null else part.value
                         if (part.name == "area") project.area = if (part.value == "") null else part.value
-                        if (part.name == "classId") project.classId = part.value?.toIntOrNull() ?: -1
+                        if (part.name == "classId") project.classId = part.value.toIntOrNull() ?: -1
                         if (part.name == "classInfo") project.classInfo = if (part.value == "") null else part.value
                     }
 
                     is PartData.FileItem -> {
-                        fileName = part.originalFileName as String?
-                        project.classMap = part.originalFileName as String?
+                        fileName = part.originalFileName
+                        project.classMap = part.originalFileName
                         fileName?.let {
                             if (fileName != "")
                                 File(projectsDataFolder.resolve(fileName!!).toString())
@@ -329,7 +331,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.receiveMultipart().forEachPart { part ->
                 when (part) {
                     is PartData.FileItem -> {
-                        fileName = part.originalFileName as String? ?: "noFilenamefound"
+                        fileName = part.originalFileName ?: "noFilenamefound"
                         File(classesDataFolder.resolve(fileName!!).toString())
                             .writeBytes(part.streamProvider().readBytes())
                     }
@@ -371,6 +373,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             }
         }
 
+        @Suppress("UnusedPrivateMember")
         get("/classes/{classId}/types") {
             call.parameters["classId"]?.toIntOrNull()?.let { classId ->
                 val classData: ClassData? = ClassData.getById(classId)
@@ -464,6 +467,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 call.respondRedirect("/admin/biotop/projects")
             }
         }
+        @Suppress("UnusedPrivateMember")
         get("/{projectId}/types") {
             val wmsUrl =
                 "$geoserverUrl/$geoserverWorkspace/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=" +
@@ -537,7 +541,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             call.receiveMultipart().forEachPart { part ->
                 when (part) {
                     is PartData.FileItem -> {
-                        fileName = part.originalFileName as String? ?: "noFilenamefound"
+                        fileName = part.originalFileName ?: "noFilenamefound"
                         File(projectDataFolder.resolve(fileName!!).toString())
                             .writeBytes(part.streamProvider().readBytes())
                     }
@@ -578,6 +582,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             val speciesColTaxonIdChanged = speciesColTaxonId != project.speciesColTaxonId
             val speciesColTaxonNameChanged = speciesColTaxonName != project.speciesColTaxonName
 
+            @Suppress("ComplexCondition")
             if (speciesColId.isNotEmpty() && speciesColTaxonId.isNotEmpty() && speciesColTaxonName.isNotEmpty() &&
                 (speciesColIdChanged || speciesColTaxonIdChanged || speciesColTaxonNameChanged)
                 ) {

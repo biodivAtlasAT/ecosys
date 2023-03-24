@@ -31,6 +31,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.time.LocalDateTime
 
+@Suppress("TooManyFunctions")
 object BiotopServices {
     const val DEFAULT_LAYER_COLOR = "#808080"
 
@@ -160,8 +161,8 @@ object BiotopServices {
         }
         hierarchyList.setIsLeaf()
         transaction {
-            hierarchyList.filter { it.isLeaf }.forEach {
-                TableHierarchy.update({ TableHierarchy.id eq it.id }) { it ->
+            hierarchyList.filter { it.isLeaf }.forEach { hd ->
+                TableHierarchy.update({ TableHierarchy.id eq hd.id }) { it ->
                     it[TableHierarchy.isLeaf] = true
                 }
             }
@@ -246,6 +247,7 @@ object BiotopServices {
         return true
     }
 
+    @Suppress("UnusedPrivateMember")
     private fun getSortCode(k: String, longestKeyPart: Int): String {
         val newKey = mutableListOf<String>()
         k.split(".").forEach {
@@ -571,7 +573,7 @@ object BiotopServices {
                 )?.useLines { it.firstOrNull() }?.split(";")
 
     fun removeSpeciesFile(project: ProjectData, dataCacheDirectory: String) {
-        project?.speciesFileName?.let {
+        project.speciesFileName?.let {
             AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it).delete()
         }
 

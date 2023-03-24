@@ -124,6 +124,7 @@ object AdminServices {
     fun getProjectDataFolderName(dataCacheDirectory: String, projectId: Int): String =
         File(dataCacheDirectory).resolve("projects").resolve(projectId.toString()).absolutePath
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     suspend fun isServiceReachable(url: String) = try {
         HttpClient(CIO).request(url) {
             method = HttpMethod.Get

@@ -19,7 +19,6 @@
 package at.duk.plugins
 
 import at.duk.routes.*
-import at.duk.utils.CasChecker
 import at.duk.utils.CasConfig
 import at.duk.utils.UserSession
 import io.ktor.http.*
@@ -27,7 +26,6 @@ import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.swagger.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
@@ -89,14 +87,10 @@ fun Application.configureRouting() {
 
         get("/logout") {
             val casConfig = CasConfig(config)
-            //CasChecker.AlaLogout(casConfig)
             val userSession = call.sessions.get<UserSession>()
             if (userSession != null)
                 call.sessions.clear<UserSession>()
-
-
             call.respondRedirect(casConfig.logoutUrl)
         }
-
     }
 }
