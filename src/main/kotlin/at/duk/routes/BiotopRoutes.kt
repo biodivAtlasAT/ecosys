@@ -548,7 +548,6 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                     else -> {}
                 }
             }
-            // analyze csv file and return with message
             fileName?.let { fn ->
                 transaction {
                     TableProjects.update({ TableProjects.id eq projectId }) {

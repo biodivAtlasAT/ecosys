@@ -93,7 +93,7 @@ object BiotopServices {
 
     fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
 
-    fun removeBOM(content: MutableList<String>) {
+    private fun removeBOM(content: MutableList<String>) {
         val ba = content[0].toByteArray()
         if (ba.size < 3) return
 
