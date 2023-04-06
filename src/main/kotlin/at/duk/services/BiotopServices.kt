@@ -430,7 +430,7 @@ object BiotopServices {
                 if (it.levelNumber <= actLevel)
                     inside = false
                 else if (it.hasData && it.isLeaf)
-                        keyCodesList.add(it.mappedKeyCode ?: it.keyCode)
+                    keyCodesList.add(it.mappedKeyCode ?: it.keyCode)
             }
         }
 
@@ -444,13 +444,13 @@ object BiotopServices {
         this.filter { !it.isLeaf }.forEach { hierarchyData ->
             val kl = getChildrenKeyCodes(this, hierarchyData)
             if (kl.size == numberOfDataLeaves) // if node contains all subnodes, then do not save a cql-filter;
-                                                // the filter may contain to many characters for an URL-Parameter
+            // the filter may contain to many characters for an URL-Parameter
                 hierarchyData.cqlQuery = null
             else if (kl.isEmpty())
-                    hierarchyData.cqlQuery = null
-                else
-                    hierarchyData.cqlQuery =
-                        kl.joinToString(",", "$colTypesCode in (", ")") { "$stringDelim$it$stringDelim" }
+                hierarchyData.cqlQuery = null
+            else
+                hierarchyData.cqlQuery =
+                    kl.joinToString(",", "$colTypesCode in (", ")") { "$stringDelim$it$stringDelim" }
         }
 
         this.filter { it.isLeaf && it.hasData }.forEach {
@@ -587,8 +587,8 @@ object BiotopServices {
     private fun speciesGetCSVCols(project: ProjectData, dataCacheDirectory: String) =
         (
                 project.speciesFileName?.let {
-            AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it)
-        }
+                    AdminServices.getProjectDataFolder(dataCacheDirectory, project.id).resolve(it)
+                }
                 )?.useLines { it.firstOrNull() }?.split(";")
 
     fun removeSpeciesFile(project: ProjectData, dataCacheDirectory: String) {

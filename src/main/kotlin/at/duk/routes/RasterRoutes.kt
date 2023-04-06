@@ -28,6 +28,7 @@ import at.duk.tables.TablePackages
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
 import io.ktor.http.content.*
+import io.ktor.server.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
@@ -44,8 +45,8 @@ import java.time.format.DateTimeFormatter
 
 @Suppress("LongMethod", "ComplexMethod")
 fun Route.rasterRouting(config: ApplicationConfig) {
-    val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
-        Paths.get("").toAbsolutePath().toString()
+    val dataCacheDirectory =
+        config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
 
     route("/admin/raster") {
 
@@ -73,12 +74,13 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             val formParameters = call.receiveParameters()
             when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "")
-                        RasterServices.packageInsertOrUpdate(
-                            formParameters,
-                            formParameters["default"]?.toBoolean() ?: false
-                        )
+                    RasterServices.packageInsertOrUpdate(
+                        formParameters,
+                        formParameters["default"]?.toBoolean() ?: false
+                    )
+
                 1 -> RasterServices.packageDelete(formParameters)
-                else -> { }
+                else -> {}
             }
             call.respondRedirect("./packages")
         }
@@ -108,6 +110,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                         if (part.name == "description") fileDescription = part.value
                         if (part.name == "srid") srid = part.value
                     }
+
                     is PartData.FileItem -> {
                         fileName = part.originalFileName as String
                         val re = "[^A-Za-z0-9 ]".toRegex()
@@ -115,6 +118,7 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                         var fileBytes = part.streamProvider().readBytes()
                         File("$cachePath/$tmpName/$fileName").writeBytes(fileBytes)
                     }
+
                     else -> {}
                 }
             }
@@ -179,19 +183,19 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                     "    ON d.package_id = p.id" +
                     "   ORDER BY p.name, s.name, d.name ASC"
 
-                transaction {
-                    exec(sql) { rs ->
-                        while (rs.next()) {
-                            val id = rs.getInt("id")
-                            val name = rs.getString("name")
-                            val dimension = rs.getString("dimension") ?: ""
-                            val serviceName = rs.getString("service_name") ?: ""
-                            val packageName = rs.getString("package_name") ?: ""
-                            val dataComplete = rs.getBoolean("data_complete")
-                            liste.add(RasterData(id, name, dimension, serviceName, packageName, dataComplete))
-                        }
+            transaction {
+                exec(sql) { rs ->
+                    while (rs.next()) {
+                        val id = rs.getInt("id")
+                        val name = rs.getString("name")
+                        val dimension = rs.getString("dimension") ?: ""
+                        val serviceName = rs.getString("service_name") ?: ""
+                        val packageName = rs.getString("package_name") ?: ""
+                        val dataComplete = rs.getBoolean("data_complete")
+                        liste.add(RasterData(id, name, dimension, serviceName, packageName, dataComplete))
                     }
                 }
+            }
             call.respond(FreeMarkerContent("07_RasterList.ftl", mapOf("result" to liste)))
         }
 

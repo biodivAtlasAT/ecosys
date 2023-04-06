@@ -60,16 +60,16 @@ object ApiServices {
     }
 
     fun generatePackageResponse(): String {
-            val packageList: MutableList<PackageData> = emptyList<PackageData>().toMutableList()
-            transaction {
-                TablePackages.select { TablePackages.deleted eq null }.forEach { rs ->
-                    packageList.add(
-                        PackageData(rs[TablePackages.id].value, rs[TablePackages.name], rs[TablePackages.default])
-                    )
-                }
+        val packageList: MutableList<PackageData> = emptyList<PackageData>().toMutableList()
+        transaction {
+            TablePackages.select { TablePackages.deleted eq null }.forEach { rs ->
+                packageList.add(
+                    PackageData(rs[TablePackages.id].value, rs[TablePackages.name], rs[TablePackages.default])
+                )
             }
-            return mapper.writeValueAsString(EcosysPackageDataResponse(ResponseError(0, ""), packageList))
         }
+        return mapper.writeValueAsString(EcosysPackageDataResponse(ResponseError(0, ""), packageList))
+    }
 
     fun generateLayersResponse(): String {
         val layerList = mutableListOf<LayerData>()
@@ -93,11 +93,11 @@ object ApiServices {
             var layerDetailsId = -1
             TableLayerDetails.select {
                 TableLayerDetails.layerId eq layerId
-                }.andWhere {
-                    TableLayerDetails.keyId eq layerKey
-                }.also {
-                    if (!it.empty())
-                        layerDetailsId = it.first()[TableLayerDetails.id].value
+            }.andWhere {
+                TableLayerDetails.keyId eq layerKey
+            }.also {
+                if (!it.empty())
+                    layerDetailsId = it.first()[TableLayerDetails.id].value
             }
             if (layerDetailsId > -1)
                 fillRasterServiceValsSingleList(packageId, layerDetailsId, rasterServiceValsSingle)
@@ -148,7 +148,7 @@ object ApiServices {
             " where layer_details.id = $layerId and raster_data.id = $rasterId) as subLayer," +
             " (select raster_data.rast from raster_data where raster_data.id = $rasterId) as subRaster) as " +
             "resultRecords) select sum((result::text::raster_values).r_value *(result::text::raster_values).r_count)" +
-                " / sum((result::text::raster_values).r_count) as average from resultRecords;"
+            " / sum((result::text::raster_values).r_count) as average from resultRecords;"
 
         var result: List<Pair<String, Double?>> = emptyList()
         transaction {
@@ -165,7 +165,7 @@ object ApiServices {
                 "categories c where s.id in (select distinct (service_id) from raster_data where " +
                 "package_id = $packageId) and s.deleted is null and s.category_id = c.id;"
 
-        val categoryList = mutableMapOf<Int, CategoryData> ()
+        val categoryList = mutableMapOf<Int, CategoryData>()
         val serviceList = mutableListOf<ServiceData>()
 
         transaction {
@@ -189,9 +189,9 @@ object ApiServices {
     }
 
     fun generateServiceResponse(packageId: Int): String =
-         mapper.writeValueAsString(
-             EcosysServiceDataResponse(ResponseError(0, ""), getServicesForPackage(packageId))
-         )
+        mapper.writeValueAsString(
+            EcosysServiceDataResponse(ResponseError(0, ""), getServicesForPackage(packageId))
+        )
 
     fun generateRasterDataResponseResponse(rasterDataRequest: RasterDataRequest): String {
 
@@ -265,12 +265,12 @@ object ApiServices {
             selStmtList.add(
                 "Select $index as pointId, dimension, statistics, id, geoserver_layer_name, geoserver_working_space, " +
                         "service_id, " +
-                    "ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(${pair.first}, ${pair.second}), 4326), " +
-                    "ST_SRID(rast))) as v from raster_data where package_id = ${rasterDataRequest.packageID} " +
-                    "and data_complete is true and service_id in " +
-                    rasterDataRequest.services!!.joinToString(separator = ",", prefix = "(", postfix = ")") {
-                        it.toString()
-                    }
+                        "ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(${pair.first}, ${pair.second}), 4326), " +
+                        "ST_SRID(rast))) as v from raster_data where package_id = ${rasterDataRequest.packageID} " +
+                        "and data_complete is true and service_id in " +
+                        rasterDataRequest.services!!.joinToString(separator = ",", prefix = "(", postfix = ")") {
+                            it.toString()
+                        }
             )
         }
 
@@ -280,6 +280,7 @@ object ApiServices {
     fun generateProjectsResponse(): String {
         @Serializable
         data class ProjectTemp(val id: Int, val name: String)
+
         @Serializable
         data class EcosysProjectDataResponse(val error: ResponseError, val projects: List<ProjectTemp>)
 
@@ -288,16 +289,17 @@ object ApiServices {
         transaction {
             TableProjects.select { TableProjects.deleted eq null }
                 .andWhere { TableProjects.enabled eq true }.forEach { rs ->
-                projectList.add(
-                    ProjectTemp(rs[TableProjects.id].value, rs[TableProjects.name])
-                )
-            }
+                    projectList.add(
+                        ProjectTemp(rs[TableProjects.id].value, rs[TableProjects.name])
+                    )
+                }
         }
         return mapper.writeValueAsString(EcosysProjectDataResponse(ResponseError(0, ""), projectList))
     }
 
     suspend fun generateProjectResponse(projectId: Int, config: ApplicationConfig): String {
         val collectoryUrl = config.propertyOrNull("atlas.collectory")?.getString() ?: ""
+
         data class EcosysProjectDataResponse(val error: ResponseError, val projects: ProjectData?)
 
         val project = ProjectData.getById(projectId)
@@ -354,6 +356,7 @@ object ApiServices {
             val id: String,
             val list: List<SpeciesData>
         )
+
         data class EcosysProjectSpeciesDataResponse(val error: ResponseError, val speciesGroup: SpeciesGroup)
 
         val speciesList = mutableListOf<SpeciesData>()

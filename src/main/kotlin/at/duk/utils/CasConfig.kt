@@ -27,6 +27,7 @@ class CasConfig(config: ApplicationConfig) {
     val protectedRoutes: MutableMap<String, List<String>> = mutableMapOf()
     val behindAProxy = config.propertyOrNull("cas.behindAProxy")?.getString().toBoolean()
     val logoutUrl = config.propertyOrNull("cas.logoutUrl")?.getString() ?: ""
+
     init {
         config.configList("cas.protectedRoutes").forEach { applicationConfig ->
             applicationConfig.keys().forEach {

@@ -23,7 +23,6 @@ import at.duk.tables.TableServices
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -86,9 +85,9 @@ object AdminServices {
     }
 
     fun resolveSVGPath(str: String?) = if (str == null)
-            "static/svg/dummy.svg"
-        else
-            "assets/svg/$str"
+        "static/svg/dummy.svg"
+    else
+        "assets/svg/$str"
 
     fun getUniqueSVGName(svgDataFolder: File): String {
         var tmpFileName = "SVG_${RasterServices.genTempName(15)}.svg"
@@ -110,6 +109,7 @@ object AdminServices {
         if (!File("$df").exists()) File("$df").mkdir()
         return df
     }
+
     fun getProjectDataFolder(dataCacheDirectory: String, projectId: Int): File {
         val dataFolder = File(dataCacheDirectory).resolve("projects")
         if (!File("$dataFolder").exists()) File("$dataFolder").mkdir()
@@ -129,5 +129,7 @@ object AdminServices {
         HttpClient(CIO).request(url) {
             method = HttpMethod.Get
         }.status == HttpStatusCode.OK
-    } catch (ex: Exception) { false }
+    } catch (ex: Exception) {
+        false
+    }
 }

@@ -77,7 +77,7 @@ object LayerServices {
                             val geomJson = mapper.writeValueAsString(spatialLayerPart)
                             exec(
                                 "insert into layer_details (layer_id, sequence, key_id, geom) values " +
-                                   "($layerId, ${spatialObject.pid}, '$key', ST_GeomFromGeoJSON('$geomJson'))"
+                                        "($layerId, ${spatialObject.pid}, '$key', ST_GeomFromGeoJSON('$geomJson'))"
                             )
                         }
                     }
@@ -93,8 +93,8 @@ object LayerServices {
     }
 
     private fun prepareDatabase(config: ApplicationConfig): List<Int> {
-        val layersToSync = config.propertyOrNull("dataCache.layersToSync")?.getString()?.replace(" ", "")?.
-            split(",")?.filter { it.toIntOrNull() != null }?.map { it.toInt() } ?: emptyList()
+        val layersToSync = config.propertyOrNull("dataCache.layersToSync")?.getString()?.replace(" ", "")?.split(",")
+            ?.filter { it.toIntOrNull() != null }?.map { it.toInt() } ?: emptyList()
 
         if (layersToSync.isEmpty()) {
             logger.info("No layers to sync - due to configuration!")
@@ -103,10 +103,10 @@ object LayerServices {
         }
         transaction {
             val idsToDelete = TableLayers.select {
-                TableLayers.spatialLayerId notInList(layersToSync.toMutableList().map { "cl$it" })
+                TableLayers.spatialLayerId notInList (layersToSync.toMutableList().map { "cl$it" })
             }.map { it[TableLayers.id].value }
-            TableLayerDetails.deleteWhere { TableLayerDetails.layerId inList(idsToDelete) }
-            TableLayers.deleteWhere { TableLayers.id inList(idsToDelete) }
+            TableLayerDetails.deleteWhere { TableLayerDetails.layerId inList (idsToDelete) }
+            TableLayers.deleteWhere { TableLayers.id inList (idsToDelete) }
         }
         return layersToSync
     }
@@ -205,8 +205,8 @@ object LayerServices {
     }
 
     fun checkIfSyncAlreadyRunning(config: ApplicationConfig) =
-            File(getDataCacheSyncDirectory(config).resolve("sync.started").toString()).exists() &&
-            !File(getDataCacheSyncDirectory(config).resolve("sync.finished").toString()).exists()
+        File(getDataCacheSyncDirectory(config).resolve("sync.started").toString()).exists() &&
+                !File(getDataCacheSyncDirectory(config).resolve("sync.finished").toString()).exists()
 
     fun getDataCacheSyncDirectory(config: ApplicationConfig): File {
         val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("")

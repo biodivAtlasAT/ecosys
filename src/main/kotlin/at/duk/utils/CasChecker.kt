@@ -42,9 +42,9 @@ object CasChecker {
             val newUri = if (pos > 0) uri.substring(0, pos) else uri
 
             val neededRoles = casConfig.protectedRoutes
-                                .toSortedMap(compareBy<String> { it.length * -1 }.thenBy { it })
-                                .filterKeys { k -> newUri.startsWith(k) }
-                                .takeIf { it.isNotEmpty() }?.values?.first() ?: emptyList()
+                .toSortedMap(compareBy<String> { it.length * -1 }.thenBy { it })
+                .filterKeys { k -> newUri.startsWith(k) }
+                .takeIf { it.isNotEmpty() }?.values?.first() ?: emptyList()
 
             if (neededRoles.isNotEmpty()) {
                 if (call.request.queryParameters.contains("ticket")) {
@@ -69,7 +69,7 @@ object CasChecker {
                     if (call.request.cookies["JSESSIONID"] == null) {
                         call.respondRedirect(
                             "${casConfig.redirectToLoginUrl}?service=" +
-                                getOrigin(this, casConfig.behindAProxy, uri),
+                                    getOrigin(this, casConfig.behindAProxy, uri),
                             false
                         )
                     } else {

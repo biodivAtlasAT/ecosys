@@ -34,6 +34,7 @@ class AppDataBase(
         flyway.migrate()
         orm()
     }
+
     private fun connectionPool() {
         val dbConfig = this.config.config("ktor.database")
         val config = HikariConfig().apply {
@@ -47,5 +48,6 @@ class AppDataBase(
         }
         dataSource = HikariDataSource(config)
     }
+
     private fun orm() = org.jetbrains.exposed.sql.Database.connect(dataSource)
 }

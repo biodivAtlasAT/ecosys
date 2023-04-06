@@ -117,13 +117,13 @@ object RasterServices {
         tmpName: String, connStr: String, id: Int, srid: String
     ) = this.replace(
         "%postgresqlBinDirectory%",
-            config.propertyOrNull("ktor.database.postgresqlBinDirectory")?.getString() ?: ""
+        config.propertyOrNull("ktor.database.postgresqlBinDirectory")?.getString() ?: ""
     ).replace("%uploadDirectory%", jobsPath.toString())
-            .replace("%tifFileName%", fileName)
-            .replace("%tableName%", "table_$tmpName")
-            .replace("%connection%", connStr)
-            .replace("%id%", id.toString())
-            .replace("%srid%", srid)
+        .replace("%tifFileName%", fileName)
+        .replace("%tableName%", "table_$tmpName")
+        .replace("%connection%", connStr)
+        .replace("%id%", id.toString())
+        .replace("%srid%", srid)
 
     private fun generateScripts(
         config: ApplicationConfig, tmpName: String, fileName: String, id: Int, srid: String
@@ -171,7 +171,7 @@ object RasterServices {
             }.value
 
             val sql = "UPDATE raster_data " +
-                "SET rast = $tmpTableName.rast, srid = ST_SRID($tmpTableName.rast) " +
+                    "SET rast = $tmpTableName.rast, srid = ST_SRID($tmpTableName.rast) " +
                     " FROM $tmpTableName " +
                     " WHERE raster_data.id = $rasterDataId " +
                     " AND $tmpTableName.rid = 1"
@@ -205,7 +205,7 @@ object RasterServices {
         return rasterDataId
     }
 
-     fun removeFromRasterData(it: Int, dataCacheDirectory: String) {
+    fun removeFromRasterData(it: Int, dataCacheDirectory: String) {
         transaction {
             val r = TableRasterData.select { TableRasterData.id eq it }.first()[TableRasterData.rasterTaskId] ?: -1
             if (r > -1) {

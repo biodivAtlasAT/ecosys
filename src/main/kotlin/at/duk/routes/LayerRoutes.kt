@@ -96,7 +96,7 @@ fun Route.layerRouting(config: ApplicationConfig) {
             // to ensure that the coroutine has already created the marker files!
             Thread.sleep(2000)
             call.respondRedirect("./sync")
-       }
+        }
 
         get("/show") {
             call.respond(FreeMarkerContent("99_Development.ftl", null))

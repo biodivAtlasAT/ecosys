@@ -37,6 +37,7 @@ import at.duk.tables.biotop.*
 import at.duk.utils.CSVChecker
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.http.content.*
+import io.ktor.server.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
@@ -58,8 +59,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
     val geoserverWorkspace = config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
     val geoserverUrl = config.propertyOrNull("geoserver.url")?.getString() ?: ""
     val collectoryUrl = config.propertyOrNull("atlas.collectory")?.getString()
-    val dataCacheDirectory = config.propertyOrNull("dataCache.directory")?.getString() ?:
-    Paths.get("").toAbsolutePath().toString()
+    val dataCacheDirectory =
+        config.propertyOrNull("dataCache.directory")?.getString() ?: Paths.get("").toAbsolutePath().toString()
 
     route("/admin/biotop") {
         post("/{projectId}/removeGeoserverData") {
@@ -83,9 +84,9 @@ fun Route.biotopRouting(config: ApplicationConfig) {
 
         get("/projects") {
             val projectsList = transaction {
-                    TableProjects.select { TableProjects.deleted eq null }
-                        .orderBy(TableProjects.name)
-                        .map { ProjectData.mapRSToProjectData(it) }
+                TableProjects.select { TableProjects.deleted eq null }
+                    .orderBy(TableProjects.name)
+                    .map { ProjectData.mapRSToProjectData(it) }
             }
             val report = call.request.queryParameters["report"]
             call.respond(
@@ -108,8 +109,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             @Suppress("ComplexCondition")
             if (projectId != null && layer != null && typeFeature != "-1" && nameFeature != "-1" && workspace != null) {
                 val mapOfFeature = call.request.queryParameters["layer"]?.let { lay ->
-                        geoServer.getListOfFeatures(lay)
-                    } ?: emptyMap()
+                    geoServer.getListOfFeatures(lay)
+                } ?: emptyMap()
 
                 transaction {
                     TableProjects.update({ TableProjects.id eq projectId }) {
@@ -294,8 +295,8 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                 )
                 usedClassIds.addAll(
                     TableProjects.select { TableProjects.deleted eq null }
-                    .map { rs -> rs[TableProjects.classId] }
-                    .distinct()
+                        .map { rs -> rs[TableProjects.classId] }
+                        .distinct()
                 )
             }
             call.respond(
@@ -335,6 +336,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                         File(classesDataFolder.resolve(fileName!!).toString())
                             .writeBytes(part.streamProvider().readBytes())
                     }
+
                     else -> {}
                 }
             }
@@ -545,6 +547,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
                         File(projectDataFolder.resolve(fileName!!).toString())
                             .writeBytes(part.streamProvider().readBytes())
                     }
+
                     else -> {}
                 }
             }
@@ -584,7 +587,7 @@ fun Route.biotopRouting(config: ApplicationConfig) {
             @Suppress("ComplexCondition")
             if (speciesColId.isNotEmpty() && speciesColTaxonId.isNotEmpty() && speciesColTaxonName.isNotEmpty() &&
                 (speciesColIdChanged || speciesColTaxonIdChanged || speciesColTaxonNameChanged)
-                ) {
+            ) {
 
                 transaction {
                     TableProjects.update({ TableProjects.id eq projectId }) {

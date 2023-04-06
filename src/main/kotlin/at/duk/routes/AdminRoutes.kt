@@ -30,6 +30,7 @@ import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
 import at.duk.tables.TableServices.updateTableServices
 import io.ktor.http.content.*
+import io.ktor.server.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
@@ -83,9 +84,10 @@ fun Route.adminRouting(config: ApplicationConfig) {
             val formParameters = call.receiveParameters()
             when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "")
-                        AdminServices.categoryInsertOrUpdate(formParameters)
+                    AdminServices.categoryInsertOrUpdate(formParameters)
+
                 1 -> AdminServices.categoryDelete(formParameters)
-                else -> { }
+                else -> {}
             }
             call.respondRedirect("./categories")
         }
@@ -105,7 +107,7 @@ fun Route.adminRouting(config: ApplicationConfig) {
                                 rs[TableServices.originalSvgName] ?: "dummy.svg"
                             )
                         }
-                    )
+                )
                 idsInUse.addAll(
                     TableRasterData.selectAll().map { rs -> rs[TableRasterData.serviceId] ?: -1 }
                 )
@@ -131,8 +133,9 @@ fun Route.adminRouting(config: ApplicationConfig) {
             when (formParameters["mode"]?.toIntOrNull() ?: -1) {
                 0 -> if (formParameters["name"] != "" && (formParameters["categoryId"]?.toIntOrNull() ?: -1) != -1)
                     AdminServices.serviceInsertOrUpdate(formParameters)
+
                 1 -> AdminServices.serviceDelete(formParameters)
-                else -> { }
+                else -> {}
             }
             call.respondRedirect("./services")
         }
@@ -158,11 +161,13 @@ fun Route.adminRouting(config: ApplicationConfig) {
                     is PartData.FormItem -> {
                         if (part.name == "uploadId") uploadId = part.value.toIntOrNull()
                     }
+
                     is PartData.FileItem -> {
                         fileName = part.originalFileName as String
                         File(svgDataFolder.resolve(tmpFileName).toString())
                             .writeBytes(part.streamProvider().readBytes())
                     }
+
                     else -> {}
                 }
             }
