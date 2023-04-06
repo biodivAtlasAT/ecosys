@@ -29,7 +29,9 @@
                         Datei:
                     </div>
                     <div class="col-md-3 m-2"><b>${classData.filename}</b></div>
-                    <div class="col-md-3 m-2">
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-2 m-2">
                         <button type="button" class="btn btn-sm btn-outline-danger" <#if classIsInUse>disabled</#if> onclick="classTypeDelete();">CSV-Datei löschen</button>
                     </div>
                 </div>

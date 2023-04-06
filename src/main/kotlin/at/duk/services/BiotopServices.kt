@@ -91,9 +91,28 @@ object BiotopServices {
             }
         }
 
+    fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
+
+    fun removeBOM(content: MutableList<String>) {
+        val ba = content[0].toByteArray()
+        if (ba.size < 3) return
+
+        val bom = ByteArray(3)
+        bom[0] = content[0].toByteArray()[0]
+        bom[1] = content[0].toByteArray()[1]
+        bom[2] = content[0].toByteArray()[2]
+
+        val bomHex = bom.toHexString()
+        if ("efbbbf".equals(bomHex, ignoreCase = true)) {
+            val newString = content[0].toByteArray().copyOfRange(3, content[0].toByteArray().size)
+            content[0] = String(newString)
+        }
+    }
+
     fun classCSVProcessing(filePath: String, classId: Int): Pair<Boolean, String> {
         var report = ""
-        val content = File(filePath).readLines()
+        val content = File(filePath).readLines().toMutableList()
+        removeBOM(content)
 
         report += "<li>Analysierte Zeilen: ${content.size}</li>"
 
