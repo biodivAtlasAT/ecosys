@@ -73,7 +73,6 @@ fun Application.module() {
 
     val casConfig = CasConfig(environment.config)
     val alaCASPlugin = createApplicationPlugin(name = "AlaCASPlugin") {
-        println("AlaCASPlugin is installed! ")
         if (casConfig.enabled) {
             onCall { call -> CasChecker.authenticate(call, casConfig) }
         }
