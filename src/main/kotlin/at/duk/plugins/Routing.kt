@@ -50,13 +50,21 @@ fun Application.configureRouting() {
         swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
 
         get("/") {
-            // get Biodiversity-Atlas navigation from data cache
             if (!File(cachePath.path).resolve("navigation.html").exists()) {
                 rtLogger.error("Header file navigation.html does nit exist in dataCache/AlaNavigation directory!")
                 call.respondText("Configuration Error for Navigation Header!", ContentType.Text.Html)
                 return@get
             }
             call.respondText(File(cachePath.path).resolve("navigation.html").readText(), ContentType.Text.Html)
+        }
+
+        get("/biotop") {
+            if (!File(cachePath.path).resolve("navigationBiotop.html").exists()) {
+                rtLogger.error("Header file navigation.html does nit exist in dataCache/AlaNavigation directory!")
+                call.respondText("Configuration Error for Navigation Header!", ContentType.Text.Html)
+                return@get
+            }
+            call.respondText(File(cachePath.path).resolve("navigationBiotop.html").readText(), ContentType.Text.Html)
         }
 
         // Static plugin
