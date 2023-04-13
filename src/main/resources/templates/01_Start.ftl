@@ -8,7 +8,7 @@
         <#include "common/navigation.ftl">
     </div>
     <div class="col-md-8 m-4">
-        <h1 class="text-primary">Welcome to the ECOSYS</h1>
+        <h1 class="text-primary">Herzlich Willkommen!</h1>
     </div>
 </div>
 
