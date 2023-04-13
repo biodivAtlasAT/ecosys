@@ -42,7 +42,7 @@ plugins {
 }
 
 group = "at.duk"
-version = "0.0.1"
+version = "0.9.0"
 application {
     mainClass.set("at.duk.ApplicationKt")
 
@@ -109,18 +109,18 @@ dependencies {
 
     implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
-    implementation("io.ktor:ktor-server-core-jvm:2.2.4")
-    implementation("io.ktor:ktor-server-host-common-jvm:2.2.4")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:2.2.4")
-    implementation("io.ktor:ktor-server-swagger:2.2.4")
-    implementation("io.ktor:ktor-server-html-builder-jvm:2.2.4")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:2.2.4")
-    implementation("io.ktor:ktor-server-netty-jvm:2.2.4")
-    implementation("io.ktor:ktor-server-sessions-jvm:2.2.4")
-    implementation("io.ktor:ktor-client-cio-jvm:2.2.4")
-    implementation("io.ktor:ktor-server-freemarker:2.2.4")
-    implementation("io.ktor:ktor-server-cors:2.2.4")
-    testImplementation("io.ktor:ktor-server-tests-jvm:2.2.4")
+    implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-host-common-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-swagger:$ktorVersion")
+    implementation("io.ktor:ktor-server-html-builder-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-sessions-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-freemarker:$ktorVersion")
+    implementation("io.ktor:ktor-server-cors:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektFormattingVersion")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
