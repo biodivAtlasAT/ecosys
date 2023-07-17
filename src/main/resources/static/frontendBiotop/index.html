@@ -13,6 +13,11 @@
     <link rel="stylesheet" type="text/css" href="styles/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="styles/leaflet.css" />
     <link rel="profile" href="https://gmpg.org/xfn/11">
+    <!-- rauslöschen später -->
+    <link href="https://core.biodiversityatlas.at/css/bootstrap.min.css" rel="stylesheet" media="screen,print">
+    <link href="https://core.biodiversityatlas.at/css/bootstrap-theme.min.css" rel="stylesheet" media="screen,print">
+    <link href="https://core.biodiversityatlas.at/css/ala-styles.css" rel="stylesheet" media="screen,print">
+    <!-- rauslöschen ende -->
     <title>Biodiversitäts-Atlas Österreich &#8211; Frei zugängliches Onlineportal zur Entdeckung der Vielfalt an Organismen und Lebensräumen in Österreich</title>
     <meta name="robots" content="noindex,nofollow">
     <!--<link rel='dns-prefetch' href='//fonts.googleapis.com' />-->
@@ -37,37 +42,53 @@
     <script type="text/javascript" src="scripts/proj4.js"></script>
     <script type="text/javascript" src="scripts/proj4leaflet.js"></script>
     <script type="text/javascript" src="scripts/GeoUtils.js"></script>
+    <script type="text/javascript" src="scripts/turf.js"></script>
 </head>
 <body onload="func_initMap();">
 <!-- Container ecosys servcies -->
 <div id="cnt_id">
-    <div id="id_mainNav">
-        <!--<button class="cl_button" type="button" id="id_btnLayer" data-i18n="Layermodus auswählen"></button>--->
-        <!--<button class="cl_button" type="button" id="id_btnecosys" data-i18n="Ökosystemleistungen auswählen"></button>-->
-        <div id="id_mod_1">
-            <button class="cl_button" type="button" id="id_btnNewMark" data-i18n="Marker setzen"></button>
-            <button class="cl_button" type="button" id="id_btnMarkConn" data-i18n="Verbindung setzen"></button>
+    <section id="breadcrumb" style="background-color: #49754a;">
+        <div class="container-fluid">
+            <div class="row">
+                <nav aria-label="Breadcrumb" role="navigation">
+                    <ol class="breadcrumb-list">
+                        <li><a href="https://biodiversityatlas.at" style="font-size: 1em; color: white;">Home</a></li>
+                        <li class="active" data-i18n="Biotop- & Lebensraumtypen" style="font-size: 1em; color: white;">Biotop- & Lebensraumtypen</li> <!-- Biological Habitats -->
+                    </ol>
+                </nav>
+            </div>
         </div>
-        <div  id="id_mod_2">
-            <select class="cl_select" id="id_addLayer">
-            </select>
-        </div>
-        <select class="cl_select" id="id_packageID">
-        </select>
-        <select class="cl_select" id="id_mapLayer">
-            <option class="cl_option" data-i18n="Karte auswählen" selected='true' disabled>Karte auswählen</option>
-            <option class="cl_option" data-i18n="Straßenkarte" value="0">Straßenkarte</option>
-            <option class="cl_option" data-i18n="Topographiekarte" value="1">Topographiekarte</option>
-            <option class="cl_option" data-i18n="Satelitenkarte" value="2">Satelitenkarte</option>
-        </select>
-    </div>
+    </section>
+    <!--<div id="id_mainNav">
+        <button class="cl_button" type="button" id="id_btnLayer" data-i18n="Layermodus auswählen"></button>
+        <button class="cl_button" type="button" id="id_btnecosys" data-i18n="Ökosystemleistungen auswählen"></button>
+    </div>-->
     <div id="cnt_main">
         <div id="info_icon"></div>
         <div id="cnt_map">
-            <div id="eSys">
-                <div class="cl_descrH"><b>Ökosystemleistungen auswählen</b></div>
-                <div class="cl_ecosys">
-                    <ul id='sortable'></ul>
+            <div class="resizable" id="eSys">
+                <!--<div class="cl_descrH" data-i18n="Suche nach Lebensraumtypen"><b>Suche nach Lebensraumtypen</b></div>
+                <div id="id_mod_1">
+                    <input class="cl_search" type="text" />
+                    <button class="cl_button" onclick="func_CQLSubm();"></button>
+                </div>-->
+                <div class="cl_descrH" data-i18n="Projekt auswählen"><b>Projekt auswählen</b></div>
+                <div  id="id_mod_2">
+                    <select class="cl_select" id="id_addLayer">
+                    </select>
+                </div>
+                <div class="cl_descrH" data-i18n="Kartendarstellung auswählen"><b>Kartendarstellung auswählen</b></div>
+                <select class="cl_select" id="id_mapLayer">
+                    <option class="cl_option" data-i18n="Karte auswählen" selected='true' disabled>Karte auswählen</option>
+                    <option class="cl_option" data-i18n="Straßenkarte" value="0">Straßenkarte</option>
+                    <option class="cl_option" data-i18n="Topographiekarte" value="1">Topographiekarte</option>
+                    <option class="cl_option" data-i18n="Satelitenkarte" value="2">Satelitenkarte</option>
+                </select>
+                <div class="cl_descrH"><b>Lebensraumtypen auswählen</b></div>
+                <div class="cl_habitatTypes">
+                    <ul class='cl_habitats'>
+
+                    </ul>
                 </div>
             </div>
             <div id="map"></div>
@@ -79,10 +100,15 @@
         </div>
     </div>
     <div id="cnt_nav">
-        <select id="id_viewQ" onchange="func_selectQ()">
+        <select class="cl_optDia" id="id_viewQ" onchange="func_selectQ()">
             <option data-i18n="Quintile" value="1">Quintile</option>
             <option data-i18n="Absolutwert" value="0">Absolutwert</option>
         </select>
+        <select class="cl_optDia" id="id_viewP" onchange="func_selectP()">
+            <option data-i18n="nur gesetzte Marker" value="1">nur gesetzte Marker</option>
+            <option data-i18n="integrierte Marker" value="0">integrierte Marker</option>
+        </select>
+        <input class="cl_optDia" id="id_numIv" type="number" min="1000" max="400000" value="1000"></input>
         <div id="id_nav" class="cl_nav">
         </div>
     </div>
@@ -90,28 +116,6 @@
 <script type="text/javascript">
     var url_ecosys = "https://ecosys.biodivdev.at/";
     var url_i18n = "i18n/";
-    $("#sortable").sortable(
-        {
-            roup: 'serialization',
-            onDrop: function () {
-                var it_x = 0;
-                if ($('input.cl_cbEsys:checked').length !== 0) {
-                    if (marker.length > 0) {
-                        $('.cl_esysInf').children().remove();
-                        for (it_r = 0; it_r < marker.length; it_r++) {
-                            if (popupArr[it_r].isOpen()) {
-                                it_x = it_r;
-                                break;
-                            }
-                        }
-                        map.closePopup();
-                        marker[it_x].fire('click');
-                    }
-                } else {
-                    map.closePopup();
-                }
-            }
-        });
 </script>
 <script type="text/javascript" src="scripts/script.js"></script>
 </body>

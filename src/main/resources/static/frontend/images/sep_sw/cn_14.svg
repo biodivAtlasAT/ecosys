@@ -1,0 +1,36 @@
+<svg version="1.1" id="id_S11" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 75.54 75.54" style="enable-background:new 0 0 75.54 75.54;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:none;stroke:#C6C6C6;}
+	.st2{fill:none;stroke:#C6C6C6;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st3{fill:none;stroke:#706F6F;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st4{fill:none;stroke:#9D9D9C;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st5{fill:#9D9D9C;}
+	.st6{fill:#E3E3E3;}
+	.st7{fill:#C6C6C6;}
+</style>
+<polygon class="st0" points="0.15,0.46 0.15,76 75.68,76 75.68,0.46 0.15,0.46 "/>
+<polygon class="st1" points="0.15,0.46 0.15,76 75.68,76 75.68,0.46 0.15,0.46 "/>
+<line class="st2" x1="53.07" y1="68.18" x2="67.57" y2="65.62"/>
+<line class="st3" x1="27.16" y1="20.89" x2="27.16" y2="58.62"/>
+<line class="st2" x1="56.8" y1="65.91" x2="70.88" y2="70.21"/>
+<line class="st4" x1="56.12" y1="34.27" x2="56.12" y2="45.44"/>
+<path class="st3" d="M20.26,53.26v5.19 M41.77,53.26v5.19"/>
+<path class="st4" d="M49.07,36.26v22.36 M10.9,48.19v10.43"/>
+<line class="st3" x1="34.93" y1="42.81" x2="34.93" y2="58.62"/>
+<line class="st3" x1="4.49" y1="70.58" x2="18.33" y2="65.54"/>
+<line class="st3" x1="27.16" y1="64.5" x2="41.09" y2="69.29"/>
+<line class="st2" x1="39.39" y1="66.04" x2="54.12" y2="66.04"/>
+<line class="st3" x1="15.01" y1="70.6" x2="29.51" y2="68.04"/>
+<path class="st5" d="M34.41,38.12c5.95,0,10.77-4.82,10.77-10.77c0-5.95-4.82-10.77-10.77-10.77c-5.94,0-10.75,4.8-10.77,10.74
+	c0,5.95,4.82,10.77,10.77,10.77l0,0V38.12z"/>
+<path class="st5" d="M24.28,30.18c7.27,0,13.16-5.89,13.16-13.16c0-7.27-5.89-13.16-13.16-13.16S11.12,9.75,11.12,17.02l0,0
+	C11.12,24.29,17.01,30.18,24.28,30.18z"/>
+<path class="st6" d="M10.9,44.01c4.26,0.01,7.72-3.45,7.73-7.71c0.01-4.26-3.45-7.72-7.71-7.73c-4.26-0.01-7.72,3.45-7.73,7.71
+	c0,0,0,0.01,0,0.01C3.19,40.55,6.64,44.01,10.9,44.01z"/>
+<path class="st6" d="M55.44,30.84c4.26,0.01,7.72-3.45,7.73-7.71c0.01-4.26-3.45-7.72-7.71-7.73c-4.26-0.01-7.72,3.45-7.73,7.71
+	c0,0,0,0.01,0,0.01C47.73,27.38,51.18,30.84,55.44,30.84z"/>
+<path class="st7" d="M65.64,60.83c4.28,0,7.75-3.18,7.75-7.09s-3.47-7.09-7.75-7.09s-7.75,3.18-7.75,7.09S61.36,60.83,65.64,60.83z"
+	/>
+</svg>

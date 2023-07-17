@@ -5,30 +5,105 @@ body {
     padding: 0;
     margin: 0;
 }
+.cl_ul {
+    position: relative;
+    margin: 0;
+}
 #map {
     position: relative;
     float: left;
-    width: 77%;
+    width: 100em;
     height: 100%;
+    z-index: 0;
 }
 #eSys {
     position: relative;
-    width: 23%;
-    float: left;
+    width: 26em;
+    float:left;
+    margin-left: 2.5em;
 }
 #id_welcome {
     color: #cccccc;
 }
+.cl_cmp {
+    position: relative;
+    margin-top: 1em;
+}
+.cl_SName {
+    position: relative;
+    margin-left: 0.7em;
+}
+.cl_catL_1 {
+    border-left: 0.2em solid #98BB1E;
+}
+.cl_catL_2 {
+    border-left: 0.2em solid #F9B100;
+}
+.cl_catL_3 {
+    border-left: 0.2em solid #9F2538;
+}
+.cl_catL_5 {
+    border-left: 0.2em solid #F9B100;
+}
+.cl_catR_1 {
+    border-right: 0.2em solid #98BB1E;
+}
+.cl_catR_2 {
+    border-right: 0.2em solid #F9B100;
+}
+.cl_catR_3 {
+    border-right: 0.2em solid #9F2538;
+}
+.cl_catR_5 {
+    border-right: 0.2em solid #F9B100;
+}
+
+.cl_innerCOB {
+    position: relative;
+    margin-left: 1.2em;
+    margin-top: 0.3em;
+}
+.cl_cob_1 {
+    float: left;
+    accent-color: #98BB1E;
+    transform: scale(1.5);
+}
+.cl_cob_2 {
+    float: left;
+    accent-color: #F9B100;
+    transform: scale(1.5);
+}
+.cl_cob_3 {
+    float: left;
+    accent-color: #9F2538;
+    transform: scale(1.5);
+}
+.cl_cob_5 {
+    float: left;
+    accent-color: #F9B100;
+    transform: scale(1.5);
+}
+.cl_IDred {
+    color: rgba(200, 0, 0, 1);
+    font-weight: bold;
+    font-size: 1.1em;
+}
+.cl_SName {
+    font-weight: bold;
+    margin-left: 2em;
+    float: left;
+}
 .cl_wrapEsys {
     position: relative;
-    height: 2em;
+    height: 2.8em;
     margin-right: 1em;
+    padding-top: 0.4em;
+    list-style: none;
 }
 .minimapNr {
     position: absolute;
     margin-top: 0.7em;
     height: 2em;
-    color: red;
 }
 .markers {
     float: left;
@@ -36,47 +111,44 @@ body {
 }
 .leaflet-popup {
     position: relative;
-    width: 77em;
-    height: 32em;
+    width: 56em;
+    height: 26em;
     z-index: 1200;
 }
 .cl_popup {
     position: relative;
-    width: 67em;
-    height: 32em;
+    width: 100%;
+    height: 100%;
     /* overflow-y: scroll; */
 }
 .cl_descr {
     position: relative;
-    margin-top: 3.4em;
     width: 13em;
 }
 .cl_descrH {
     position: relative;
     margin-top: 1em;
-    margin-left: 1em;
+    font-weight: 700;
 }
 .cl_dimension {
     position: relative;
-    margin-top: 3.4em;
-    width: 4em;
+    width: 6em;
 }
 .cl_value {
     position: relative;
-    margin-top: 3.4em;
-    width: 4em;
+    width: 3.5em;
 }
 .cl_qtArr {
     position: relative;
-    float: left;
-    margin-left: 0.2em;
+    margin-left: 1.2em;
     margin-top: 1.75em;
 }
 .cl_column {
     position: relative;
     float: left;
-    height: 10em;
-    margin-left: 1.2em;
+    height: 5.8em;
+    padding-left: 0.15em;
+    padding-right: 0.15em;
 }
 .cl_ecosys {
     position: relative;
@@ -94,7 +166,6 @@ body {
     height: 17em;
     width: 17em;
     margin-left: 2.4em;
-    margin-right: 2.4em;
 }
 .cl_minimap {
     position: relative;
@@ -108,15 +179,25 @@ body {
 .cl_mark {
     position: relative;
     top: -3em;
+    width: 38em;
+}
+.cl_flL {
+    position: relative;
+    float:left;
 }
 .cl_delMark {
-    position: absolute;
-    margin-top: 0.7em;
-    margin-left: 16em;
-    height: 2em;
-    background-image: url("/images/img_003_close.svg");
+    position: relative;
+    float:right;
+    margin-right: 2em;
+    margin-top: -2.1em;
+    height: 1.6em;
+    width: 1.6em;
+    background-image: url("/proj_ecosys/images/img_003_close.png");
     background-repeat: no-repeat;
     background-size: contain;
+    border: none;
+    background-color: white;
+    z-index: 2000;
 }
 .cl_footer {
     position: relative;
@@ -127,42 +208,54 @@ body {
     width: 100%;
     height: 30em;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 .cl_headID {
     position: relative;
-    margin-top: 0.7em;
-    height: 2em;
+    margin-top: 1.3em;
+    margin-top: 1.3em;
+    height: 3.2em;
     color: rgba(0, 0, 0, 1);
 }
 .cl_row {
     position: relative;
     width: 100%;
-    height: 10em;
+    height: 50px;
+    margin-left: 0.15em;
+    margin-right: 0.15em;
 }
 .cl_fixedW {
     position: relative;
-    width: 38em;
-    height: 10em;
+    width: 270px;
 }
+.cl_tDw {
+    position: relative;
+    margin-top: 2.4em;
+    font-weight: bold;
+    margin-left: 0.4em;
+}
+
 .cl_quint {
     position: relative;
     float: left;
-    height: 7em;
-    width: 7em;
+    height: 50px;
+    width: 50px;
+    margin-top: 1em;
+    margin-left: 0.15em;
 }
 #id_mainNav {
     position: relative;
+    margin-top: 0.6em;
     height: 4.5em;
+    margin-left: 3.1em;
     width: 100%;
 }
 #id_mod_1 {
     position: relative;
-    float: left;
     display: block;
 }
 #id_mod_2 {
     position: relative;
-    float: left;
     display: none;
 }
 #info {
@@ -190,11 +283,13 @@ body {
     height: 100%;
     width: 100%;
     float: left;
+    z-index: 1;
 }
 #cnt_info {
-    position: relative;
+    position: fixed;
     height: 0%;
-    width: 100%;
+    width: 100em;
+    z-index: 2;
 }
 #cnt_map {
     position: relative;
@@ -208,15 +303,17 @@ body {
     padding: 1em;
     width: 3em;
     height: 3em;
-    z-index: 1000;
+    z-index: 2;
 }
 #cnt_nav {
-    position: relative;
-    float: left;
+    position: fixed;
     padding-bottom: 3em;
-    width: 0%;
+    width: 52em;
     height: 100%;
+    background-color: rgb(255, 255, 255);
     overflow-y: scroll;
+    z-index: 2;
+    right: 0;
 }
 #id_nav {
     position: relative;
@@ -224,11 +321,14 @@ body {
     height: 100%;
     z-index: 1000;
     margin-left: 1em;
-    margin-top: 1em;
+    margin-top: 4em;
+}
+.cl_optDia {
+    position: relative;
+    margin-left: 1em;
 }
 .cl_button {
     position: relative;
-    margin-left: 0.5em;
     margin-right: 0.5em;
     background-color: #3f3f3f;
     color: #cccccc;
@@ -236,8 +336,6 @@ body {
 }
 .cl_select {
     position: relative;
-    margin-left: 0.5em;
-    margin-right: 0.5em;
 }
 .line {
     fill: none;
@@ -249,11 +347,15 @@ body {
 }
 #id_addLayer {
     position: relative;
-    float: left;
+    width: 80%;
 }
 #id_mapLayer {
     position: relative;
-    float: left;
+    width: 80%;
+}
+#id_packageID {
+    position: relative;
+    width: 80%;
 }
 .hide {
     display: none !important;
@@ -289,12 +391,12 @@ body {
     color: #4563a5;
 }
 #menu-item-243 {
-    margin-top: 4px;
+    margin-top: 0.15em;
 }
 #menu-item-244,
 #menu-item-245,
 #menu-item-289{
-    margin-top: 4px;
+    margin-top: 0.15em;
 }
 
 /* HOME HEADER */

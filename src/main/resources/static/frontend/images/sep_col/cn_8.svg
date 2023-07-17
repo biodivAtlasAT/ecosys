@@ -1,0 +1,25 @@
+<svg version="1.1" id="id_S6" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 75.54 75.54" style="enable-background:new 0 0 75.54 75.54;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:none;stroke:#C6C6C6;}
+	.st2{fill:none;stroke:#98BC1F;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st3{fill:none;stroke:#B15922;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st4{fill:none;stroke:#009FE3;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st5{fill:#FAB200;}
+	.st6{fill:#98BC1F;}
+</style>
+<polygon class="st0" points="0.14,0.46 0.14,76 75.68,76 75.68,0.46 0.14,0.46 "/>
+<polygon class="st1" points="0.14,0.46 0.14,76 75.68,76 75.68,0.46 0.14,0.46 "/>
+<path class="st2" d="M48.22,32.07v13.55 M37.42,32.07v13.55 M26.62,35.62v10"/>
+<line class="st3" x1="6.93" y1="53.36" x2="53.73" y2="53.36"/>
+<path class="st4" d="M62.55,53.36h6.34 M12.82,61.77h6.34"/>
+<path class="st3" d="M27.26,61.77h34 M19.67,70.18h34"/>
+<path class="st5" d="M14.5,46.38c3.31,0,6-2.69,6-6s-2.69-6-6-6s-6,2.69-6,6S11.19,46.38,14.5,46.38z"/>
+<path class="st6" d="M48.29,25.87c5.96,0.01,10.8-4.83,10.81-10.79c0.01-5.96-4.83-10.8-10.79-10.81
+	C42.35,4.27,37.51,9.1,37.5,15.06c0,0,0,0.01,0,0.01C37.5,21.04,42.34,25.87,48.29,25.87L48.29,25.87z"/>
+<path class="st5" d="M25.71,30.07c3.84,0,7-2.77,7-6.19s-3.12-6.19-7-6.19s-7,2.77-7,6.19S21.83,30.07,25.71,30.07z"/>
+<path class="st5" d="M25.71,20.73c3.13,0,5.66-2.26,5.66-5s-2.53-5-5.66-5s-5.67,2.26-5.67,5S22.57,20.73,25.71,20.73z"/>
+<path class="st5" d="M25.71,12.07c2.09-0.22,3.61-2.1,3.39-4.19c-0.22-2.09-2.1-3.61-4.19-3.39c-1.95,0.21-3.42,1.86-3.41,3.82
+	C21.63,10.51,23.51,12.19,25.71,12.07z"/>
+</svg>

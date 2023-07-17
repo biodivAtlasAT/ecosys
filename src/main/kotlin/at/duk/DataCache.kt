@@ -25,7 +25,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.config.*
-import koodies.text.toLowerCase
+// import koodies.text.toLowerCase
 import org.jsoup.Jsoup
 import java.io.File
 import java.nio.file.Paths
@@ -92,7 +92,7 @@ object DataCache {
         }
         // 3. Insert "css" and "js" links if not already included; if not included, set path to "/static..."
         ecosys.head().getElementsByTag("script").forEach {
-            if (it.attr("src").split("/").last().toLowerCase() != "jquery.js")
+            /* if (it.attr("src").split("/").last().toLowerCase() != "jquery.js") */
                 brand.head().append(it.toString().replace("src=\"scripts", "src=\"static/$frontendFolder/scripts"))
         }
         ecosys.head().getElementsByTag("link").forEach {

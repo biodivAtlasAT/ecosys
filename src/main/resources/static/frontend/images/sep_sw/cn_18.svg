@@ -1,0 +1,27 @@
+<svg version="1.1" id="id_K12" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 75.54 75.54" style="enable-background:new 0 0 75.54 75.54;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:none;stroke:#C6C6C6;}
+	.st2{fill:none;stroke:#9D9D9C;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st3{fill:none;stroke:#706F6F;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st4{fill:none;stroke:#C6C6C6;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st5{fill:#706F6F;}
+	.st6{fill:none;stroke:#FFFFFF;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+	.st7{fill:none;stroke:#3C3C3B;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;}
+</style>
+<polygon class="st0" points="0.15,0.47 0.15,76 75.68,76 75.68,0.47 0.15,0.47 "/>
+<polygon class="st1" points="0.15,0.47 0.15,76 75.68,76 75.68,0.47 0.15,0.47 "/>
+<path class="st2" d="M8.48,31.9v29.3 M17.87,44.68v15.81 M28.32,44.68v15.81"/>
+<line class="st3" x1="5.62" y1="68.26" x2="38.71" y2="68.26"/>
+<line class="st4" x1="46.22" y1="68.26" x2="71.09" y2="68.26"/>
+<path class="st5" d="M53.31,61.58c10.24,0,18.55-8.31,18.55-18.55s-8.31-18.55-18.55-18.55c-10.24,0-18.55,8.31-18.55,18.55
+	c0,0,0,0.01,0,0.01C34.76,53.28,43.07,61.58,53.31,61.58z"/>
+<path class="st6" d="M44.04,46.84c3.07,5.2,9.77,6.92,14.97,3.85c1.59-0.94,2.91-2.26,3.85-3.85"/>
+<path class="st0" d="M46,40.82c1.57,0,2.84-1.27,2.84-2.84c0-1.57-1.27-2.84-2.84-2.84s-2.84,1.27-2.84,2.84c0,0,0,0.01,0,0.01
+	c0,1.56,1.27,2.83,2.83,2.83C45.99,40.82,46,40.82,46,40.82z"/>
+<path class="st0" d="M60.64,40.82c1.57,0,2.84-1.27,2.84-2.84c0-1.57-1.27-2.84-2.84-2.84s-2.84,1.27-2.84,2.84c0,0,0,0.01,0,0.01
+	c0,1.56,1.27,2.83,2.83,2.83C60.63,40.82,60.64,40.82,60.64,40.82z"/>
+<path class="st7" d="M36.55,26.29c0,0-5.24-16.22-16.65-17.72C9.62,7.23,7.43,9.85,5.59,13.11s-1.12,8.84,6.8,11.1
+	c7.44,2.11,8.23-2.24,15.31-1.89c3.12,0.16,8.85,4,8.85,4V26.29z"/>
+</svg>

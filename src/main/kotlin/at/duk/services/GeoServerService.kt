@@ -152,13 +152,16 @@ class GeoServerService(config: ApplicationConfig) {
             it.startsWith("class\":\"featureType\"")
         }.split("\"").first {
             it.startsWith("http")
-        }
+        }.replace("\\/", "/")
+
         val client2 = HttpClient(CIO)
         val response2: HttpResponse = client2.request(featureUrl) {
             method = HttpMethod.Get
             basicAuth(username, password)
         }
+        logger.info("outer featureUrl" + featureUrl)
         if (response2.status == HttpStatusCode.OK) {
+            logger.info("BODY_AS_TEXT: resonse2" + response2.bodyAsText())
             return BiotopServices.mapper.readTree(response2.bodyAsText()).path("featureType")
                 .path("attributes").path("attribute")
                 .associate { it.path("name").textValue() to it.path("binding").textValue() }
