@@ -179,17 +179,7 @@ object RasterServices {
             exec(sql)
 
             // calculate quintils for raster_data based on column rast, saved as json in a varchar
-            /*val sqlStatistics = "SELECT ST_Quantile(rast, 1, true, ARRAY[0.2,0.4,0.6,0.8])::Text As pvq FROM " +
-                    "raster_data r WHERE id=$rasterDataId;"
-            val quints = mutableMapOf<Double, Double>()
-            exec(sqlStatistics) { rs ->
-                while (rs.next()) {
-                    // Result is string of record "(0.2,8)"
-                    val pvq = rs.getString("pvq")
-                    val withoutBracketsParts = pvq.replace("(", "").replace(")", "").split(",")
-                    quints[withoutBracketsParts[0].toDouble()] = withoutBracketsParts[1].toDouble()
-                }
-            }*/
+            // due to ignoring 0-values th postgis function ST_Quantile could not be used!
             val quints = mutableMapOf<Double, Double>()
             val sqlStatistics = "select percentile_disc(0.2) within group (order by fff asc) as q_1, " +
                     "       percentile_disc(0.4) within group (order by fff asc) as q_2," +
@@ -197,17 +187,18 @@ object RasterServices {
                     "       percentile_disc(0.8) within group (order by fff asc) as q_4," +
                     "       percentile_disc(1.0) within group (order by fff asc) as q_5 " +
                     "from (select ttt from " +
-                    "    (select (ST_PixelAsPoints(rast)).val as ttt from raster_data where id = $rasterDataId) as xxx) as fff where ttt != 0;"
+                    " (select (ST_PixelAsPoints(rast)).val as ttt from raster_data where id = $rasterDataId) as xxx) " +
+                    " as fff where ttt != 0;"
             exec(sqlStatistics) { rs ->
                 while (rs.next()) {
-                    quints[0.2] = rs.getString("q_1").replace("(", "").replace(")", "").toDoubleOrNull()?:-1.0
-                    quints[0.4] = rs.getString("q_2").replace("(", "").replace(")", "").toDoubleOrNull()?:-1.0
-                    quints[0.6] = rs.getString("q_3").replace("(", "").replace(")", "").toDoubleOrNull()?:-1.0
-                    quints[0.8] = rs.getString("q_4").replace("(", "").replace(")", "").toDoubleOrNull()?:-1.0
-                    //quints[1.0] = rs.getString("q_5").replace("(", "").replace(")", "").toDoubleOrNull()?:-1.0
+                    quints[0.2] = rs.getString("q_1").replace("(", "").replace(")", "").toDoubleOrNull() ?: -1.0
+                    quints[0.4] = rs.getString("q_2").replace("(", "").replace(")", "").toDoubleOrNull() ?: -1.0
+                    quints[0.6] = rs.getString("q_3").replace("(", "").replace(")", "").toDoubleOrNull() ?: -1.0
+                    quints[0.8] = rs.getString("q_4").replace("(", "").replace(")", "").toDoubleOrNull() ?: -1.0
+                    // only the four limits are stored
+                    // quints[1.0] = rs.getString("q_5").replace("(", "").replace(")", "").toDoubleOrNull()?:-1.0
                 }
             }
-
 
                 TableRasterTasks.update({ TableRasterTasks.id eq rasterTasksId }) { table ->
                 table[imported] = true
@@ -321,16 +312,17 @@ object RasterServices {
 
     fun getQuartilsFromStatistics(jsonStats: Any?): List<Double> {
         // "0.2":31.0,"0.4":128.0,"0.6":128.0,"0.8":128.0
-        jsonStats?.let{
+        jsonStats?.let {
             val limits: Map<Double, Double> = mapper.readValue(jsonStats.toString())
             return limits.map { it.value }
         }
         return emptyList()
     }
 
-    fun makeQuartilsJson(q1: Double?, q2: Double?,q3: Double?,q4: Double?): String? {
-        if (q1 != null && q2 != null  && q3 != null  && q4 != null ) {
-            val vals = listOf<Double>(q1, q2, q3, q4 ).sorted()
+    @Suppress("ComplexCondition")
+    fun makeQuartilsJson(q1: Double?, q2: Double?, q3: Double?, q4: Double?): String? {
+        if (q1 != null && q2 != null && q3 != null && q4 != null) {
+            val vals = listOf<Double>(q1, q2, q3, q4).sorted()
             val quints = mutableMapOf<Double, Double>()
             quints[0.2] = vals[0]
             quints[0.4] = vals[1]

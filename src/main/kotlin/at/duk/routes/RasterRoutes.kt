@@ -254,10 +254,12 @@ fun Route.rasterRouting(config: ApplicationConfig) {
 
             val xxx = call.request.queryParameters["q3"]?.replace(" ", "")
             println(xxx)
-            val jsonStatistics = RasterServices.makeQuartilsJson(call.request.queryParameters["q1"]?.replace(" ", "")?.replace(",",".")?.toDoubleOrNull(),
-                call.request.queryParameters["q2"]?.replace(" ", "")?.replace(",",".")?.toDoubleOrNull(),
-                call.request.queryParameters["q3"]?.replace(" ", "")?.replace(",",".")?.toDoubleOrNull(),
-                call.request.queryParameters["q4"]?.replace(" ", "")?.replace(",",".")?.toDoubleOrNull())
+            val jsonStatistics = RasterServices.makeQuartilsJson(
+                call.request.queryParameters["q1"]?.replace(" ", "")?.replace(",", ".")?.toDoubleOrNull(),
+                call.request.queryParameters["q2"]?.replace(" ", "")?.replace(",", ".")?.toDoubleOrNull(),
+                call.request.queryParameters["q3"]?.replace(" ", "")?.replace(",", ".")?.toDoubleOrNull(),
+                call.request.queryParameters["q4"]?.replace(" ", "")?.replace(",", ".")?.toDoubleOrNull()
+            )
 
             if (id > -1 && packageId > -1 && serviceId > -1)
                 transaction {
