@@ -23,6 +23,7 @@ import at.duk.tables.TableUploadedRasterData
 import at.duk.tables.TableRasterData
 import at.duk.tables.TablePackages
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.http.*
 import io.ktor.server.config.*
 import koodies.exec.Process
@@ -316,5 +317,28 @@ object RasterServices {
             }
         }
         return rasterTasksId
+    }
+
+    fun getQuartilsFromStatistics(jsonStats: Any?): List<Double> {
+        // "0.2":31.0,"0.4":128.0,"0.6":128.0,"0.8":128.0
+        jsonStats?.let{
+            val limits: Map<Double, Double> = mapper.readValue(jsonStats.toString())
+            return limits.map { it.value }
+        }
+        return emptyList()
+    }
+
+    fun makeQuartilsJson(q1: Double?, q2: Double?,q3: Double?,q4: Double?): String? {
+        if (q1 != null && q2 != null  && q3 != null  && q4 != null ) {
+            val vals = listOf<Double>(q1, q2, q3, q4 ).sorted()
+            val quints = mutableMapOf<Double, Double>()
+            quints[0.2] = vals[0]
+            quints[0.4] = vals[1]
+            quints[0.6] = vals[2]
+            quints[0.8] = vals[3]
+            val sortedMap = quints.toList().sortedBy { (k, v) -> v }.toMap()
+            return mapper.writeValueAsString(sortedMap)
+        }
+        return null
     }
 }

@@ -93,6 +93,43 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-md-6 m-2">
+                Obergrenzen für Kategorien (z.B. Quintile):
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 m-2">
+                &nbsp;&nbsp;Kategorie 1:
+            </div>
+            <div class="col-md-6 m-2">
+                &lt;= <input type="text" size="5" maxlength="8" name="q1" value="<#if q1?has_content>${q1}<#else></#if>">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 m-2">
+                &nbsp;&nbsp;Kategorie 2:
+            </div>
+            <div class="col-md-6 m-2">
+                &lt;= <input type="text" size="5" maxlength="8" name="q2" value="<#if q2?has_content>${q2}<#else></#if>">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 m-2">
+                &nbsp;&nbsp;Kategorie 3:
+            </div>
+            <div class="col-md-6 m-2">
+                &lt;= <input type="text" size="5" maxlength="8" name="q3" value="<#if q3?has_content>${q3}<#else></#if>">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 m-2">
+                &nbsp;&nbsp;Kategorie 4:
+            </div>
+            <div class="col-md-6 m-2">
+                &lt;= <input type="text" size="5" maxlength="8" name="q4" value="<#if q4?has_content>${q4}<#else></#if>"> &gt; Kategorie 5
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-2 m-2">
                 <input type="submit" class="btn btn-sm btn-outline-primary" value="Speichern" onclick="return submit08check('${combinations}');">
             </div>

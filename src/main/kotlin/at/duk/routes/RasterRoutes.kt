@@ -28,7 +28,6 @@ import at.duk.tables.TablePackages
 import at.duk.tables.TableRasterData
 import at.duk.tables.TableServices
 import io.ktor.http.content.*
-import io.ktor.server.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.freemarker.*
@@ -220,6 +219,15 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                         }
                     }
 
+                    model["statistics"]?.let {
+                        val quartils = RasterServices.getQuartilsFromStatistics(model["statistics"])
+                        if (quartils.size == 4) {
+                            model["q1"] = quartils[0].toString()
+                            model["q2"] = quartils[1].toString()
+                            model["q3"] = quartils[2].toString()
+                            model["q4"] = quartils[3].toString()
+                        }
+                    }
                     model["packageList"] = TablePackages.select { TablePackages.deleted eq null }
                         .orderBy(TablePackages.name, SortOrder.ASC)
                         .map { mapOf("id" to it[TablePackages.id].toString(), "name" to it[TablePackages.name]) }
@@ -244,6 +252,13 @@ fun Route.rasterRouting(config: ApplicationConfig) {
             else
                 config.propertyOrNull("geoserver.workspace")?.getString() ?: "ECO"
 
+            val xxx = call.request.queryParameters["q3"]?.replace(" ", "")
+            println(xxx)
+            val jsonStatistics = RasterServices.makeQuartilsJson(call.request.queryParameters["q1"]?.replace(" ", "")?.replace(",",".")?.toDoubleOrNull(),
+                call.request.queryParameters["q2"]?.replace(" ", "")?.replace(",",".")?.toDoubleOrNull(),
+                call.request.queryParameters["q3"]?.replace(" ", "")?.replace(",",".")?.toDoubleOrNull(),
+                call.request.queryParameters["q4"]?.replace(" ", "")?.replace(",",".")?.toDoubleOrNull())
+
             if (id > -1 && packageId > -1 && serviceId > -1)
                 transaction {
                     TableRasterData.update({ TableRasterData.id eq id }) {
@@ -254,6 +269,8 @@ fun Route.rasterRouting(config: ApplicationConfig) {
                         it[TableRasterData.dataComplete] = true
                         it[TableRasterData.geoserverLayerName] = geoserverLayerName
                         it[TableRasterData.geoserverWorkingSpace] = geoserverWorkingSpace
+                        if (jsonStatistics != null)
+                            it[TableRasterData.statistics] = jsonStatistics
                     }
                 }
 
