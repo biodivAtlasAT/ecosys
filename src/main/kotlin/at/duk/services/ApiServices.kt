@@ -148,7 +148,8 @@ object ApiServices {
             " where layer_details.id = $layerId and raster_data.id = $rasterId) as subLayer," +
             " (select raster_data.rast from raster_data where raster_data.id = $rasterId) as subRaster) as " +
             "resultRecords) select sum((result::text::raster_values).r_value *(result::text::raster_values).r_count)" +
-            " / sum((result::text::raster_values).r_count) as average from resultRecords;"
+            " / sum((result::text::raster_values).r_count) as average from resultRecords " +
+            " where (result::text::raster_values).r_value > 0;"
 
         var result: List<Pair<String, Double?>> = emptyList()
         transaction {

@@ -48,6 +48,7 @@ data class RasterServiceVal(
     init {
         // "0.2":31.0,"0.4":128.0,"0.6":128.0,"0.8":128.0
         `val`?.let {
+
             val mapper = jacksonObjectMapper()
             val limits: Map<Double, Double> = mapper.readValue(statistics)
 
@@ -60,6 +61,7 @@ data class RasterServiceVal(
                     }
                 }
             }
+            if (it == 0.0) quantil = -1
         }
     }
 }
