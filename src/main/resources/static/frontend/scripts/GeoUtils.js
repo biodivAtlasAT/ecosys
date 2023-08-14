@@ -3,10 +3,10 @@
     var L;
     if (typeof define === 'function' && define.amd) {
         // AMD
-        define(['scripts/leaflet'], factory);
+        define(['leaflet'], factory);
     } else if (typeof module !== 'undefined') {
         // Node/CommonJS
-        L = require('scripts/leaflet');
+        L = require('leaflet');
         module.exports = factory(L);
     } else {
         // Browser globals

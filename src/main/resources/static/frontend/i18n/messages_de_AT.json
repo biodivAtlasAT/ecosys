@@ -5,6 +5,7 @@
   "Ökosystemleistungen schließen": "Ökosystemleistungen schließen",
   "Marker setzen":"Marker setzen",
   "Verbindung setzen": "Verbindung setzen",
+  "Verbindung verbergen":"Verbindung verbergen",
   "Karte auswählen": "Karte auswählen",
   "Straßenkarte": "Straßenkarte",
   "Topographiekarte": "Topographiekarte",
@@ -14,5 +15,8 @@
   "bestätigen": "bestätigen",
   "Erleben der Natur": "Erleben der Natur",
   "Layer auswählen": "Layer auswählen",
-  "Kein Layer": "Kein Layer"
+  "Quintile": "Quintile",
+  "Absolutwert": "Absolutwert",
+  "Unterschideliche Arten": "Unterschieldiche Arten",
+  "Menü schließen":"Menü schließen"
 }

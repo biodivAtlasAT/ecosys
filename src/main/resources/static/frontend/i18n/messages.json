@@ -5,6 +5,7 @@
   "Ökosystemleistungen schließen": "close ecosystem services",
   "Marker setzen":"set marker",
   "Verbindung setzen": "set connection",
+  "Verbindung verbergen":"hide connection",
   "Karte auswählen": "choose map",
   "Straßenkarte": "street map",
   "Topographiekarte": "topographic map",
@@ -14,5 +15,8 @@
   "bestätigen": "submit",
   "Erleben der Natur": "Nature experience",
   "Layer auswählen": "choose layer",
-  "Kein Layer": "no layer"
+  "Quintile": "Quintile",
+  "Absolutwert": "Absolute values",
+  "Unterschideliche Arten": "different species",
+  "Menü schließen":"Close menu"
 }

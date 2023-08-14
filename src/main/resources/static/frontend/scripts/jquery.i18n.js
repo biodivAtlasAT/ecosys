@@ -229,6 +229,7 @@
 			var $this = $( this ),
 				messageKey = $this.data( 'i18n' ),
 				lBracket, rBracket, type, key;
+			console.log($this.find( '[data-i18n]' ));
 			if ( messageKey ) {
 				lBracket = messageKey.indexOf( '[' );
 				rBracket = messageKey.indexOf( ']' );

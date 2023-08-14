@@ -56,6 +56,7 @@ var categories = new Array();
 var catID = new Array();
 var chk_lyClick = 0;
 
+/*
 var info_icon = $('#info_icon').append('<svg id="ic_info" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">\n' +
     '  <circle cy="24" cx="24" r="24" fill="#36c"/>\n' +
     '  <g fill="#fff">\n' +
@@ -64,6 +65,8 @@ var info_icon = $('#info_icon').append('<svg id="ic_info" xmlns="http://www.w3.o
     '  </g>\n' +
     '</svg>');
 
+ */
+var info_icon = $('#ic_info');
 var do_translate = function () {
     $("[data-i18n]").each(function () {
         var prop = $(this).attr('data-i18n');
@@ -113,8 +116,8 @@ $('button').attrchange({
 });
 func_cbClick = function () {
     if(('.cl_clop') != undefined) {
-        $('.cl_clop').remove();
-    }map.closePopup();
+                            $('.cl_clop').remove();
+                        }map.closePopup();
     for (it_r = 0; it_r < marker.length; it_r++) {
         marker[it_r].fire('dragend');
     }
@@ -234,7 +237,7 @@ $('#id_mapLayer').change(function () {
     chk_map = $(this).val();
     func_initMap();
 });
-opt_packageID.on('change mouseup', function () {
+opt_packageID.on('change', function () {
     $.ajax({
         url: url_ecosys + url_pathServices + '?packageID=' + opt_packageID.val(),
         headers: {"Accept": "application/json"},
@@ -293,8 +296,8 @@ func_updatePolyLine = function () {
     pLineGroup.addTo(map);
     // req calc bounds Boxes
     if (!$('input.cl_cbEsys:checked').length) {
-        alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
-        bt_ecosysCB.click();
+        //alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
+        //bt_ecosysCB.click();
     } else {
         func_reqEcosys(marker);
     }
@@ -359,7 +362,6 @@ func_reqEcosys = function (m_th, m_id) {
                         type: 'POST',
                         success: function (resp) {
                             // into request and use response formated
-                            console.log(resp);
                             var it_d = 0;
                             var qtArr = new Array();
                             var absData = new Array();
@@ -386,7 +388,6 @@ func_reqEcosys = function (m_th, m_id) {
                             }
                             var quantArr = new Array();
                             var elemAObj = new Object();
-                            console.log(absData[it_d]);
                             for (it_d = 0; it_d < absData.length; it_d++) {
                                 d3.select('#id_chr_' + m_id)
                                     .append('div')
@@ -419,37 +420,45 @@ func_reqEcosys = function (m_th, m_id) {
                                 });
                             }
                             for (it_d = 0; it_d < quantArr.length; it_d++) {
-                                quantArr[it_d].getElementsByTagName("svg")[0].removeAttribute('id');
-                                quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("width", "50");
-                                quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("height", "50");
-                                for (it_t = 0; it_t < $(quantArr[it_d].getElementsByTagName("svg")[0]).children().length; it_t++) {
-                                    if ($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class') !== null) {
-                                        for (it_h = 0; it_h < quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class')).length; it_h++) {
-                                            //console.log(quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class'))[it_h]);
-                                            elemObj = quantArr[it_d].getElementsByTagName("style")[0];
-                                            for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
-                                                //console.log( elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''));
-                                                if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
-                                                    quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].setAttribute('style', elemObj.innerHTML.split('}')[it_r].split('{')[1]);
+                                    quantArr[it_d].getElementsByTagName("svg")[0].removeAttribute('id');
+                                    quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("width", "50");
+                                    quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("height", "50");
+                                    for (it_t = 0; it_t < $(quantArr[it_d].getElementsByTagName("svg")[0]).children().length; it_t++) {
+                                        if ($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class') !== null) {
+                                            for (it_h = 0; it_h < quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class')).length; it_h++) {
+                                                //console.log(quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class'))[it_h]);
+                                                elemObj = quantArr[it_d].getElementsByTagName("style")[0];
+                                                for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
+                                                    //console.log( elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''));
+                                                    if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
+                                                        quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].setAttribute('style', elemObj.innerHTML.split('}')[it_r].split('{')[1]);
+                                                    }
                                                 }
-                                            }
-                                            for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
-                                                if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
-                                                    quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].removeAttribute('class');
+                                                for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
+                                                    if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
+                                                        quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].removeAttribute('class');
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                                if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
-                                    quantArr[it_d].getElementsByTagName("style")[0].remove();
-                                }
-                                for (it_s = 0; it_s < absData[it_d]['vals'][0]['quantil']; it_s++) {
+                                    if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
+                                        quantArr[it_d].getElementsByTagName("style")[0].remove();
+                                    }
+                                    if( absData[it_d]['vals'][0]['val'] > 0) {
+                                        for (it_s = 0; it_s < absData[it_d]['vals'][0]['quantil']; it_s++) {
+                                            d3.select('#id_chrIcons_' + it_d)
+                                                .append('div')
+                                                .attr('class', ' cl_quint')
+                                                .attr('id', 'id_quint_' + it_d + '_' + it_s)
+                                                .html(new XMLSerializer().serializeToString(quantArr[it_d]));
+                                        }
+                                    }
+                                if( absData[it_d]['vals'][0]['val'] === 0) {
                                     d3.select('#id_chrIcons_' + it_d)
                                         .append('div')
                                         .attr('class', ' cl_quint')
-                                        .attr('id', 'id_quint_' + it_d + '_' + it_s)
-                                        .html(new XMLSerializer().serializeToString(quantArr[it_d]));
+                                        .attr('id', 'id_quint_' + it_d + '_' + 0);
                                 }
                             }
                         }
@@ -470,11 +479,11 @@ func_reqEcosys = function (m_th, m_id) {
                 });
                 packageID = opt_packageID.val();
                 services = reqEcosys;
-                var latlngs = func_connectTheDots(filteredmarker).map((point) => L.latLng(point));
-                var lengths = L.GeometryUtil.accumulatedLengths(latlngs);
-                // Reduce all lengths to a single total length
-                var totalLength = lengths[lengths.length - 1];
-                console.log(totalLength);
+                    var latlngs = func_connectTheDots(filteredmarker).map((point) => L.latLng(point));
+                    var lengths = L.GeometryUtil.accumulatedLengths(latlngs);
+                    // Reduce all lengths to a single total length
+                    var totalLength = lengths[lengths.length - 1];
+                    console.log(totalLength);
                 if(parseInt($('#id_viewP option:selected').val()) === 0) {
                     // Get number of points based on desired interval and total length
                     var interval = 1000;
@@ -597,7 +606,7 @@ func_reqSpecies = function () {
             if (minimapBox[it_x] !== undefined) {
                 str_bBox = "MULTIPOLYGON(((" + minimapBox[it_x]._latlngs[0][0].lng + "%20" + minimapBox[it_x]._latlngs[0][0].lat + "," + minimapBox[it_x]._latlngs[0][1].lng + "%20" + minimapBox[it_x]._latlngs[0][1].lat + "," + minimapBox[it_x]._latlngs[0][2].lng + "%20" + minimapBox[it_x]._latlngs[0][2].lat + "," + minimapBox[it_x]._latlngs[0][3].lng + "%20" + minimapBox[it_x]._latlngs[0][3].lat + "," + minimapBox[it_x]._latlngs[0][0].lng + "%20" + minimapBox[it_x]._latlngs[0][3].lat + "," + minimapBox[it_x]._latlngs[0][0].lng + "%20" + minimapBox[it_x]._latlngs[0][0].lat + ")))";
             }
-            url_linkBioc = "https://biocache.biodiversityatlas.at/occurrences/search?q=*%3A*&qc=&wkt=" + str_bBox + '&facets=taxon_name';
+            url_linkBioc = "https://biocache.biodiversityatlas.at/occurrences/search?q=*%3A*&qc=&wkt=" + str_bBox;
             url_biocache_ws = 'https://biocache-ws.biodiversityatlas.at/occurrence/facets.json?q=*:*&qc=&wkt=' + str_bBox + '&facets=taxon_name'; //"https://biocache-ws.biodiversityatlas.at/occurrence/facets.json?q=*:*&qc=&wkt=" + str_bBox + "&facets=taxon_name";
             $.ajax({
                 url: url_biocache_ws,
@@ -762,7 +771,7 @@ id_newMark.on('click', function (e) {
     }
     if (it_mmBt == 0) {
         cnt_map.animate({
-            'height': '65%'
+            'height': '78%'
         }, 100);
         bt_close_mark.html('Minimaps schließen');
         bt_close_mark.attr('data-i18n', 'Minimaps schließen');
@@ -866,7 +875,6 @@ id_newMark.on('click', function (e) {
             }).addTo(minimapArr[it_0]);
         //minimapArr[it_0].fitBounds(minimapBox[it_0]);
         if (chk_pconn === 0) {
-            $('#ic_info').attr('visibility', 'hidden');
             if (!$('input.cl_cbEsys:checked').length) {
 
                 //alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
@@ -955,18 +963,18 @@ id_MarkerConn.on('click', function (th) {
         }
         if (chk_pconn === 0) {
             chk_pcSet = 1;
-            $('#ic_info').attr('visibility', 'visible');
+            info_icon.css('visibility', 'visible');
             console.log($('input.cl_cbEsys:checked').length);
             if (!$('input.cl_cbEsys:checked').length) {
                 alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
                 bt_ecosysCB.click();
             }
             func_updatePolyLine();
-            id_MarkerConn.val("Verbindung löschen");
+            id_MarkerConn.val("Verbindung verbergen");
         }
         if (chk_pconn === 1) {
             chk_pcSet = 0;
-            $('#ic_info').attr('visibility', 'hidden');
+            info_icon.css('visibility', 'hidden');
             func_deletePolyLine();
             /*
             cnt_main.animate({
@@ -974,10 +982,10 @@ id_MarkerConn.on('click', function (th) {
             }, 100);
             */
             cnt_info.animate({
-                'width': '170em'
+                'width': '148em'
             }, 100);
             cnt_info.animate({
-                'width': '170em'
+                'width': '148em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1003,6 +1011,7 @@ id_MarkerConn.on('click', function (th) {
                     'width': '65%'
                 }, 100);
                 */
+                info_icon.css('visibility', 'visible');
                 cnt_info.animate({
                     'width': '100em'
                 }, 100);
@@ -1023,7 +1032,7 @@ id_MarkerConn.on('click', function (th) {
 
              */
             cnt_info.animate({
-                'width': '170em'
+                'width': '148em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1115,7 +1124,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
     if (filteredmarker.length > 1) {
         var div_nav = d3.select("#id_nav");
         var svg = new Array();
-        var margin = {top: 70, right: 20, bottom: 20, left: 20}, width = 600, height = 430;
+        var margin = {top: 20, right: 20, bottom: 20, left: 20}, width = 600, height = 320;
         var xScale = [];
         var yScale = [];
         var xAxis = [];
@@ -1159,7 +1168,12 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
             }
             if (chk_quint === 1) {
                 for (it_n = 0; it_n < data[it_d]['vals'].length; it_n++) {
-                    yStep[it_d][it_n] = data[it_d]['vals'][it_n]['quantil'];
+                    if(data[it_d]['vals'][it_n]['val'] > 0) {
+                        yStep[it_d][it_n] = data[it_d]['vals'][it_n]['quantil'];
+                    }
+                    if(data[it_d]['vals'][it_n]['val'] === 0) {
+                        yStep[it_d][it_n] = 0;
+                    }
                 }
             }
             console.log(yMax[it_d]);
@@ -1179,7 +1193,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
 
             svg[it_d].append('text')
                 .attr('dx', margin.left)
-                .attr('dy', 20)
+                .attr('dy', 12)
                 .attr('stroke', '#222222')
                 .attr('font-style', 'italic')
                 .text($('#id_divName_' + data[it_d]['id']).html());
@@ -1189,23 +1203,10 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                 .attr("transform", "translate(" + margin.left + "," + (height - margin.bottom) + ")")
                 .call(xAxis[it_d]);
 
-            if (chk_quint === 0) {
-                svg[it_d].append("text")
-                    .attr("class", "x-text")
-                    .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom) + ")")
-                    .text("Distanz: " + parseInt(distance * 0.001) + "km");
-
-                svg[it_d].append("text")
-                    .attr("class", "x-text")
-                    .attr("transform", "translate(" + (width - margin.right) + "," + (margin.top - margin.bottom) + ")")
-                    .text(data[it_d]['dim']);
-            }
-            if (chk_quint === 1) {
-                svg[it_d].append("text")
-                    .attr("class", "x-text")
-                    .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom) + ")")
-                    .text("Distanz: " + parseInt(distance * 0.001) + "km");
-            }
+            svg[it_d].append("text")
+                .attr("class", "x-text")
+                .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom) + ")")
+                .text("Distanz: " + parseInt(distance * 0.001) + "km Dimension: " + data[it_d]['dim']);
 
 // Y axis
             svg[it_d].append("g")
@@ -1227,9 +1228,9 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                     .attr('display', 'none')
                     .attr("x1", margin.left + xScale[it_d](xStep[it_d][it_n]))
                     .attr("x2", width)
-                    .attr('y1', yScale[it_d](yStep[it_d][it_n]) + margin.top)
-                    .attr('y2', yScale[it_d](yStep[it_d][it_n]) + margin.top)
-                    .attr('stroke', '#222222')
+                    .attr('y1', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
+                    .attr('y2', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
+                    .attr('stroke', '#6666ff')
                     .attr('stroke-dasharray', '4')
             }
             svg[it_d].append("g")
@@ -1245,13 +1246,13 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                         .attr('id', 'id_text_' + it_d + '_' + it_n)
                         .attr('display', 'none')
                         .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                        .attr('y', -40 + yScale[it_d](yStep[it_d][it_n]) + margin.top)
+                        .attr('y', -3 + yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
                         .attr('dy', 32)
                         .attr('dx', 3)
                         .attr('width', xScale[it_d](xStep[it_d][1]))
                         .attr("height", 60)
                         .attr('font-size', 30)
-                        .attr('stroke', '#222222')
+                        .attr('stroke', '#6666ff')
                         .attr('fill', '#111111')
                         .attr('font-style', 'italic')
                         .text(yStep[it_d][it_n] + " " + data[it_d]['dim'])
@@ -1268,13 +1269,13 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                         .attr('id', 'id_text_' + it_d + '_' + it_n)
                         .attr('display', 'none')
                         .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                        .attr('y', -40 + yScale[it_d](yStep[it_d][it_n]) + margin.top)
+                        .attr('y', -3 + yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
                         .attr('dy', 32)
                         .attr('dx', 3)
                         .attr('width', xScale[it_d](xStep[it_d][1]))
                         .attr("height", 60)
                         .attr('font-size', 30)
-                        .attr('stroke', '#222222')
+                        .attr('stroke', '#6666ff')
                         .attr('fill', '#111111')
                         .attr('font-style', 'italic')
                         .text(yStep[it_d][it_n])
@@ -1289,40 +1290,40 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                 //console.log(xStep[it_d][it_n]);
                 //console.log(yStep[it_d][it_n]);
                 if (cntID[it_n] === 1) {
+                    if (p_catID[it_d].catID === 5) {
+                            d3.selectAll('#id_grRect_' + it_d)
+                                .append("rect")
+                                .attr('class', 'cl_rCol_1 cl_Rect')
+                                .attr('id', 'id_bar_' + it_d + '_' + it_n)
+                                .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
+                                .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
+                                .attr('width', xScale[it_d](xStep[it_d][1]))
+                                .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
+                                .attr('y_value', yStep[it_d][it_n])
+                                .attr('fill', '#98BB1E')
+                                .attr('fill-opacity', 0.7)
+                                .on('mouseover', function () {
+                                    var tmp = $(this).attr('id');
+                                    $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
+                                    $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
+                                    d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('stroke', '#98BB1E');
+                                    d3.select('#id_grRect_' + tmp.split('_')[2]).moveToBack();
+
+                                })
+                                .on('mouseout', function () {
+                                    var tmp = $(this).attr('id');
+                                    $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
+                                    $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
+                                    d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('stroke', '#98BB1E');
+                                });
+                        }
                     if (p_catID[it_d].catID === 2) {
                         d3.selectAll('#id_grRect_' + it_d)
                             .append("rect")
                             .attr('class', 'cl_rCol_1 cl_Rect')
                             .attr('id', 'id_bar_' + it_d + '_' + it_n)
                             .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.top)
-                            .attr('width', xScale[it_d](xStep[it_d][1]))
-                            .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
-                            .attr('y_value', yStep[it_d][it_n])
-                            .attr('fill', '#98BB1E')
-                            .attr('fill-opacity', 0.7)
-                            .on('mouseover', function () {
-                                var tmp = $(this).attr('id');
-                                $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
-                                $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
-                                d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('stroke', '#98BB1E');
-                                d3.select('#id_grRect_' + tmp.split('_')[2]).moveToBack();
-
-                            })
-                            .on('mouseout', function () {
-                                var tmp = $(this).attr('id');
-                                $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
-                                $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
-                                d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('stroke', '#98BB1E');
-                            });
-                    }
-                    if (p_catID[it_d].catID === 5) {
-                        d3.selectAll('#id_grRect_' + it_d)
-                            .append("rect")
-                            .attr('class', 'cl_rCol_1 cl_Rect')
-                            .attr('id', 'id_bar_' + it_d + '_' + it_n)
-                            .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.top)
+                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
                             .attr('width', xScale[it_d](xStep[it_d][1]))
                             .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
                             .attr('y_value', yStep[it_d][it_n])
@@ -1349,7 +1350,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                             .attr('class', 'cl_rCol_1 cl_Rect')
                             .attr('id', 'id_bar_' + it_d + '_' + it_n)
                             .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.top)
+                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
                             .attr('width', xScale[it_d](xStep[it_d][1]))
                             .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
                             .attr('y_value', yStep[it_d][it_n])
@@ -1372,13 +1373,13 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                     }
                 }
                 if (cntID[it_n] === 0) {
-                    if (p_catID[it_d].catID === 2) {
+                    if (p_catID[it_d].catID === 5) {
                         d3.selectAll('#id_grRect_' + it_d)
                             .append("rect")
                             .attr("class", "cl_Rects")
                             .attr('id', 'id_bar_' + it_d + '_' + it_n)
                             .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.top)
+                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
                             .attr('width', xScale[it_d](xStep[it_d][1]))
                             .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
                             .attr('y_value', yStep[it_d][it_n])
@@ -1399,13 +1400,13 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                                 d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('fill', '#aaaaaa');
                             });
                     }
-                    if (p_catID[it_d].catID === 5) {
+                    if (p_catID[it_d].catID === 2) {
                         d3.selectAll('#id_grRect_' + it_d)
                             .append("rect")
                             .attr("class", "cl_Rects")
                             .attr('id', 'id_bar_' + it_d + '_' + it_n)
                             .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.top)
+                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
                             .attr('width', xScale[it_d](xStep[it_d][1]))
                             .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
                             .attr('y_value', yStep[it_d][it_n])
@@ -1432,7 +1433,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                             .attr("class", "cl_Rects")
                             .attr('id', 'id_bar_' + it_d + '_' + it_n)
                             .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.top)
+                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
                             .attr('width', xScale[it_d](xStep[it_d][1]))
                             .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
                             .attr('y_value', yStep[it_d][it_n])
@@ -1475,7 +1476,7 @@ func_delMark = function (th) {
         if (chk_pconn === 1) {
             func_updatePolyLine();
             chk_pcSet = 0;
-            $('#ic_info').attr('visibility', 'hidden');
+            info_icon.css('visibility', 'hidden');
             func_deletePolyLine();
             /*
             cnt_main.animate({
@@ -1484,7 +1485,7 @@ func_delMark = function (th) {
 
              */
             cnt_info.animate({
-                'width': '170em'
+                'width': '148em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1617,10 +1618,9 @@ func_delMark = function (th) {
             }).addTo(minimapArr[it_r]);
         //minimapArr[it_r].fitBounds(minimapBox[it_r]);
         if (chk_pconn === 0) {
-            $('#ic_info').attr('visibility', 'hidden');
+            info_icon.css('visibility', 'hidden');
             if (!$('input.cl_cbEsys:checked').length) {
 
-                alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
                 bt_ecosysCB.click();
             } else {
                 //func_reqEcosys();
@@ -1640,7 +1640,7 @@ func_delMark = function (th) {
 
          */
         cnt_info.animate({
-            'width': '170em'
+            'width': '148em'
         }, 100);
         cnt_nav.animate({
             'width': '0em', 'display': 'none'
@@ -1665,7 +1665,7 @@ func_delMark = function (th) {
 
              */
             cnt_info.animate({
-                'width': '170em'
+                'width': '148em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1744,7 +1744,7 @@ func_updateID = function (tmpT) {
 
                 // Create a new map object within the popup
                 if (popupMap[tt_0] != undefined) popupMap[tt_0].remove();
-                popupMap[tt_0] = L.map('popup-map_' + tt_0, {
+                    popupMap[tt_0] = L.map('popup-map_' + tt_0, {
                     dragging: false,
                     zoomControl: false
                 }).setView(latlng, map.getZoom());
@@ -1811,7 +1811,7 @@ func_submEsys = function () {
         func_updatePolyLine();
         bt_ecosysCB.click();
     } else {
-        alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
+        //alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
     }
 };
 func_selectQ = function () {
@@ -1823,6 +1823,9 @@ func_selectP = function () {
     func_reqEcosys(marker);
     //func_reqSpecies();
 };
+if(chk_pconn === 0) {
+    info_icon.css('visibility', 'hidden');
+}
 info_icon.on('click', function (e) {
     if (chk_pconn === 1) {
         if (it_infBt == 0) {
@@ -1851,7 +1854,7 @@ info_icon.on('click', function (e) {
 
              */
             cnt_info.animate({
-                'width': '170em'
+                'width': '148em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1880,7 +1883,7 @@ bt_close_mark.on('click', function (e) {
         }
         if (it_mmBt == 1) {
             cnt_map.animate({
-                'height': '65%'
+                'height': '78%'
             }, 100);
             if (chk_pconn === 0) {
                 cnt_info.animate({
@@ -1908,7 +1911,7 @@ map.locate({
 });
 map.on('popupopen', function (e) {
     if (!$('input.cl_cbEsys:checked').length) {
-        alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
+        //("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
         bt_ecosysCB.click();
     } else {
         chk_pcSet = 0;
@@ -1937,11 +1940,10 @@ map.on('locationerror', function(e) {
  */
 func_initMap = function () {
     cnt_nav.css('width', '0em');
-    cnt_info.css('width', '170em');
+    cnt_info.css('width', '148em');
     if (LayerMap !== undefined) {
         map.removeLayer(LayerMap);
     }
-    $('#ic_info').attr('visibility', 'hidden');
     if (chk_map == 0) {
         LayerMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -2047,8 +2049,8 @@ map.on('click', function(e) {
                 var url_esys;
                 var descrName;
                 if(result['PB'] !== undefined) {
-                    url_esys = 'https://ecosys.biodivdev.at/' + url_pathLData + '?packageID=' + opt_packageID.val() + '&layerID=' + $('#id_addLayer option:selected').val() + '&layerKey=' + result['PB'];
-                    descrName = result['PB'];
+                     url_esys = 'https://ecosys.biodivdev.at/' + url_pathLData + '?packageID=' + opt_packageID.val() + '&layerID=' + $('#id_addLayer option:selected').val() + '&layerKey=' + result['PB'];
+                     descrName = result['PB'];
                 }
                 if(result['HRNAME'] !== undefined) {
                     url_esys = 'https://ecosys.biodivdev.at/' + url_pathLData + '?packageID=' + opt_packageID.val() + '&layerID=' + $('#id_addLayer option:selected').val() + '&layerKey=' + result['HRNAME'];
@@ -2184,6 +2186,7 @@ map.on('click', function(e) {
                                 }
                             });
                         }
+
                         for (it_d = 0; it_d < quantArr.length; it_d++) {
                             quantArr[it_d].getElementsByTagName("svg")[0].removeAttribute('id');
                             quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("width", "50");
@@ -2210,12 +2213,21 @@ map.on('click', function(e) {
                             if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
                                 quantArr[it_d].getElementsByTagName("style")[0].remove();
                             }
-                            for (it_s = 0; it_s < absData[it_d]['vals']['quantil']; it_s++) {
-                                d3.select('#id_chrIcons_' + it_d)
-                                    .append('div')
-                                    .attr('class', ' cl_quint')
-                                    .attr('id', 'id_quint_' + it_d + '_' + it_s)
-                                    .html(new XMLSerializer().serializeToString(quantArr[it_d]));
+                            if(absData[it_d]['vals']['val'] > 0) {
+
+                                for (it_s = 0; it_s < absData[it_d]['vals']['quantil']; it_s++) {
+                                    d3.select('#id_chrIcons_' + it_d)
+                                        .append('div')
+                                        .attr('class', ' cl_quint')
+                                        .attr('id', 'id_quint_' + it_d + '_' + it_s)
+                                        .html(new XMLSerializer().serializeToString(quantArr[it_d]));
+                                }
+                            }
+                            if(absData[it_d]['vals']['val'] === 0) {
+                                    d3.select('#id_chrIcons_' + it_d)
+                                        .append('div')
+                                        .attr('class', ' cl_quint')
+                                        .attr('id', 'id_quint_' + it_d + '_' + 0);
                             }
                         }
                     }
