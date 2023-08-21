@@ -37,7 +37,7 @@ body {
     border-left: 0.2em solid #98BB1E;
 }
 .cl_catL_2 {
-    border-left: 0.2em solid #F9B100;
+    border-left: 0.2em solid #98BB1E;
 }
 .cl_catL_3 {
     border-left: 0.2em solid #9F2538;
@@ -49,7 +49,7 @@ body {
     border-right: 0.2em solid #98BB1E;
 }
 .cl_catR_2 {
-    border-right: 0.2em solid #F9B100;
+    border-right: 0.2em solid #98BB1E;
 }
 .cl_catR_3 {
     border-right: 0.2em solid #9F2538;
@@ -70,7 +70,7 @@ body {
 }
 .cl_cob_2 {
     float: left;
-    accent-color: #F9B100;
+    accent-color: #98BB1E;
     transform: scale(1.5);
 }
 .cl_cob_3 {

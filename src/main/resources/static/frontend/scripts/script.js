@@ -55,7 +55,7 @@ var polygonLayer = new Array();
 var categories = new Array();
 var catID = new Array();
 var chk_lyClick = 0;
-
+var id_fName = '';
 /*
 var info_icon = $('#info_icon').append('<svg id="ic_info" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">\n' +
     '  <circle cy="24" cx="24" r="24" fill="#36c"/>\n' +
@@ -123,6 +123,52 @@ func_cbClick = function () {
     }
 };
 var topLayer;
+$("cl_cbEsys").click(function () {
+    if ($('input.cl_cbEsys:checked').length !== 0) {
+
+    }
+    if ($('input.cl_cbEsys:checked').length === 0) {
+        if(topLayer !== undefined) {
+            map.removeLayer(topLayer);
+        }
+        reqEcosys = new Array();
+        ecosysName = new Array();
+        $('input.cl_cbEsys:checked').each(function (iter, item) {
+            ecosysName.push($('#id_divName_' + item.id.split('_')[2]).html());
+            reqEcosys.push(item.id.split('_')[2]);
+        });
+        packageID = opt_packageID.val();
+        services = reqEcosys;
+        $('input.cl_cbEsys').each(function (iter, item) {
+            if (iter === 0) {
+                $.ajax({
+                    url: url_ecosys + url_pathRasterData + '?packageID=' + packageID + '&services=[' + services + ']&coords=[(15,95/48,38)]',
+                    headers: {"Accept": "application/json"},
+                    type: 'POST',
+                    dataType: "json",
+                    crossDomain: true,
+                    beforeSend: function (xhr) {
+                        xhr.withCredentials = true;
+                    },
+                    type: 'POST',
+                    success: function (resp) {
+                        console.log(resp['data'][0]['geoserverLayerName']);
+                        id_fName =  resp['data'][0]['geoserverLayerName'];
+                        var url_rdataTop = "https://spatial.biodivdev.at/geoserver/wms";
+
+                        topLayer = L.tileLayer.wms(url_rdataTop, {
+                            layers: 'ALA:' + id_fName.toLowerCase(),
+                            format: 'image/png',
+                            transparent: true,
+                            version: '1.1.0'
+                        }).addTo(map);
+
+                    }
+                });
+            }
+        });
+    }
+});
 $("#sortable").sortable({
     group: 'serialization',
     onDrop: function () {
@@ -147,22 +193,42 @@ $("#sortable").sortable({
         if(topLayer !== undefined) {
             map.removeLayer(topLayer);
         }
-        var id_fName = '';
+        reqEcosys = new Array();
+        ecosysName = new Array();
+        $('input.cl_cbEsys:checked').each(function (iter, item) {
+            ecosysName.push($('#id_divName_' + item.id.split('_')[2]).html());
+            reqEcosys.push(item.id.split('_')[2]);
+        });
+        packageID = opt_packageID.val();
+        services = reqEcosys;
         $('input.cl_cbEsys').each(function (iter, item) {
-            if(iter === 0) {
-                id_fName = $('#id_divName_' + item.id.split('_')[2]).html();
+            if (iter === 0) {
+                $.ajax({
+                    url: url_ecosys + url_pathRasterData + '?packageID=' + packageID + '&services=[' + services + ']&coords=[(15,95/48,38)]',
+                    headers: {"Accept": "application/json"},
+                    type: 'POST',
+                    dataType: "json",
+                    crossDomain: true,
+                    beforeSend: function (xhr) {
+                        xhr.withCredentials = true;
+                    },
+                    type: 'POST',
+                    success: function (resp) {
+                        console.log(resp['data'][0]['geoserverLayerName']);
+                        id_fName =  resp['data'][0]['geoserverLayerName'];
+                        var url_rdataTop = "https://spatial.biodivdev.at/geoserver/wms";
+
+                        topLayer = L.tileLayer.wms(url_rdataTop, {
+                            layers: 'ALA:' + id_fName.toLowerCase(),
+                            format: 'image/png',
+                            transparent: true,
+                            version: '1.1.0'
+                        }).addTo(map);
+
+                    }
+                });
             }
         });
-        var url_rdataTop = "https://spatial.biodivdev.at/geoserver/wms";
-
-        topLayer = L.tileLayer.wms(url_rdataTop, {
-            layers: 'ALA:' + id_fName.toLowerCase(),
-            format: 'image/png',
-            transparent: true,
-            version: '1.1.0'
-        }).addTo(map);
-
-
         //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
         map.closePopup();
         for (it_r = 0; it_r < marker.length; it_r++) {
@@ -218,7 +284,8 @@ $.ajax({
             categories[index].servID = item.id;
             categories[index].catID = item['category']['id'];
             if(index === 0) {
-                url_rdataTop = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + item.name + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+                console.log(id_fName.toLowerCase());
+                url_rdataTop = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + id_fName.toLowerCase() + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
             }
             $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onclick='func_cbClick();'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
 
@@ -1290,7 +1357,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                 //console.log(xStep[it_d][it_n]);
                 //console.log(yStep[it_d][it_n]);
                 if (cntID[it_n] === 1) {
-                    if (p_catID[it_d].catID === 5) {
+                    if (p_catID[it_d].catID === 2) {
                             d3.selectAll('#id_grRect_' + it_d)
                                 .append("rect")
                                 .attr('class', 'cl_rCol_1 cl_Rect')
@@ -1317,7 +1384,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                                     d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('stroke', '#98BB1E');
                                 });
                         }
-                    if (p_catID[it_d].catID === 2) {
+                    if (p_catID[it_d].catID === 5) {
                         d3.selectAll('#id_grRect_' + it_d)
                             .append("rect")
                             .attr('class', 'cl_rCol_1 cl_Rect')
@@ -1373,7 +1440,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                     }
                 }
                 if (cntID[it_n] === 0) {
-                    if (p_catID[it_d].catID === 5) {
+                    if (p_catID[it_d].catID === 2) {
                         d3.selectAll('#id_grRect_' + it_d)
                             .append("rect")
                             .attr("class", "cl_Rects")
@@ -1400,7 +1467,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                                 d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('fill', '#aaaaaa');
                             });
                     }
-                    if (p_catID[it_d].catID === 2) {
+                    if (p_catID[it_d].catID === 5) {
                         d3.selectAll('#id_grRect_' + it_d)
                             .append("rect")
                             .attr("class", "cl_Rects")
