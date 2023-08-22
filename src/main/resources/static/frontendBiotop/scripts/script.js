@@ -401,72 +401,73 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                 }
                                 wktString += wkt[0][0] + " " + wkt[0][1] + ")))";
                                 //console.log(response['features'][0]['properties']['AK_FNR']);
-                                var infoPup = L.popup({
-                                    className: 'cl_popup3',
-                                    closeButton: true,
-                                    closeOnClick: true
-                                });
+                                var infoPup;
                                 var str_content = '';
                                 if (response['features'] !== undefined) {
-                                    str_content += '<div><b>' + decode_utf8(response['features'][0]['properties']['BT_Lang']) + '</b></div>';
-                                }
-                                $.ajax({
-                                    url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/' + response['features'][0]['properties']['AK_FNR'],
-                                    headers: {"Accept": "application/json"},
-                                    type: 'GET',
-                                    dataType: "json",
-                                    crossDomain: true,
-                                    beforeSend: function (xhr) {
-                                        xhr.withCredentials = true;
-                                    },
-                                    //data: JSON.stringify({"packageID":opt_layerID.val()}),
-                                    success: function (resp2) {
-                                        console.log(wktString);
-                                        speciesGroups = new Array();
-                                        //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
-                                        for (it_d = 0; it_d < resp2['speciesGroup']['list'].length; it_d++) {
-                                            $.ajax({
-                                                //url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
-                                                url: 'https://biocache.biodivdev.at/ws/webportal/params?',
-                                                data: {
-                                                    q: resp2['speciesGroup']['list'][it_d]['description'],
-                                                    wkt: wktString
-                                                },
-                                                // POST tested string returns a number
-                                                type: 'POST',
-                                                success: function (occurrence) {
-                                                    $.ajax({
-                                                        url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=qid:' + occurrence,
-                                                        type: 'GET',
-                                                        success: function (result) {
-                                                            if (result['totalRecords'] !== 0) {
-                                                                speciesGroups.push(result['occurrences']);
+                                    $.ajax({
+                                        url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/' + response['features'][0]['properties']['AK_FNR'],
+                                        headers: {"Accept": "application/json"},
+                                        type: 'GET',
+                                        dataType: "json",
+                                        crossDomain: true,
+                                        beforeSend: function (xhr) {
+                                            xhr.withCredentials = true;
+                                        },
+                                        //data: JSON.stringify({"packageID":opt_layerID.val()}),
+                                        success: function (resp2) {
+                                            console.log(wktString);
+                                            speciesGroups = new Array();
+                                            //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
+                                            for (it_d = 0; it_d < resp2['speciesGroup']['list'].length; it_d++) {
+                                                $.ajax({
+                                                    //url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
+                                                    url: 'https://biocache.biodivdev.at/ws/webportal/params?',
+                                                    data: {
+                                                        q: resp2['speciesGroup']['list'][it_d]['description'],
+                                                        wkt: wktString
+                                                    },
+                                                    // POST tested string returns a number
+                                                    type: 'POST',
+                                                    success: function (occurrence) {
+                                                        $.ajax({
+                                                            url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=qid:' + occurrence,
+                                                            type: 'GET',
+                                                            success: function (result) {
+                                                                if (result['totalRecords'] !== 0) {
+                                                                    speciesGroups.push(result['occurrences']);
+                                                                }
                                                             }
-                                                        }
-                                                    });
-                                                }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error(error);
+                                        }
+                                    });
+                                    str_content += '<div><b>' + decode_utf8(response['features'][0]['properties']['BT_Lang']) + '</b></div>';
+                                    if (speciesGroups.length > 0) {
+                                        if (infoPup === undefined) {
+                                            infoPup = L.popup({
+                                                className: 'cl_popup3',
+                                                closeButton: true,
+                                                closeOnClick: true
                                             });
                                         }
-                                    },
-                                    error: function (xhr, status, error) {
-                                        console.error(error);
-                                    }
-                                });
-                                if (speciesGroups.length > 0) {
-                                    if (infoPup !== undefined) {
                                         str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>" +
                                             "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>"
                                         infoPup.setLatLng(e.latlng);
                                         infoPup.setContent(str_content);
+                                        infoPup.openOn(map);
                                     }
-                                    infoPup.openOn(map);
-                                }
-                                if (!speciesGroups.length) {
-                                    if (infoPup !== undefined) {
-                                        infoPup.setLatLng(e.latlng);
-                                        infoPup.setContent(str_content);
+                                    if (!speciesGroups.length) {
+                                        if (infoPup !== undefined) {
+                                            infoPup.setLatLng(e.latlng);
+                                            infoPup.setContent(str_content);
+                                        }
+                                        infoPup.openOn(map);
                                     }
-                                    infoPup.openOn(map);
                                 }
                             });
                             ly_filter.addTo(map);
