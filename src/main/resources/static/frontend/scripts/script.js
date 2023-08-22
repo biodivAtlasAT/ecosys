@@ -56,6 +56,7 @@ var categories = new Array();
 var catID = new Array();
 var chk_lyClick = 0;
 var id_fName = '';
+var topLayer = new Array();
 /*
 var info_icon = $('#info_icon').append('<svg id="ic_info" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">\n' +
     '  <circle cy="24" cx="24" r="24" fill="#36c"/>\n' +
@@ -114,66 +115,72 @@ $('button').attrchange({
         //Triggered when the selected elements attribute is added/updated/removed
     }
 });
-func_cbClick = function () {
-    if(('.cl_clop') != undefined) {
-                            $('.cl_clop').remove();
-                        }map.closePopup();
-    for (it_r = 0; it_r < marker.length; it_r++) {
-        marker[it_r].fire('dragend');
-    }
-};
-var topLayer;
-$("cl_cbEsys").click(function () {
-    if ($('input.cl_cbEsys:checked').length !== 0) {
-
-    }
-    if ($('input.cl_cbEsys:checked').length === 0) {
-        if(topLayer !== undefined) {
-            map.removeLayer(topLayer);
+func_cbClick = function (p_id) {
+    if ($('.cl_cbEsys:checkbox:checked').length === 0) {
+        for(it_tl = 0; it_tl < topLayer.length; it_tl++) {
+            if(topLayer[it_tl] !== undefined) {
+                map.removeLayer(topLayer[it_tl]);
+            }
         }
+    }
+    if ($('.cl_cbEsys:checkbox:checked').length !== 0) {
         reqEcosys = new Array();
         ecosysName = new Array();
-        $('input.cl_cbEsys:checked').each(function (iter, item) {
-            ecosysName.push($('#id_divName_' + item.id.split('_')[2]).html());
-            reqEcosys.push(item.id.split('_')[2]);
-        });
+        ecosysName.push($('#id_divName_' + p_id).html());
+        reqEcosys.push(p_id);
         packageID = opt_packageID.val();
         services = reqEcosys;
-        $('input.cl_cbEsys').each(function (iter, item) {
-            if (iter === 0) {
-                $.ajax({
-                    url: url_ecosys + url_pathRasterData + '?packageID=' + packageID + '&services=[' + services + ']&coords=[(15,95/48,38)]',
-                    headers: {"Accept": "application/json"},
-                    type: 'POST',
-                    dataType: "json",
-                    crossDomain: true,
-                    beforeSend: function (xhr) {
-                        xhr.withCredentials = true;
-                    },
-                    type: 'POST',
-                    success: function (resp) {
-                        console.log(resp['data'][0]['geoserverLayerName']);
-                        id_fName =  resp['data'][0]['geoserverLayerName'];
-                        var url_rdataTop = "https://spatial.biodivdev.at/geoserver/wms";
-
-                        topLayer = L.tileLayer.wms(url_rdataTop, {
+        //$(item).attr('class', $(item).attr('class').split(' ')[0] + ' ' + 'cl_cbNR_' + iter + ' ' + $(item).attr('class').split(' ')[2]);
+            $('#id_esys_' + p_id).parent().css('background-color', '#ef932a');
+            $.ajax({
+                url: url_ecosys + url_pathRasterData + '?packageID=' + packageID + '&services=[' + services + ']&coords=[(15,95/48,38)]',
+                headers: {"Accept": "application/json"},
+                type: 'POST',
+                dataType: "json",
+                crossDomain: true,
+                beforeSend: function (xhr) {
+                    xhr.withCredentials = true;
+                },
+                type: 'POST',
+                success: function (resp) {
+                    console.log(resp['data'][0]['geoserverLayerName']);
+                    id_fName = resp['data'][0]['geoserverLayerName'];
+                    var url_rdataTop = "https://spatial.biodivdev.at/geoserver/wms";
+                    if (!$('#id_esys_' + p_id).is(':checked')) {
+                        if (topLayer[p_id] !== undefined) {
+                            map.removeLayer(topLayer[p_id]);
+                        }
+                    }
+                    if ($('#id_esys_' + p_id).is(':checked')) {
+                        topLayer[p_id] = L.tileLayer.wms(url_rdataTop, {
                             layers: 'ALA:' + id_fName.toLowerCase(),
                             format: 'image/png',
                             transparent: true,
                             version: '1.1.0'
                         }).addTo(map);
-
                     }
-                });
-            }
-        });
+                }
+            });
     }
-});
+    for(it_esys = 0; it_esys <  $('input.cl_cbEsys').length; it_esys++) {
+        if ($('.cl_cbNR_' + it_esys + ':checkbox:checked').length === 0) {
+            $('.cl_cbNR_' + it_esys).parent().css('background-color', '#ffffff');
+        }
+    }
+    if(('.cl_clop') != undefined) {
+        $('.cl_clop').remove();
+    }
+    map.closePopup();
+    for (it_r = 0; it_r < marker.length; it_r++) {
+        marker[it_r].fire('dragend');
+    }
+};
+/*
 $("#sortable").sortable({
     group: 'serialization',
     onDrop: function () {
         var it_x = 0;
-        if ($('input.cl_cbEsys:checked').length !== 0) {
+        if ($('input.cl_cbEsys:checkbox:checked').length !== 0) {
             if (marker.length > 0) {
                 $('.cl_esysInf').children().remove();
                 for (it_r = 0; it_r < marker.length; it_r++) {
@@ -189,53 +196,11 @@ $("#sortable").sortable({
             map.closePopup();
         }
     },
-    update: function() {
-        if(topLayer !== undefined) {
-            map.removeLayer(topLayer);
-        }
-        reqEcosys = new Array();
-        ecosysName = new Array();
-        $('input.cl_cbEsys:checked').each(function (iter, item) {
-            ecosysName.push($('#id_divName_' + item.id.split('_')[2]).html());
-            reqEcosys.push(item.id.split('_')[2]);
-        });
-        packageID = opt_packageID.val();
-        services = reqEcosys;
-        $('input.cl_cbEsys').each(function (iter, item) {
-            if (iter === 0) {
-                $.ajax({
-                    url: url_ecosys + url_pathRasterData + '?packageID=' + packageID + '&services=[' + services + ']&coords=[(15,95/48,38)]',
-                    headers: {"Accept": "application/json"},
-                    type: 'POST',
-                    dataType: "json",
-                    crossDomain: true,
-                    beforeSend: function (xhr) {
-                        xhr.withCredentials = true;
-                    },
-                    type: 'POST',
-                    success: function (resp) {
-                        console.log(resp['data'][0]['geoserverLayerName']);
-                        id_fName =  resp['data'][0]['geoserverLayerName'];
-                        var url_rdataTop = "https://spatial.biodivdev.at/geoserver/wms";
-
-                        topLayer = L.tileLayer.wms(url_rdataTop, {
-                            layers: 'ALA:' + id_fName.toLowerCase(),
-                            format: 'image/png',
-                            transparent: true,
-                            version: '1.1.0'
-                        }).addTo(map);
-
-                    }
-                });
-            }
-        });
-        //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
-        map.closePopup();
-        for (it_r = 0; it_r < marker.length; it_r++) {
-            marker[it_r].fire('dragend');
-        }
+    stop: function() {
+       func_cbClick();
     }
 });
+*/
 $(function() {
     $('#id_numIv').on('blur' , function() {
         map.closePopup();
@@ -277,26 +242,57 @@ $.ajax({
     },
     //data: JSON.stringify({"packageID":opt_packageID.val()}),
     success: function (resp) {
+        var it_2, it_3, it_5;
+        it_2 = it_3 = it_5 = 0;
         $("#sortable").children().remove();
-        var url_rdataTop = '';
+        //var url_rdataTop = '';
+        var sortEsys = new Array();
+        for(it_se = 0; it_se < 3; it_se++) {
+            sortEsys[it_se] = new Array()
+        }
         $.each(resp.services, function (index, item) { // Iterates through a collection
             categories[index] = new Object();
             categories[index].servID = item.id;
             categories[index].catID = item['category']['id'];
-            if(index === 0) {
-                console.log(id_fName.toLowerCase());
-                url_rdataTop = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + id_fName.toLowerCase() + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
-            }
-            $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onclick='func_cbClick();'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
 
+                //console.log(id_fName.toLowerCase());
+                //url_rdataTop = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + id_fName.toLowerCase() + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+            if(categories[index].catID === 2) {
+                if(it_2 === 0) {
+                    sortEsys[0].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
+                    it_2 = 1;
+                }
+                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
+            }
+            if(categories[index].catID === 3) {
+                if(it_3 === 0) {
+                    sortEsys[1].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
+                    it_3 = 1;
+                }
+                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
+            }
+            if(categories[index].catID === 5) {
+                if(it_5 === 0) {
+                    sortEsys[2].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
+                    it_5 = 1;
+                }
+                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
+            }
         });
+        for(it_se = 0; it_se < 3; it_se++) {
+            for(it_i = 0; it_i < sortEsys[it_se].length; it_i++) {
+                $("#sortable").append(sortEsys[it_se][it_i]);
+            }
+        }
         //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
+        /*
         $.ajax({
             url: url_rdataTop,
             success: function (data) {
                 console.log(data);
             }
         });
+         */
         map.closePopup();
     }
 });
@@ -322,7 +318,7 @@ opt_packageID.on('change', function () {
                 categories[index] = new Object();
                 categories[index].servID = item.id;
                 categories[index].catID = item['category']['id'];
-                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onclick='func_cbClick();'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
+                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
             });
             //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
             map.closePopup();
@@ -513,7 +509,7 @@ func_reqEcosys = function (m_th, m_id) {
                                         quantArr[it_d].getElementsByTagName("style")[0].remove();
                                     }
                                     if( absData[it_d]['vals'][0]['val'] > 0) {
-                                        for (it_s = 0; it_s < absData[it_d]['vals'][0]['quantil']; it_s++) {
+                                        for (it_s = 0; it_s < absData[it_d]['vals'][0]['quantil'] + 1; it_s++) {
                                             d3.select('#id_chrIcons_' + it_d)
                                                 .append('div')
                                                 .attr('class', ' cl_quint')
@@ -1236,7 +1232,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
             if (chk_quint === 1) {
                 for (it_n = 0; it_n < data[it_d]['vals'].length; it_n++) {
                     if(data[it_d]['vals'][it_n]['val'] > 0) {
-                        yStep[it_d][it_n] = data[it_d]['vals'][it_n]['quantil'];
+                        yStep[it_d][it_n] = data[it_d]['vals'][it_n]['quantil'] + 1;
                     }
                     if(data[it_d]['vals'][it_n]['val'] === 0) {
                         yStep[it_d][it_n] = 0;
@@ -2282,7 +2278,7 @@ map.on('click', function(e) {
                             }
                             if(absData[it_d]['vals']['val'] > 0) {
 
-                                for (it_s = 0; it_s < absData[it_d]['vals']['quantil']; it_s++) {
+                                for (it_s = 0; it_s < absData[it_d]['vals']['quantil'] + 1; it_s++) {
                                     d3.select('#id_chrIcons_' + it_d)
                                         .append('div')
                                         .attr('class', ' cl_quint')
