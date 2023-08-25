@@ -470,13 +470,13 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                             }
                                             str_content += "<div class='cl_capMatr'><div class='cl_cntCap'><b>Capacity Matrix values</b></div></div>";
                                             if((response['features'][0]['properties']['Disturbanc'] !== undefined || response['features'][0]['properties']['Localclima'] !== undefined || response['features'][0]['properties']['Waterregul'] !== undefined || response['features'][0]['properties']['Watersuppl'] !== undefined || response['features'][0]['properties']['Pollinatio'] !== undefined)) {
-                                                str_content += "<div class='cl_services cl_serv1'>Regulation services</div>";
+                                                str_content += "<div class='cl_services cl_serv1'><b>Regulation services</b></div>";
                                             }
                                             if(response['features'][0]['properties']['Refugium'] !== undefined) {
-                                                str_content += "<div class='cl_services cl_serv2'>Habitat services</div>";
+                                                str_content += "<div class='cl_services cl_serv2'><b>Habitat services</b></div>";
                                             }
                                             if((response['features'][0]['properties']['Food'] !== undefined || response['features'][0]['properties']['Rawmateria'] !== undefined || response['features'][0]['properties']['Geneticres'] !== undefined)) {
-                                                str_content += "<div class='cl_services cl_serv3'>Provision services</div>";
+                                                str_content += "<div class='cl_services cl_serv3'><b>Provision services</b></div>";
                                             }
 
                                             infoPup.setLatLng(e.latlng);
