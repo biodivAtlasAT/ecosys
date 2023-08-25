@@ -457,26 +457,60 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                                 closeOnClick: true
                                             });
                                         }
-                                        str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>" +
-                                            "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>" +
-                                            "<div class='cl_capMatr'>" +
-                                            "<div><b>Capacity Matrix values</b></div>" +
-                                            "<div class='cl_services'>Regulation services</div>" +
-                                            "<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>" +
-                                            "<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>" +
-                                            "<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>" +
-                                            "<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>" +
-                                            "<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>" +
-                                            "<div class='cl_services'>Habitat services</div>" +
-                                            "<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>" +
-                                            "<div class='cl_services'>Provision services</div>" +
-                                            "<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>" +
-                                            "<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>" +
-                                            "<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>" +
-                                            "</div>";
-                                        infoPup.setLatLng(e.latlng);
-                                        infoPup.setContent(str_content);
-                                        infoPup.openOn(map);
+
+                                        str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
+                                        str_content += "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>";
+                                        if(response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
+                                        } else {
+                                            if($('.cl_capMatr').length !== 0) {
+                                                $('.cl_capMatr').remove();
+                                            }
+                                            if($('.cl_services').length !== 0) {
+                                                $('.cl_services').remove();
+                                            }
+                                            str_content += "<div class='cl_capMatr'><div class='cl_cntCap'><b>Capacity Matrix values</b></div></div>";
+                                            if((response['features'][0]['properties']['Disturbanc'] !== undefined || response['features'][0]['properties']['Localclima'] !== undefined || response['features'][0]['properties']['Waterregul'] !== undefined || response['features'][0]['properties']['Watersuppl'] !== undefined || response['features'][0]['properties']['Pollinatio'] !== undefined)) {
+                                                str_content += "<div class='cl_services cl_serv1'>Regulation services</div>";
+                                            }
+                                            if(response['features'][0]['properties']['Refugium'] !== undefined) {
+                                                str_content += "<div class='cl_services cl_serv2'>Habitat services</div>";
+                                            }
+                                            if((response['features'][0]['properties']['Food'] !== undefined || response['features'][0]['properties']['Rawmateria'] !== undefined || response['features'][0]['properties']['Geneticres'] !== undefined)) {
+                                                str_content += "<div class='cl_services cl_serv3'>Provision services</div>";
+                                            }
+
+                                            infoPup.setLatLng(e.latlng);
+                                            infoPup.setContent(str_content);
+                                            infoPup.openOn(map);
+
+                                            if (response['features'][0]['properties']['Disturbanc'] !== undefined) {
+                                                $('.cl_serv1').append("<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>");
+                                            }
+                                            if (response['features'][0]['properties']['Localclima'] !== undefined) {
+                                                $('.cl_serv1').append("<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>");
+                                            }
+                                            if(response['features'][0]['properties']['Waterregul'] !== undefined) {
+                                                $('.cl_serv1').append("<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>");
+                                            }
+                                            if(response['features'][0]['properties']['Watersuppl'] !== undefined) {
+                                                $('.cl_serv1').append("<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>");
+                                            }
+                                            if(response['features'][0]['properties']['Pollinatio'] !== undefined) {
+                                                $('.cl_serv1').append("<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>");
+                                            }
+                                            if(response['features'][0]['properties']['Refugium'] !== undefined) {
+                                                $('.cl_serv2').append("<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>");
+                                            }
+                                            if(response['features'][0]['properties']['Food'] !== undefined) {
+                                                $('.cl_serv3').append("<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>");
+                                            }
+                                            if(response['features'][0]['properties']['Rawmateria'] !== undefined) {
+                                                $('.cl_serv3').append("<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>");
+                                            }
+                                            if(response['features'][0]['properties']['Geneticres'] !== undefined) {
+                                                $('.cl_serv3').append("<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>");
+                                            }
+                                        }
                                     }
                                     if (!speciesGroups.length) {
                                         if (infoPup !== undefined) {
