@@ -976,11 +976,6 @@ body {
     height: 0%;
     width: 100%;
 }
-#cnt_map {
-    position: relative;
-    height: 100%;
-    width: 100%;
-}
 #info_icon {
     position: absolute;
     right: 1em;
