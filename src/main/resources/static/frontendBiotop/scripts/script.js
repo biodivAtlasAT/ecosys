@@ -447,6 +447,8 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                         }
                                     });
                                     str_content += '<div><b>' + decode_utf8(response['features'][0]['properties']['BT_Lang']) + '</b></div>';
+
+                                    console.log(response['features'][0]['properties']);
                                     if (speciesGroups.length > 0) {
                                         if (infoPup === undefined) {
                                             infoPup = L.popup({
@@ -456,7 +458,22 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                             });
                                         }
                                         str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>" +
-                                            "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>"
+                                            "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>" +
+                                            "<div class='cl_capMatr'>" +
+                                            "<div><b>Capacity Matrix values</b></div>" +
+                                            "<div class='cl_services'>Regulation services</div>" +
+                                            "<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>" +
+                                            "<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>" +
+                                            "<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>" +
+                                            "<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>" +
+                                            "<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>" +
+                                            "<div class='cl_services'>Habitat services</div>" +
+                                            "<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>" +
+                                            "<div class='cl_services'>Provision services</div>" +
+                                            "<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>" +
+                                            "<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>" +
+                                            "<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>" +
+                                            "</div>";
                                         infoPup.setLatLng(e.latlng);
                                         infoPup.setContent(str_content);
                                         infoPup.openOn(map);

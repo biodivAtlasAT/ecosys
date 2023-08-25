@@ -349,12 +349,12 @@ body {
     font-size:16px;
     line-height:24px;
     border-radius: 0px;
-    height: 20em;
+    height: 27em;
 }
 .cl_popup3 .leaflet-popup-content-wrapper a {
     background: white;
     color:rgba(255,255,255,0.0);
-    height: 20em;
+    height: 27em;
 }
 .cl_popup3 .leaflet-popup-tip-container {
     background: white;
@@ -365,7 +365,7 @@ body {
     background: white;
     border: none;
     box-shadow: none;
-    height: 20em;
+    height: 27em;
 }
 .cl_button {
     position: relative;
@@ -1425,7 +1425,13 @@ ul.cl_accord {
 .cl_accord li > a:hover {
     background: #ccc;
 }
-
+.cl_CapMatr {
+    margin-top: 0.4em;
+}
+.cl_services {
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+}
 .cl_accord li > a:after {
     content: "+";
     float: right;

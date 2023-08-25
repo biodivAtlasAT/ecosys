@@ -156,6 +156,7 @@ func_cbClick = function (p_id) {
                             layers: 'ALA:' + id_fName.toLowerCase(),
                             format: 'image/png',
                             transparent: true,
+                            opacity: 0.4,
                             version: '1.1.0'
                         }).addTo(map);
                     }
@@ -908,13 +909,13 @@ id_newMark.on('click', function (e) {
             closePopupOnClick: false,
             dragging: false,
             zoomControl: false,
-            zoomSnap: false,
-            zoomDelta: false,
+            zoomSnap: true,
+            zoomDelta: 1,
             trackResize: false,
             touchZoom: false,
             scrollWheelZoom: false,
             center: [48.3805228, 15.9558588],
-            zoom: 19
+            zoom: 14
         });
         popupArr[it_0] = L.popup({
             closeOnClick: false,
@@ -1652,13 +1653,13 @@ func_delMark = function (th) {
             closePopupOnClick: false,
             dragging: false,
             zoomControl: false,
-            zoomSnap: false,
-            zoomDelta: false,
+            zoomSnap: true,
+            zoomDelta: 1,
             trackResize: false,
             touchZoom: false,
             scrollWheelZoom: false,
             center: [p_point[it_r].lat, p_point[it_r].lng],
-            zoom: 19
+            zoom: 14
         });
         popupArr[it_r] = L.popup({
             closeOnClick: false,
@@ -1762,7 +1763,7 @@ func_updateID = function (tmpT) {
     marker[parseInt(tmpT.attr('id').split('_')[1])].bindPopup("<div class='cl_popup' id='id_popup_" + parseInt(tmpT.attr('id').split('_')[1]) + "'><div id='id_coords'><div class=\"cl_headID\"><span class=\"cl_IDred\"> ID " + parseInt(tmpT.attr('id').split('_')[1]) + "</span> Coords: " + p_point[parseInt(tmpT.attr('id').split('_')[1])] + "</div><div class='cl_esysInf' id='id_esysInf_" + parseInt(tmpT.attr('id').split('_')[1]) + "'></div></div>", {
         minWidth: "43em"
     });
-    minimapArr[parseInt(tmpT.attr('id').split('_')[1])].setView(point[parseInt(tmpT.attr('id').split('_')[1])], 19);
+    minimapArr[parseInt(tmpT.attr('id').split('_')[1])].setView(point[parseInt(tmpT.attr('id').split('_')[1])], 14);
 
     var tt_0 = parseInt(tmpT.attr('id').split('_')[1]);
     if (ly_ecosys !== undefined) {
@@ -1781,6 +1782,7 @@ func_updateID = function (tmpT) {
             height: size.y,
             format: 'image/png',
             transparent: true,
+            opacity: 0.4,
             query_layers: ly_ecosys.wmsParams.layers,
             info_format: 'application/json',
             feature_count: 1,
