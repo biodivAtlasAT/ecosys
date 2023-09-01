@@ -200,7 +200,7 @@ object RasterServices {
                 }
             }
 
-                TableRasterTasks.update({ TableRasterTasks.id eq rasterTasksId }) { table ->
+            TableRasterTasks.update({ TableRasterTasks.id eq rasterTasksId }) { table ->
                 table[imported] = true
             }
 

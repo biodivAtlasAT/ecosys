@@ -111,7 +111,8 @@ body {
 }
 .leaflet-popup {
     position: relative;
-    width: 52em;
+    position: absolute;
+    text-align: center;
     height: 26em;
     z-index: 1200;
 }
@@ -281,9 +282,8 @@ body {
 #cnt_main {
     position: relative;
     height: 100%;
-    width: 120em;
+    width: 100%;
     float: left;
-    z-index: 1;
 }
 #cnt_info {
     position: relative;
@@ -798,7 +798,8 @@ body {
 }
 .leaflet-popup {
     position: relative;
-    width: 52em;
+    position: absolute;
+    text-align: center;
     height: 26em;
     z-index: 1200;
 }
