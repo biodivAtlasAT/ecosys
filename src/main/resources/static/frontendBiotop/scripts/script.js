@@ -282,12 +282,13 @@ func_CQLFull = function() {
                         }
                     });
                     geoJsonLayer.on('mouseout', function() {
-                        if(popup !== undefined) {
                             console.log("here left");
-                                cnt_nav.animate({
-                                    'width': '0em', 'display': 'none'
-                                }, 2000);
-                        }
+                            //map.closePopup();
+                            setTimeout(function() {
+                                if(popup !== undefined) {
+                                    popup.remove();
+                                }
+                            }, 600);
                     });
                     geoJsonLayer.addTo(map);
                 },
@@ -380,7 +381,8 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                             if (ly_filter !== undefined) {
                                 map.removeLayer(ly_filter);
                             }
-                            ly_filter = L.geoJSON(response);
+                            ly_filter = L.geoJSON(response, {style: style});
+                            ly_filter.setStyle({'className': 'cl_lyFilt'})
                             map.fitBounds(ly_filter.getBounds());
 
                             ly_filter.on('click', function (e) {

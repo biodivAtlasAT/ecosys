@@ -722,6 +722,10 @@ body {
     height: 31em;
     margin-top: 1em;
 }
+.cl_lyFilt {
+    z-index: 10000;
+    color: #ffffff;
+}
 .cl_tdesc {
     margin: 0.4em;
 }
