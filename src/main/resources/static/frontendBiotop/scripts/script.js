@@ -282,7 +282,7 @@ func_CQLFull = function() {
                         }
                     });
                     geoJsonLayer.on('mouseout', function(event) {
-                        Event.stop(event);
+                        event.stopPropagation();
                         if(popup !== undefined) {
                             console.log("here left");
                             popup.on('remove', function() {
