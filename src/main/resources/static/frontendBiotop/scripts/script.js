@@ -281,7 +281,7 @@ func_CQLFull = function() {
                             popup.openOn(map);
                         }
                     });
-                    geoJsonLayer.on('mouseout', function(event) {
+                    geoJsonLayer.mouseout(function(event) {
                         event.stopPropagation();
                         if(popup !== undefined) {
                             console.log("here left");
