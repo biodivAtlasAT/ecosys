@@ -281,8 +281,8 @@ body {
 }
 #cnt_main {
     position: relative;
-    height: 100%;
-    width: 100%;
+    /* height: 100%; */
+    /* width: 100%; */
     float: left;
 }
 #cnt_info {
@@ -700,9 +700,9 @@ body {
 }
 #eSys {
     position: relative;
-    width: 20%;
+    width: fit-content;
     float: left;
-    min-width: 20%;
+    min-width: fit-content;
 }
 #id_welcome {
     color: #cccccc;
@@ -719,7 +719,7 @@ body {
 }
 .cl_habitatTypes {
     overflow-y: scroll;
-    height: 39.2em;
+    height: min-content;
     margin-top: 1em;
 }
 .cl_tdesc {
@@ -968,8 +968,8 @@ body {
 }
 #cnt_main {
     position: relative;
-    height: 100%;
-    width: 100%;
+    height: inherit;
+    width: inherit;
     float: left;
 }
 #cnt_info {
