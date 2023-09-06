@@ -289,8 +289,6 @@ func_CQLFull = function() {
                                     'width': '0em', 'display': 'none'
                                 }, 100);
                             });
-                            map.closePopup();
-                            //popup.remove();
                         }
                     });
                     geoJsonLayer.addTo(map);
