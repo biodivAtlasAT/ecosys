@@ -463,7 +463,7 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                         if(response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
                                             infoPup.setLatLng(e.latlng);
                                             infoPup.setContent(str_content);
-                                            infoPup.openOn(map);
+                                            // infoPup.openOn(map);
                                         } else {
                                             if($('.cl_capMatr').length !== 0) {
                                                 $('.cl_capMatr').remove();
@@ -484,7 +484,7 @@ func_CQLSubm = function(p_id, r_id, p_color) {
 
                                             infoPup.setLatLng(e.latlng);
                                             infoPup.setContent(str_content);
-                                            infoPup.openOn(map);
+                                            // infoPup.openOn(map);
 
                                             if (response['features'][0]['properties']['Disturbanc'] !== undefined) {
                                                 $('.cl_serv1').append("<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>");
