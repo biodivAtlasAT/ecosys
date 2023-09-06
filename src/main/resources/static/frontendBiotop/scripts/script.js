@@ -284,11 +284,9 @@ func_CQLFull = function() {
                     geoJsonLayer.on('mouseout', function() {
                         if(popup !== undefined) {
                             console.log("here left");
-                            popup.on('remove', function() {
                                 cnt_nav.animate({
                                     'width': '0em', 'display': 'none'
-                                }, 100);
-                            });
+                                }, 2000);
                         }
                     });
                     geoJsonLayer.addTo(map);
