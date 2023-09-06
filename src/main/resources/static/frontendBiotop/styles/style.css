@@ -719,7 +719,7 @@ body {
 }
 .cl_habitatTypes {
     overflow-y: scroll;
-    height: min-content;
+    height: 31em;
     margin-top: 1em;
 }
 .cl_tdesc {
