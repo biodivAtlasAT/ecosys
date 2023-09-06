@@ -211,6 +211,9 @@ func_CQLFull = function() {
                                         }
                                         ly_filter = L.geoJSON(response);
                                         map.fitBounds(ly_filter.getBounds());
+                                        ly_filter.on('mouseover', function(event) {
+                                            popup.remove();
+                                        });
                                         ly_filter.on('click', function (e) {
                                             //console.log(e.layer.feature.geometry);
                                             var clickedFeature = e.layer.feature;
@@ -272,23 +275,19 @@ func_CQLFull = function() {
                             }
                         });
                     });
-                    geoJsonLayer.on('mouseover', function(event) {
-                        var latlng = event.latlng;
-                        var center =  latlng;
+                    /*
+                    time = 0;
+                    time = setInterval(function(){
+                        //hide bar if he counts to 5 sec
 
-                        // Open the popup at the center of the polygon
-                        if(popup !== undefined) {
-                            popup.openOn(map);
+                    },1200);
+
+                            */
+                    geoJsonLayer.on('mouseover', function() {
+                        popup.openOn(map);
+                        if(popup.isOpen()) {
+                            popup.update();
                         }
-                    });
-                    geoJsonLayer.on('mouseout', function() {
-                            console.log("here left");
-                            //map.closePopup();
-                            setTimeout(function() {
-                                if(popup !== undefined) {
-                                    popup.remove();
-                                }
-                            }, 600);
                     });
                     geoJsonLayer.addTo(map);
                 },
@@ -381,10 +380,11 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                             if (ly_filter !== undefined) {
                                 map.removeLayer(ly_filter);
                             }
-                            ly_filter = L.geoJSON(response, {style: style});
-                            ly_filter.setStyle({'className': 'cl_lyFilt'})
+                            ly_filter = L.geoJSON(response);
                             map.fitBounds(ly_filter.getBounds());
-
+                            ly_filter.on('mouseover', function(event) {
+                                popup.remove();
+                            });
                             ly_filter.on('click', function (e) {
                                 //console.log(e.layer.feature.geometry);
                                 var clickedFeature = e.layer.feature;
@@ -447,14 +447,12 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                     str_content += '<div><b>' + decode_utf8(response['features'][0]['properties']['BT_Lang']) + '</b></div>';
 
                                     console.log(response['features'][0]['properties']);
-                                    if (speciesGroups.length > 0) {
                                         if (infoPup === undefined) {
                                             infoPup = L.popup({
                                                 className: 'cl_popup3',
                                                 closeButton: true,
                                                 closeOnClick: true
                                             });
-                                        }
 
                                         str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
                                         str_content += "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>";

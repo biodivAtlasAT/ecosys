@@ -32,7 +32,7 @@ body {
 }
 .cl_habitatTypes {
     overflow-y: scroll;
-    height: 31em;
+    height: 39.2em;
     margin-top: 1em;
 }
 .cl_tdesc {
@@ -281,8 +281,8 @@ body {
 }
 #cnt_main {
     position: relative;
-    /* height: 100%; */
-    /* width: 100%; */
+    height: 100%;
+    width: 100%;
     float: left;
 }
 #cnt_info {
@@ -700,9 +700,9 @@ body {
 }
 #eSys {
     position: relative;
-    width: fit-content;
+    width: 20%;
     float: left;
-    min-width: fit-content;
+    min-width: 20%;
 }
 #id_welcome {
     color: #cccccc;
@@ -719,12 +719,8 @@ body {
 }
 .cl_habitatTypes {
     overflow-y: scroll;
-    height: 31em;
+    height: 39.2em;
     margin-top: 1em;
-}
-.cl_lyFilt {
-    z-index: 10000;
-    color: #ffffff;
 }
 .cl_tdesc {
     margin: 0.4em;
@@ -972,8 +968,8 @@ body {
 }
 #cnt_main {
     position: relative;
-    height: inherit;
-    width: inherit;
+    height: 100%;
+    width: 100%;
     float: left;
 }
 #cnt_info {
