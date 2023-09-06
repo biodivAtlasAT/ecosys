@@ -275,19 +275,18 @@ func_CQLFull = function() {
                             }
                         });
                     });
-                    /*
                     time = 0;
                     time = setInterval(function(){
                         //hide bar if he counts to 5 sec
-
-                    },1200);
-
-                            */
+                        map.closePopup(popup);
+                        popup.remove();
+                    },4200);
                     geoJsonLayer.on('mouseover', function() {
                         popup.openOn(map);
                         if(popup.isOpen()) {
                             popup.update();
                         }
+                        clearInterval(time);
                     });
                     geoJsonLayer.addTo(map);
                 },
@@ -470,45 +469,45 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                             str_content += "<div class='cl_capMatr'><div class='cl_cntCap'><b>Capacity Matrix values</b></div></div>";
                                             if((response['features'][0]['properties']['Disturbanc'] !== undefined || response['features'][0]['properties']['Localclima'] !== undefined || response['features'][0]['properties']['Waterregul'] !== undefined || response['features'][0]['properties']['Watersuppl'] !== undefined || response['features'][0]['properties']['Pollinatio'] !== undefined)) {
                                                 str_content += "<div class='cl_services cl_serv1'><b>Regulation services</b></div>";
+                                                if (response['features'][0]['properties']['Disturbanc'] !== undefined) {
+                                                    str_content += "<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>";
+                                                }
+                                                if (response['features'][0]['properties']['Localclima'] !== undefined) {
+                                                    str_content += "<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Waterregul'] !== undefined) {
+                                                    str_content += "<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Watersuppl'] !== undefined) {
+                                                    str_content += "<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Pollinatio'] !== undefined) {
+                                                    str_content += "<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>";
+                                                }
                                             }
                                             if(response['features'][0]['properties']['Refugium'] !== undefined) {
                                                 str_content += "<div class='cl_services cl_serv2'><b>Habitat services</b></div>";
+                                                if(response['features'][0]['properties']['Refugium'] !== undefined) {
+                                                    str_content += "<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>";
+                                                }
                                             }
                                             if((response['features'][0]['properties']['Food'] !== undefined || response['features'][0]['properties']['Rawmateria'] !== undefined || response['features'][0]['properties']['Geneticres'] !== undefined)) {
                                                 str_content += "<div class='cl_services cl_serv3'><b>Provision services</b></div>";
+                                                if(response['features'][0]['properties']['Food'] !== undefined) {
+                                                    str_content += "<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Rawmateria'] !== undefined) {
+                                                    str_content += "<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Geneticres'] !== undefined) {
+                                                    str_content += "<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>";
+                                                }
                                             }
 
                                             infoPup.setLatLng(e.latlng);
                                             infoPup.setContent(str_content);
                                             infoPup.openOn(map);
 
-                                            if (response['features'][0]['properties']['Disturbanc'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>");
-                                            }
-                                            if (response['features'][0]['properties']['Localclima'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Waterregul'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Watersuppl'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Pollinatio'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Refugium'] !== undefined) {
-                                                $('.cl_serv2').append("<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Food'] !== undefined) {
-                                                $('.cl_serv3').append("<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Rawmateria'] !== undefined) {
-                                                $('.cl_serv3').append("<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Geneticres'] !== undefined) {
-                                                $('.cl_serv3').append("<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>");
-                                            }
                                         }
                                     }
                                     if (!speciesGroups.length) {
@@ -581,11 +580,6 @@ func_CQLSubm = function(p_id, r_id, p_color) {
 
                                         //str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
                                         str_content += "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>";
-                                        if(response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
-                                            infoPup.setLatLng(e.latlng);
-                                            infoPup.setContent(str_content);
-                                            infoPup.openOn(map);
-                                        } else {
                                             if($('.cl_capMatr').length !== 0) {
                                                 $('.cl_capMatr').remove();
                                             }
@@ -595,45 +589,39 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                             str_content += "<div class='cl_capMatr'><div class='cl_cntCap'><b>Capacity Matrix values</b></div></div>";
                                             if((response['features'][0]['properties']['Disturbanc'] !== undefined || response['features'][0]['properties']['Localclima'] !== undefined || response['features'][0]['properties']['Waterregul'] !== undefined || response['features'][0]['properties']['Watersuppl'] !== undefined || response['features'][0]['properties']['Pollinatio'] !== undefined)) {
                                                 str_content += "<div class='cl_services cl_serv1'><b>Regulation services</b></div>";
+                                                if (response['features'][0]['properties']['Disturbanc'] !== undefined) {
+                                                    str_content += "<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>";
+                                                }
+                                                if (response['features'][0]['properties']['Localclima'] !== undefined) {
+                                                    str_content += "<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Waterregul'] !== undefined) {
+                                                    str_content += "<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Watersuppl'] !== undefined) {
+                                                    str_content += "<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Pollinatio'] !== undefined) {
+                                                    str_content += "<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>";
+                                                }
                                             }
                                             if(response['features'][0]['properties']['Refugium'] !== undefined) {
                                                 str_content += "<div class='cl_services cl_serv2'><b>Habitat services</b></div>";
+                                                if(response['features'][0]['properties']['Refugium'] !== undefined) {
+                                                    str_content += "<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>";
+                                                }
                                             }
                                             if((response['features'][0]['properties']['Food'] !== undefined || response['features'][0]['properties']['Rawmateria'] !== undefined || response['features'][0]['properties']['Geneticres'] !== undefined)) {
                                                 str_content += "<div class='cl_services cl_serv3'><b>Provision services</b></div>";
-                                            }
-
-                                            infoPup.setLatLng(e.latlng);
-                                            infoPup.setContent(str_content);
-                                            infoPup.openOn(map);
-
-                                            if (response['features'][0]['properties']['Disturbanc'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>");
-                                            }
-                                            if (response['features'][0]['properties']['Localclima'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Waterregul'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Watersuppl'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Pollinatio'] !== undefined) {
-                                                $('.cl_serv1').append("<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Refugium'] !== undefined) {
-                                                $('.cl_serv2').append("<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Food'] !== undefined) {
-                                                $('.cl_serv3').append("<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Rawmateria'] !== undefined) {
-                                                $('.cl_serv3').append("<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>");
-                                            }
-                                            if(response['features'][0]['properties']['Geneticres'] !== undefined) {
-                                                $('.cl_serv3').append("<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>");
-                                            }
+                                                if(response['features'][0]['properties']['Food'] !== undefined) {
+                                                    str_content += "<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Rawmateria'] !== undefined) {
+                                                    str_content += "<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>";
+                                                }
+                                                if(response['features'][0]['properties']['Geneticres'] !== undefined) {
+                                                    str_content += "<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>";
+                                                }
                                         }
                                         if (infoPup !== undefined) {
                                             infoPup.setLatLng(e.latlng);
