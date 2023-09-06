@@ -113,7 +113,6 @@ body {
     position: relative;
     position: absolute;
     text-align: center;
-    height: 26em;
     z-index: 1200;
 }
 .cl_popup {
@@ -800,7 +799,6 @@ body {
     position: relative;
     position: absolute;
     text-align: center;
-    height: 26em;
     z-index: 1200;
 }
 .cl_popup {
