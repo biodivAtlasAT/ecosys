@@ -115,6 +115,47 @@ $('button').attrchange({
         //Triggered when the selected elements attribute is added/updated/removed
     }
 });
+func_legend = function (p_id) {
+    packageID = opt_packageID.val();
+    $.ajax({
+        url: url_ecosys + url_pathRasterData + '?packageID=' + packageID + '&services=[' + p_id + ']&coords=[(15,95/48,38)]',
+        headers: {"Accept": "application/json"},
+        type: 'POST',
+        dataType: "json",
+        crossDomain: true,
+        beforeSend: function (xhr) {
+            xhr.withCredentials = true;
+        },
+        type: 'POST',
+        success: function (resp) {
+            console.log(resp['data'][0]['geoserverLayerName']);
+            var id_lName = resp['data'][0]['geoserverLayerName'];
+// Define the URL for GetLegendGraphic service
+            var legendURL = 'https://spatial.biodivdev.at/geoserver/ows?service=WMS&request=GetLegendGraphic&format=image/png&layer=ALA:' + id_lName.toLowerCase() + '&width=20&height=20&legend_options=forceLabels:on';
+
+                    // Create a popup element
+                    var popup = document.createElement('div');
+                    popup.className = 'legend-popup';
+                    popup.id = 'id_lPopup_' + p_id;
+                    popup.innerHTML = '<img style="margin: 1.7em;" src="' + legendURL + '">';
+
+                    // Position the popup near the clicked icon
+                    // You'll need to adjust these values based on your UI layout
+                    var iconPosition = { top: 50, left: 50 }; // Example values, adjust as needed
+                    popup.style.top = iconPosition.top + 'px';
+                    popup.style.left = iconPosition.left + 'px';
+
+                    // Add the popup to the document body
+                    $('#id_divName_' + p_id).parent().parent().append(popup);
+
+                    // Add an event listener to close the popup when clicked
+                    popup.addEventListener('click', function() {
+                        $('#id_divName_' + p_id).parent().parent().remove(popup);
+                    });
+        }
+    });
+
+};
 func_cbClick = function (p_id) {
     if ($('.cl_cbEsys:checkbox:checked').length === 0) {
         for(it_tl = 0; it_tl < topLayer.length; it_tl++) {
@@ -263,21 +304,21 @@ $.ajax({
                     sortEsys[0].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_2 = 1;
                 }
-                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
+                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" onclick='func_legend(" + item.id + ");'><b style='background-color: blue'>L.</b></div></div></li>");
             }
             if(categories[index].catID === 3) {
                 if(it_3 === 0) {
                     sortEsys[1].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_3 = 1;
                 }
-                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
+                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" onclick='func_legend(" + item.id + ");'><b style='background-color: blue'>L.</b></div></div></li>");
             }
             if(categories[index].catID === 5) {
                 if(it_5 === 0) {
                     sortEsys[2].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_5 = 1;
                 }
-                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
+                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" onclick='func_legend(" + item.id + ");'><b style='background-color: blue'>L.</b></div></div></li>");
             }
         });
         for(it_se = 0; it_se < 3; it_se++) {
@@ -319,7 +360,7 @@ opt_packageID.on('change', function () {
                 categories[index] = new Object();
                 categories[index].servID = item.id;
                 categories[index].catID = item['category']['id'];
-                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div></div></li>");
+                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" onclick='func_legend(" + item.id + ");'><b style='background-color: blue'>L.</b></div></div></li>");
             });
             //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
             map.closePopup();
