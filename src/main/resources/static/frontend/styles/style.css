@@ -129,6 +129,12 @@ body {
     margin-top: 1em;
     font-weight: 700;
 }
+.cl_ptleg:hover {
+    cursor: pointer;
+}
+.cl_ptinfo:hover {
+    cursor: pointer;
+}
 .cl_dimension {
     position: relative;
     width: 6em;

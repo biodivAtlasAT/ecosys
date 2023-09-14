@@ -146,16 +146,21 @@ func_legend = function (p_id) {
                     popup.style.left = iconPosition.left + 'px';
 
                     // Add the popup to the document body
-                    $('#id_divName_' + p_id).parent().parent().append(popup);
+                    if(!$('#id_lPopup_' + p_id).length) {
+                        $('#id_divName_' + p_id).parent().parent().append(popup);
+                    }
 
                     // Add an event listener to close the popup when clicked
                     popup.addEventListener('click', function() {
-                        $('#id_divName_' + p_id).parent().parent().remove(popup);
+                        popup.remove();
                     });
         }
     });
 
 };
+func_info = function(p_id) {
+    console.log('steckbriefe' + p_id);
+}
 func_cbClick = function (p_id) {
     if ($('.cl_cbEsys:checkbox:checked').length === 0) {
         for(it_tl = 0; it_tl < topLayer.length; it_tl++) {
@@ -304,21 +309,21 @@ $.ajax({
                     sortEsys[0].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_2 = 1;
                 }
-                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" onclick='func_legend(" + item.id + ");'><b style='background-color: blue'>L.</b></div></div></li>");
+                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
             }
             if(categories[index].catID === 3) {
                 if(it_3 === 0) {
                     sortEsys[1].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_3 = 1;
                 }
-                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" onclick='func_legend(" + item.id + ");'><b style='background-color: blue'>L.</b></div></div></li>");
+                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
             }
             if(categories[index].catID === 5) {
                 if(it_5 === 0) {
                     sortEsys[2].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_5 = 1;
                 }
-                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" onclick='func_legend(" + item.id + ");'><b style='background-color: blue'>L.</b></div></div></li>");
+                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
             }
         });
         for(it_se = 0; it_se < 3; it_se++) {
@@ -360,7 +365,7 @@ opt_packageID.on('change', function () {
                 categories[index] = new Object();
                 categories[index].servID = item.id;
                 categories[index].catID = item['category']['id'];
-                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" onclick='func_legend(" + item.id + ");'><b style='background-color: blue'>L.</b></div></div></li>");
+                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
             });
             //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
             map.closePopup();
