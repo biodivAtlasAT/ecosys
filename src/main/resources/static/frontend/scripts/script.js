@@ -57,6 +57,7 @@ var catID = new Array();
 var chk_lyClick = 0;
 var id_fName = '';
 var topLayer = new Array();
+
 /*
 var info_icon = $('#info_icon').append('<svg id="ic_info" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">\n' +
     '  <circle cy="24" cx="24" r="24" fill="#36c"/>\n' +
@@ -131,29 +132,29 @@ func_legend = function (p_id) {
             console.log(resp['data'][0]['geoserverLayerName']);
             var id_lName = resp['data'][0]['geoserverLayerName'];
 // Define the URL for GetLegendGraphic service
-            var legendURL = 'https://spatial.biodivdev.at/geoserver/ows?service=WMS&request=GetLegendGraphic&format=image/png&layer=ALA:' + id_lName.toLowerCase() + '&width=20&height=20&legend_options=forceLabels:on';
+            var legendURL = 'https://spatial.biodivdev.at/geoserver/ows?service=WMS&request=GetLegendGraphic&format=image/png&layer=ECO:' + id_lName.toLowerCase() + '&width=20&height=20&legend_options=forceLabels:on';
 
-                    // Create a popup element
-                    var popup = document.createElement('div');
-                    popup.className = 'legend-popup';
-                    popup.id = 'id_lPopup_' + p_id;
-                    popup.innerHTML = '<img style="margin: 1.7em;" src="' + legendURL + '">';
+            // Create a popup element
+            var popup = document.createElement('div');
+            popup.className = 'legend-popup';
+            popup.id = 'id_lPopup_' + p_id;
+            popup.innerHTML = '<img style="margin: 1.7em;" src="' + legendURL + '">';
 
-                    // Position the popup near the clicked icon
-                    // You'll need to adjust these values based on your UI layout
-                    var iconPosition = { top: 50, left: 50 }; // Example values, adjust as needed
-                    popup.style.top = iconPosition.top + 'px';
-                    popup.style.left = iconPosition.left + 'px';
+            // Position the popup near the clicked icon
+            // You'll need to adjust these values based on your UI layout
+            var iconPosition = { top: 50, left: 50 }; // Example values, adjust as needed
+            popup.style.top = iconPosition.top + 'px';
+            popup.style.left = iconPosition.left + 'px';
 
-                    // Add the popup to the document body
-                    if(!$('#id_lPopup_' + p_id).length) {
-                        $('#id_divName_' + p_id).parent().parent().append(popup);
-                    }
+            // Add the popup to the document body
+            if(!$('#id_lPopup_' + p_id).length) {
+                $('#id_divName_' + p_id).parent().parent().append(popup);
+            }
 
-                    // Add an event listener to close the popup when clicked
-                    popup.addEventListener('click', function() {
-                        popup.remove();
-                    });
+            // Add an event listener to close the popup when clicked
+            popup.addEventListener('click', function() {
+                popup.remove();
+            });
         }
     });
 
@@ -177,37 +178,37 @@ func_cbClick = function (p_id) {
         packageID = opt_packageID.val();
         services = reqEcosys;
         //$(item).attr('class', $(item).attr('class').split(' ')[0] + ' ' + 'cl_cbNR_' + iter + ' ' + $(item).attr('class').split(' ')[2]);
-            $('#id_esys_' + p_id).parent().css('background-color', '#ef932a');
-            $.ajax({
-                url: url_ecosys + url_pathRasterData + '?packageID=' + packageID + '&services=[' + services + ']&coords=[(15,95/48,38)]',
-                headers: {"Accept": "application/json"},
-                type: 'POST',
-                dataType: "json",
-                crossDomain: true,
-                beforeSend: function (xhr) {
-                    xhr.withCredentials = true;
-                },
-                type: 'POST',
-                success: function (resp) {
-                    console.log(resp['data'][0]['geoserverLayerName']);
-                    id_fName = resp['data'][0]['geoserverLayerName'];
-                    var url_rdataTop = "https://spatial.biodivdev.at/geoserver/wms";
-                    if (!$('#id_esys_' + p_id).is(':checked')) {
-                        if (topLayer[p_id] !== undefined) {
-                            map.removeLayer(topLayer[p_id]);
-                        }
-                    }
-                    if ($('#id_esys_' + p_id).is(':checked')) {
-                        topLayer[p_id] = L.tileLayer.wms(url_rdataTop, {
-                            layers: 'ALA:' + id_fName.toLowerCase(),
-                            format: 'image/png',
-                            transparent: true,
-                            opacity: 0.4,
-                            version: '1.1.0'
-                        }).addTo(map);
+        $('#id_esys_' + p_id).parent().css('background-color', '#ef932a');
+        $.ajax({
+            url: url_ecosys + url_pathRasterData + '?packageID=' + packageID + '&services=[' + services + ']&coords=[(15,95/48,38)]',
+            headers: {"Accept": "application/json"},
+            type: 'POST',
+            dataType: "json",
+            crossDomain: true,
+            beforeSend: function (xhr) {
+                xhr.withCredentials = true;
+            },
+            type: 'POST',
+            success: function (resp) {
+                console.log(resp['data'][0]['geoserverLayerName']);
+                id_fName = resp['data'][0]['geoserverLayerName'];
+                var url_rdataTop = "https://spatial.biodivdev.at/geoserver/wms";
+                if (!$('#id_esys_' + p_id).is(':checked')) {
+                    if (topLayer[p_id] !== undefined) {
+                        map.removeLayer(topLayer[p_id]);
                     }
                 }
-            });
+                if ($('#id_esys_' + p_id).is(':checked')) {
+                    topLayer[p_id] = L.tileLayer.wms(url_rdataTop, {
+                        layers: 'ECO:' + id_fName.toLowerCase(),
+                        format: 'image/png',
+                        transparent: true,
+                        opacity: 0.4,
+                        version: '1.1.0'
+                    }).addTo(map);
+                }
+            }
+        });
     }
     for(it_esys = 0; it_esys <  $('input.cl_cbEsys').length; it_esys++) {
         if ($('.cl_cbNR_' + it_esys + ':checkbox:checked').length === 0) {
@@ -302,28 +303,28 @@ $.ajax({
             categories[index].servID = item.id;
             categories[index].catID = item['category']['id'];
 
-                //console.log(id_fName.toLowerCase());
-                //url_rdataTop = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + id_fName.toLowerCase() + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+            //console.log(id_fName.toLowerCase());
+            //url_rdataTop = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + id_fName.toLowerCase() + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
             if(categories[index].catID === 2) {
                 if(it_2 === 0) {
                     sortEsys[0].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_2 = 1;
                 }
-                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
+                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
             }
             if(categories[index].catID === 3) {
                 if(it_3 === 0) {
                     sortEsys[1].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_3 = 1;
                 }
-                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
+                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
             }
             if(categories[index].catID === 5) {
                 if(it_5 === 0) {
                     sortEsys[2].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_5 = 1;
                 }
-                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
+                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
             }
         });
         for(it_se = 0; it_se < 3; it_se++) {
@@ -365,7 +366,7 @@ opt_packageID.on('change', function () {
                 categories[index] = new Object();
                 categories[index].servID = item.id;
                 categories[index].catID = item['category']['id'];
-                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
+                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: black; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: #ef932a'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
             });
             //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
             map.closePopup();
@@ -530,40 +531,40 @@ func_reqEcosys = function (m_th, m_id) {
                                 });
                             }
                             for (it_d = 0; it_d < quantArr.length; it_d++) {
-                                    quantArr[it_d].getElementsByTagName("svg")[0].removeAttribute('id');
-                                    quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("width", "50");
-                                    quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("height", "50");
-                                    for (it_t = 0; it_t < $(quantArr[it_d].getElementsByTagName("svg")[0]).children().length; it_t++) {
-                                        if ($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class') !== null) {
-                                            for (it_h = 0; it_h < quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class')).length; it_h++) {
-                                                //console.log(quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class'))[it_h]);
-                                                elemObj = quantArr[it_d].getElementsByTagName("style")[0];
-                                                for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
-                                                    //console.log( elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''));
-                                                    if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
-                                                        quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].setAttribute('style', elemObj.innerHTML.split('}')[it_r].split('{')[1]);
-                                                    }
+                                quantArr[it_d].getElementsByTagName("svg")[0].removeAttribute('id');
+                                quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("width", "50");
+                                quantArr[it_d].getElementsByTagName("svg")[0].setAttribute("height", "50");
+                                for (it_t = 0; it_t < $(quantArr[it_d].getElementsByTagName("svg")[0]).children().length; it_t++) {
+                                    if ($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class') !== null) {
+                                        for (it_h = 0; it_h < quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class')).length; it_h++) {
+                                            //console.log(quantArr[it_d].getElementsByClassName($(quantArr[it_d].getElementsByTagName("svg")[0]).children()[it_t].getAttribute('class'))[it_h]);
+                                            elemObj = quantArr[it_d].getElementsByTagName("style")[0];
+                                            for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
+                                                //console.log( elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''));
+                                                if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
+                                                    quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].setAttribute('style', elemObj.innerHTML.split('}')[it_r].split('{')[1]);
                                                 }
-                                                for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
-                                                    if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
-                                                        quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].removeAttribute('class');
-                                                    }
+                                            }
+                                            for (it_r = 0; it_r < elemObj.innerHTML.split('}').length; it_r++) {
+                                                if (quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', '')).length > 0) {
+                                                    quantArr[it_d].getElementsByClassName(elemObj.innerHTML.split('}')[it_r].split('{')[0].replace('.', ''))[0].removeAttribute('class');
                                                 }
                                             }
                                         }
                                     }
-                                    if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
-                                        quantArr[it_d].getElementsByTagName("style")[0].remove();
+                                }
+                                if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
+                                    quantArr[it_d].getElementsByTagName("style")[0].remove();
+                                }
+                                if( absData[it_d]['vals'][0]['val'] > 0) {
+                                    for (it_s = 0; it_s < absData[it_d]['vals'][0]['quantil'] + 1; it_s++) {
+                                        d3.select('#id_chrIcons_' + it_d)
+                                            .append('div')
+                                            .attr('class', ' cl_quint')
+                                            .attr('id', 'id_quint_' + it_d + '_' + it_s)
+                                            .html(new XMLSerializer().serializeToString(quantArr[it_d]));
                                     }
-                                    if( absData[it_d]['vals'][0]['val'] > 0) {
-                                        for (it_s = 0; it_s < absData[it_d]['vals'][0]['quantil'] + 1; it_s++) {
-                                            d3.select('#id_chrIcons_' + it_d)
-                                                .append('div')
-                                                .attr('class', ' cl_quint')
-                                                .attr('id', 'id_quint_' + it_d + '_' + it_s)
-                                                .html(new XMLSerializer().serializeToString(quantArr[it_d]));
-                                        }
-                                    }
+                                }
                                 if( absData[it_d]['vals'][0]['val'] === 0) {
                                     d3.select('#id_chrIcons_' + it_d)
                                         .append('div')
@@ -589,11 +590,11 @@ func_reqEcosys = function (m_th, m_id) {
                 });
                 packageID = opt_packageID.val();
                 services = reqEcosys;
-                    var latlngs = func_connectTheDots(filteredmarker).map((point) => L.latLng(point));
-                    var lengths = L.GeometryUtil.accumulatedLengths(latlngs);
-                    // Reduce all lengths to a single total length
-                    var totalLength = lengths[lengths.length - 1];
-                    console.log(totalLength);
+                var latlngs = func_connectTheDots(filteredmarker).map((point) => L.latLng(point));
+                var lengths = L.GeometryUtil.accumulatedLengths(latlngs);
+                // Reduce all lengths to a single total length
+                var totalLength = lengths[lengths.length - 1];
+                console.log(totalLength);
                 if(parseInt($('#id_viewP option:selected').val()) === 0) {
                     // Get number of points based on desired interval and total length
                     var interval = 1000;
@@ -889,7 +890,7 @@ id_newMark.on('click', function (e) {
     }
     var tt_0 = it_0;
     let svgEmb = '<svg id=\"Ebene_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"100px\" viewBox=\"0 0 1000 1000\" xml:space=\"preserve\"><style type=\"text/css\">.st0{fill:#FF3333;}.cl_nrT{font-size:20em;fill:#FF3333;}</style><g><text x=\"65%\" y=\"95%\" id=\"id_markNr_' + it_0 + '\" class=\"cl_nrT\">' + it_0 + '</text><path id=\"id_path\" class=\"st0\" d=\"M500,42.7c162.1,0,294,131.9,294,294c0,51.6-13.7,102.4-39.5,147L500,924.7l-254.5-441c-25.8-44.6-39.5-95.4-39.5-147C206,174.5,337.9,42.7,500,42.7L500,42.7z M500,451c63,0,114.3-51.3,114.3-114.3S563,222.4,500,222.4s-114.3,51.3-114.3,114.3S437,451,500,451z M500,10c-180.4,0-326.7,146.3-326.7,326.7c0,59.6,16,115.3,43.9,163.3L500,990l282.8-490c27.8-48.1,43.9-103.8,43.9-163.3C826.6,156.3,680.4,10,500,10L500,10L500,10z M500,418.3c-45.1,0-81.7-36.5-81.7-81.6s36.6-81.6,81.7-81.6s81.6,36.6,81.6,81.6C581.7,381.8,545.1,418.3,500,418.3L500,418.3z\"/></g></svg>';
-    marker[it_0] = L.marker([marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lat + 0.05 : 48.3805228, marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lng + 0.05 : 15.9558588], {
+    marker[it_0] = L.marker([marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lat + 0.002 : map.getCenter().lat, marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lng + 0.002 : map.getCenter().lng], {
         clickable: true,
         draggable: true,
         icon: L.divIcon({
@@ -1401,32 +1402,32 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                 //console.log(yStep[it_d][it_n]);
                 if (cntID[it_n] === 1) {
                     if (p_catID[it_d].catID === 2) {
-                            d3.selectAll('#id_grRect_' + it_d)
-                                .append("rect")
-                                .attr('class', 'cl_rCol_1 cl_Rect')
-                                .attr('id', 'id_bar_' + it_d + '_' + it_n)
-                                .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
-                                .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
-                                .attr('width', xScale[it_d](xStep[it_d][1]))
-                                .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
-                                .attr('y_value', yStep[it_d][it_n])
-                                .attr('fill', '#98BB1E')
-                                .attr('fill-opacity', 0.7)
-                                .on('mouseover', function () {
-                                    var tmp = $(this).attr('id');
-                                    $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
-                                    $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
-                                    d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('stroke', '#98BB1E');
-                                    d3.select('#id_grRect_' + tmp.split('_')[2]).moveToBack();
+                        d3.selectAll('#id_grRect_' + it_d)
+                            .append("rect")
+                            .attr('class', 'cl_rCol_1 cl_Rect')
+                            .attr('id', 'id_bar_' + it_d + '_' + it_n)
+                            .attr("x", margin.left + xScale[it_d](xStep[it_d][it_n]))
+                            .attr('y', yScale[it_d](yStep[it_d][it_n]) + margin.bottom)
+                            .attr('width', xScale[it_d](xStep[it_d][1]))
+                            .attr("height", height - yScale[it_d](yStep[it_d][it_n]) - margin.top - margin.bottom)
+                            .attr('y_value', yStep[it_d][it_n])
+                            .attr('fill', '#98BB1E')
+                            .attr('fill-opacity', 0.7)
+                            .on('mouseover', function () {
+                                var tmp = $(this).attr('id');
+                                $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
+                                $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'block');
+                                d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('stroke', '#98BB1E');
+                                d3.select('#id_grRect_' + tmp.split('_')[2]).moveToBack();
 
-                                })
-                                .on('mouseout', function () {
-                                    var tmp = $(this).attr('id');
-                                    $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
-                                    $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
-                                    d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('stroke', '#98BB1E');
-                                });
-                        }
+                            })
+                            .on('mouseout', function () {
+                                var tmp = $(this).attr('id');
+                                $('#id_text_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
+                                $('#id_line_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('display', 'none');
+                                d3.select('#id_bar_' + tmp.split('_')[2] + '_' + tmp.split('_')[3]).attr('stroke', '#98BB1E');
+                            });
+                    }
                     if (p_catID[it_d].catID === 5) {
                         d3.selectAll('#id_grRect_' + it_d)
                             .append("rect")
@@ -1855,7 +1856,7 @@ func_updateID = function (tmpT) {
 
                 // Create a new map object within the popup
                 if (popupMap[tt_0] != undefined) popupMap[tt_0].remove();
-                    popupMap[tt_0] = L.map('popup-map_' + tt_0, {
+                popupMap[tt_0] = L.map('popup-map_' + tt_0, {
                     dragging: false,
                     zoomControl: false
                 }).setView(latlng, map.getZoom());
@@ -2160,8 +2161,8 @@ map.on('click', function(e) {
                 var url_esys;
                 var descrName;
                 if(result['PB'] !== undefined) {
-                     url_esys = 'https://ecosys.biodivdev.at/' + url_pathLData + '?packageID=' + opt_packageID.val() + '&layerID=' + $('#id_addLayer option:selected').val() + '&layerKey=' + result['PB'];
-                     descrName = result['PB'];
+                    url_esys = 'https://ecosys.biodivdev.at/' + url_pathLData + '?packageID=' + opt_packageID.val() + '&layerID=' + $('#id_addLayer option:selected').val() + '&layerKey=' + result['PB'];
+                    descrName = result['PB'];
                 }
                 if(result['HRNAME'] !== undefined) {
                     url_esys = 'https://ecosys.biodivdev.at/' + url_pathLData + '?packageID=' + opt_packageID.val() + '&layerID=' + $('#id_addLayer option:selected').val() + '&layerKey=' + result['HRNAME'];
@@ -2335,10 +2336,10 @@ map.on('click', function(e) {
                                 }
                             }
                             if(absData[it_d]['vals']['val'] === 0) {
-                                    d3.select('#id_chrIcons_' + it_d)
-                                        .append('div')
-                                        .attr('class', ' cl_quint')
-                                        .attr('id', 'id_quint_' + it_d + '_' + 0);
+                                d3.select('#id_chrIcons_' + it_d)
+                                    .append('div')
+                                    .attr('class', ' cl_quint')
+                                    .attr('id', 'id_quint_' + it_d + '_' + 0);
                             }
                         }
                     }

@@ -216,17 +216,17 @@
         return t / 3600 * Math.PI / 180
     }
 
-    function A(t) {
+    function N(t) {
         var s = t.getInt32(8, !1);
         return 11 !== s && (11 !== (s = t.getInt32(8, !0)) && console.warn("Failed to detect nadgrid endian-ness, defaulting to little-endian"), !0)
     }
 
-    function E(t, s) {
+    function A(t, s) {
         return {
             nFields: t.getInt32(8, s),
             nSubgridFields: t.getInt32(24, s),
             nSubgrids: t.getInt32(40, s),
-            shiftType: N(t, 56, 64).trim(),
+            shiftType: E(t, 56, 64).trim(),
             fromSemiMajorAxis: t.getFloat64(120, s),
             fromSemiMinorAxis: t.getFloat64(136, s),
             toSemiMajorAxis: t.getFloat64(152, s),
@@ -234,7 +234,7 @@
         }
     }
 
-    function N(t, s, i) {
+    function E(t, s, i) {
         return String.fromCharCode.apply(null, new Uint8Array(t.buffer.slice(s, i)))
     }
 
@@ -262,8 +262,8 @@
 
     function S(t, s, i) {
         return {
-            name: N(t, s + 8, s + 16).trim(),
-            parent: N(t, s + 24, s + 24 + 8).trim(),
+            name: E(t, s + 8, s + 16).trim(),
+            parent: E(t, s + 24, s + 24 + 8).trim(),
             lowerLatitude: t.getFloat64(s + 72, i),
             upperLatitude: t.getFloat64(s + 88, i),
             lowerLongitude: t.getFloat64(s + 104, i),
@@ -377,7 +377,7 @@
                 if (!(c > a.y || u > a.x || f < a.y || M < a.x || (h = j(a, s, o), isNaN(h.x)))) break
             } else if (r.mandatory) return console.log("Unable to find mandatory grid '" + r.name + "'"), -1
         }
-        return isNaN(h.x) ? (console.log("Failed to find a grid shift table for location '" + -a.x * Et + " " + a.y * Et + " tried: '" + e + "'"), -1) : (i.x = -h.x, i.y = h.y, 0)
+        return isNaN(h.x) ? (console.log("Failed to find a grid shift table for location '" + -a.x * At + " " + a.y * At + " tried: '" + e + "'"), -1) : (i.x = -h.x, i.y = h.y, 0)
     }
 
     function j(t, s, i) {
@@ -429,14 +429,14 @@
     }
 
     function F(t, s) {
-        return (t.datum.datum_type === ft || t.datum.datum_type === dt) && "WGS84" !== s.datumCode || (s.datum.datum_type === ft || s.datum.datum_type === dt) && "WGS84" !== t.datumCode
+        return (t.datum.datum_type === ft || t.datum.datum_type === dt || t.datum.datum_type === pt) && "WGS84" !== s.datumCode || (s.datum.datum_type === ft || s.datum.datum_type === dt || s.datum.datum_type === pt) && "WGS84" !== t.datumCode
     }
 
     function D(t, s, i, a) {
-        var h;
-        if (Array.isArray(i) && (i = es(i)), ns(i), t.datum && s.datum && F(t, s) && (i = D(t, h = new Projection("WGS84"), i, a), t = h), a && "enu" !== t.axis && (i = hs(t, !1, i)), "longlat" === t.projName) i = {
-            x: i.x * At,
-            y: i.y * At,
+        var h, e = void 0 !== (i = Array.isArray(i) ? es(i) : {x: i.x, y: i.y, z: i.z, m: i.m}).z;
+        if (ns(i), t.datum && s.datum && F(t, s) && (i = D(t, h = new Projection("WGS84"), i, a), t = h), a && "enu" !== t.axis && (i = hs(t, !1, i)), "longlat" === t.projName) i = {
+            x: i.x * Nt,
+            y: i.y * Nt,
             z: i.z || 0
         }; else if (t.to_meter && (i = {
             x: i.x * t.to_meter,
@@ -448,14 +448,14 @@
             y: i.y,
             z: i.z || 0
         }), "longlat" === s.projName ? i = {
-            x: i.x * Et,
-            y: i.y * Et,
+            x: i.x * At,
+            y: i.y * At,
             z: i.z || 0
         } : (i = s.forward(i), s.to_meter && (i = {
             x: i.x / s.to_meter,
             y: i.y / s.to_meter,
             z: i.z || 0
-        })), a && "enu" !== s.axis ? hs(s, !0, i) : i
+        })), a && "enu" !== s.axis ? hs(s, !0, i) : (e || delete i.z, i)
     }
 
     function U(t, s, i, a) {
@@ -704,7 +704,7 @@
 
     function ut(t, s, i, a) {
         var h;
-        return t < wt ? (a.value = Ai.AREA_0, h = 0) : (h = Math.atan2(s, i), Math.abs(h) <= Nt ? a.value = Ai.AREA_0 : h > Nt && h <= xt + Nt ? (a.value = Ai.AREA_1, h -= xt) : h > xt + Nt || h <= -(xt + Nt) ? (a.value = Ai.AREA_2, h = h >= 0 ? h - Pt : h + Pt) : (a.value = Ai.AREA_3, h += xt)), h
+        return t < wt ? (a.value = Ni.AREA_0, h = 0) : (h = Math.atan2(s, i), Math.abs(h) <= Et ? a.value = Ni.AREA_0 : h > Et && h <= xt + Et ? (a.value = Ni.AREA_1, h -= xt) : h > xt + Et || h <= -(xt + Et) ? (a.value = Ni.AREA_2, h = h >= 0 ? h - Pt : h + Pt) : (a.value = Ni.AREA_3, h += xt)), h
     }
 
     function ct(t, s) {
@@ -721,8 +721,8 @@
     }
 
     var ft = 1, dt = 2, pt = 3, mt = 4, yt = 5, _t = 484813681109536e-20, xt = Math.PI / 2, gt = .16666666666666666,
-        vt = .04722222222222222, bt = .022156084656084655, wt = 1e-10, At = .017453292519943295, Et = 57.29577951308232,
-        Nt = Math.PI / 4, Ct = 2 * Math.PI, Pt = 3.14159265359, St = {};
+        vt = .04722222222222222, bt = .022156084656084655, wt = 1e-10, Nt = .017453292519943295, At = 57.29577951308232,
+        Et = Math.PI / 4, Ct = 2 * Math.PI, Pt = 3.14159265359, St = {};
     St.greenwich = 0, St.lisbon = -9.131906111111, St.paris = 2.337229166667, St.bogota = -74.080916666667, St.madrid = -3.687938888889, St.rome = 12.452333333333, St.bern = 7.439583333333, St.jakarta = 106.807719444444, St.ferro = -17.666666666667, St.brussels = 4.367975, St.stockholm = 18.058277777778, St.athens = 23.7163375, St.oslo = 10.722916666667;
     var It = {ft: {to_meter: .3048}, "us-ft": {to_meter: 1200 / 3937}}, Ot = /[\s_\-\/\(\)]/g, kt = function (s) {
         var i, a, h, e = {}, n = s.split("+").map(function (t) {
@@ -736,25 +736,25 @@
             proj: "projName", datum: "datumCode", rf: function (t) {
                 e.rf = parseFloat(t)
             }, lat_0: function (t) {
-                e.lat0 = t * At
+                e.lat0 = t * Nt
             }, lat_1: function (t) {
-                e.lat1 = t * At
+                e.lat1 = t * Nt
             }, lat_2: function (t) {
-                e.lat2 = t * At
+                e.lat2 = t * Nt
             }, lat_ts: function (t) {
-                e.lat_ts = t * At
+                e.lat_ts = t * Nt
             }, lon_0: function (t) {
-                e.long0 = t * At
+                e.long0 = t * Nt
             }, lon_1: function (t) {
-                e.long1 = t * At
+                e.long1 = t * Nt
             }, lon_2: function (t) {
-                e.long2 = t * At
+                e.long2 = t * Nt
             }, alpha: function (t) {
-                e.alpha = parseFloat(t) * At
+                e.alpha = parseFloat(t) * Nt
             }, gamma: function (t) {
                 e.rectified_grid_angle = parseFloat(t)
             }, lonc: function (t) {
-                e.longc = t * At
+                e.longc = t * Nt
             }, x_0: function (t) {
                 e.x0 = parseFloat(t)
             }, y_0: function (t) {
@@ -784,10 +784,10 @@
                 var i = t(It, s);
                 i && (e.to_meter = i.to_meter)
             }, from_greenwich: function (t) {
-                e.from_greenwich = t * At
+                e.from_greenwich = t * Nt
             }, pm: function (s) {
                 var i = t(St, s);
-                e.from_greenwich = (i || parseFloat(s)) * At
+                e.from_greenwich = (i || parseFloat(s)) * Nt
             }, nadgrids: function (t) {
                 "@null" === t ? e.datumCode = "none" : e.nadgrids = t
             }, axis: function (t) {
@@ -798,7 +798,7 @@
         };
         for (i in n) a = n[i], i in r ? "function" == typeof (h = r[i]) ? h(a) : e[h] = a : e[i] = a;
         return "string" == typeof e.datumCode && "WGS84" !== e.datumCode && (e.datumCode = e.datumCode.toLowerCase()), e
-    }, qt = 1, Rt = /\s/, Lt = /[A-Za-z]/, Tt = /[A-Za-z84]/, Gt = /[,\]]/, jt = /[\d\.E\-\+]/;
+    }, qt = 1, Rt = /\s/, Lt = /[A-Za-z]/, Tt = /[A-Za-z84_]/, Gt = /[,\]]/, jt = /[\d\.E\-\+]/;
     s.prototype.readCharicter = function () {
         var t = this.text[this.place++];
         if (4 !== this.state) for (; Rt.test(t);) {
@@ -862,7 +862,7 @@
         return h(s, n), r(n), n
     };
     !function (t) {
-        t("EPSG:4326", "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees"), t("EPSG:4269", "+title=NAD83 (long/lat) +proj=longlat +a=6378137.0 +b=6356752.31414036 +ellps=GRS80 +datum=NAD83 +units=degrees"), t("EPSG:3857", "+title=WGS 84 / Pseudo-Mercator +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"), t.WGS84 = t["EPSG:4326"], t["EPSG:3785"] = t["EPSG:3857"], t.GOOGLE = t["EPSG:3857"], t["EPSG:900913"] = t["EPSG:3857"], t["EPSG:102113"] = t["EPSG:3857"]
+        t("EPSG:4326", "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees"), t("EPSG:4269", "+title=NAD83 (long/lat) +proj=longlat +a=6378137.0 +b=6356752.31414036 +ellps=GRS80 +datum=NAD83 +units=degrees"), t("EPSG:3857", "+title=WGS 84 / Pseudo-Mercator +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"), t("EPSG:3035", "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000 +ellps=GRS80 +units=m +no_defs"), t.WGS84 = t["EPSG:4326"], t["EPSG:3785"] = t["EPSG:3857"], t.GOOGLE = t["EPSG:3857"], t["EPSG:900913"] = t["EPSG:3857"], t["EPSG:102113"] = t["EPSG:3857"]
     }(o);
     var Ft = ["PROJECTEDCRS", "PROJCRS", "GEOGCS", "GEOCCS", "PROJCS", "LOCAL_CS", "GEODCRS", "GEODETICCRS", "GEODETICDATUM", "ENGCRS", "ENGINEERINGCRS"],
         Dt = ["3857", "900913", "3785", "102113"], Ut = function (t, s) {
@@ -891,10 +891,10 @@
             },
             forward: function (t) {
                 var s = t.x, i = t.y;
-                if (i * Et > 90 && i * Et < -90 && s * Et > 180 && s * Et < -180) return null;
+                if (i * At > 90 && i * At < -90 && s * At > 180 && s * At < -180) return null;
                 var a, h;
                 if (Math.abs(Math.abs(i) - xt) <= wt) return null;
-                if (this.sphere) a = this.x0 + this.a * this.k0 * Ht(s - this.long0), h = this.y0 + this.a * this.k0 * Math.log(Math.tan(Nt + .5 * i)); else {
+                if (this.sphere) a = this.x0 + this.a * this.k0 * Ht(s - this.long0), h = this.y0 + this.a * this.k0 * Math.log(Math.tan(Et + .5 * i)); else {
                     var e = Math.sin(i), n = Xt(this.e, i, e);
                     a = this.x0 + this.a * this.k0 * Ht(s - this.long0), h = this.y0 - this.a * this.k0 * Math.log(n)
                 }
@@ -949,59 +949,64 @@
         a: 6378206.4,
         b: 6356583.8,
         ellipseName: "Clarke 1866"
-    }, $t.clrk80 = {a: 6378249.145, rf: 293.4663, ellipseName: "Clarke 1880 mod."}, $t.clrk58 = {
-        a: 6378293.645208759,
-        rf: 294.2606763692654,
-        ellipseName: "Clarke 1858"
-    }, $t.CPM = {a: 6375738.7, rf: 334.29, ellipseName: "Comm. des Poids et Mesures 1799"}, $t.delmbr = {
-        a: 6376428,
-        rf: 311.5,
-        ellipseName: "Delambre 1810 (Belgium)"
-    }, $t.engelis = {a: 6378136.05, rf: 298.2566, ellipseName: "Engelis 1985"}, $t.evrst30 = {
-        a: 6377276.345,
+    }, $t.clrk80 = {a: 6378249.145, rf: 293.4663, ellipseName: "Clarke 1880 mod."}, $t.clrk80ign = {
+        a: 6378249.2,
+        b: 6356515,
+        rf: 293.4660213,
+        ellipseName: "Clarke 1880 (IGN)"
+    }, $t.clrk58 = {a: 6378293.645208759, rf: 294.2606763692654, ellipseName: "Clarke 1858"}, $t.CPM = {
+        a: 6375738.7,
+        rf: 334.29,
+        ellipseName: "Comm. des Poids et Mesures 1799"
+    }, $t.delmbr = {a: 6376428, rf: 311.5, ellipseName: "Delambre 1810 (Belgium)"}, $t.engelis = {
+        a: 6378136.05,
+        rf: 298.2566,
+        ellipseName: "Engelis 1985"
+    }, $t.evrst30 = {a: 6377276.345, rf: 300.8017, ellipseName: "Everest 1830"}, $t.evrst48 = {
+        a: 6377304.063,
         rf: 300.8017,
-        ellipseName: "Everest 1830"
-    }, $t.evrst48 = {a: 6377304.063, rf: 300.8017, ellipseName: "Everest 1948"}, $t.evrst56 = {
-        a: 6377301.243,
+        ellipseName: "Everest 1948"
+    }, $t.evrst56 = {a: 6377301.243, rf: 300.8017, ellipseName: "Everest 1956"}, $t.evrst69 = {
+        a: 6377295.664,
         rf: 300.8017,
-        ellipseName: "Everest 1956"
-    }, $t.evrst69 = {a: 6377295.664, rf: 300.8017, ellipseName: "Everest 1969"}, $t.evrstSS = {
-        a: 6377298.556,
-        rf: 300.8017,
-        ellipseName: "Everest (Sabah & Sarawak)"
-    }, $t.fschr60 = {a: 6378166, rf: 298.3, ellipseName: "Fischer (Mercury Datum) 1960"}, $t.fschr60m = {
-        a: 6378155,
+        ellipseName: "Everest 1969"
+    }, $t.evrstSS = {a: 6377298.556, rf: 300.8017, ellipseName: "Everest (Sabah & Sarawak)"}, $t.fschr60 = {
+        a: 6378166,
         rf: 298.3,
-        ellipseName: "Fischer 1960"
-    }, $t.fschr68 = {a: 6378150, rf: 298.3, ellipseName: "Fischer 1968"}, $t.helmert = {
-        a: 6378200,
+        ellipseName: "Fischer (Mercury Datum) 1960"
+    }, $t.fschr60m = {a: 6378155, rf: 298.3, ellipseName: "Fischer 1960"}, $t.fschr68 = {
+        a: 6378150,
         rf: 298.3,
-        ellipseName: "Helmert 1906"
-    }, $t.hough = {a: 6378270, rf: 297, ellipseName: "Hough"}, $t.intl = {
-        a: 6378388,
+        ellipseName: "Fischer 1968"
+    }, $t.helmert = {a: 6378200, rf: 298.3, ellipseName: "Helmert 1906"}, $t.hough = {
+        a: 6378270,
         rf: 297,
-        ellipseName: "International 1909 (Hayford)"
-    }, $t.kaula = {a: 6378163, rf: 298.24, ellipseName: "Kaula 1961"}, $t.lerch = {
-        a: 6378139,
-        rf: 298.257,
-        ellipseName: "Lerch 1979"
-    }, $t.mprts = {a: 6397300, rf: 191, ellipseName: "Maupertius 1738"}, $t.new_intl = {
-        a: 6378157.5,
-        b: 6356772.2,
-        ellipseName: "New International 1967"
-    }, $t.plessis = {a: 6376523, rf: 6355863, ellipseName: "Plessis 1817 (France)"}, $t.krass = {
-        a: 6378245,
+        ellipseName: "Hough"
+    }, $t.intl = {a: 6378388, rf: 297, ellipseName: "International 1909 (Hayford)"}, $t.kaula = {
+        a: 6378163,
+        rf: 298.24,
+        ellipseName: "Kaula 1961"
+    }, $t.lerch = {a: 6378139, rf: 298.257, ellipseName: "Lerch 1979"}, $t.mprts = {
+        a: 6397300,
+        rf: 191,
+        ellipseName: "Maupertius 1738"
+    }, $t.new_intl = {a: 6378157.5, b: 6356772.2, ellipseName: "New International 1967"}, $t.plessis = {
+        a: 6376523,
+        rf: 6355863,
+        ellipseName: "Plessis 1817 (France)"
+    }, $t.krass = {a: 6378245, rf: 298.3, ellipseName: "Krassovsky, 1942"}, $t.SEasia = {
+        a: 6378155,
+        b: 6356773.3205,
+        ellipseName: "Southeast Asia"
+    }, $t.walbeck = {a: 6376896, b: 6355834.8467, ellipseName: "Walbeck"}, $t.WGS60 = {
+        a: 6378165,
         rf: 298.3,
-        ellipseName: "Krassovsky, 1942"
-    }, $t.SEasia = {a: 6378155, b: 6356773.3205, ellipseName: "Southeast Asia"}, $t.walbeck = {
-        a: 6376896,
-        b: 6355834.8467,
-        ellipseName: "Walbeck"
-    }, $t.WGS60 = {a: 6378165, rf: 298.3, ellipseName: "WGS 60"}, $t.WGS66 = {
-        a: 6378145,
-        rf: 298.25,
-        ellipseName: "WGS 66"
-    }, $t.WGS7 = {a: 6378135, rf: 298.26, ellipseName: "WGS 72"};
+        ellipseName: "WGS 60"
+    }, $t.WGS66 = {a: 6378145, rf: 298.25, ellipseName: "WGS 66"}, $t.WGS7 = {
+        a: 6378135,
+        rf: 298.26,
+        ellipseName: "WGS 72"
+    };
     var ts = $t.WGS84 = {a: 6378137, rf: 298.257223563, ellipseName: "WGS 84"};
     $t.sphere = {a: 6370997, b: 6370997, ellipseName: "Normal Sphere (r=6370997)"};
     var ss = {};
@@ -1179,13 +1184,13 @@
             t = Math.abs(t), s = Math.abs(s);
             var i = Math.max(t, s), a = Math.min(t, s) / (i || 1);
             return i * Math.sqrt(1 + Math.pow(a, 2))
-        }, As = function (t) {
+        }, Ns = function (t) {
             var s = 1 + t, i = s - 1;
             return 0 === i ? t : t * Math.log(s) / i
-        }, Es = function (t) {
+        }, As = function (t) {
             var s = Math.abs(t);
-            return s = As(s * (1 + s / (ws(1, s) + 1))), t < 0 ? -s : s
-        }, Ns = function (t, s) {
+            return s = Ns(s * (1 + s / (ws(1, s) + 1))), t < 0 ? -s : s
+        }, Es = function (t, s) {
             for (var i, a = 2 * Math.cos(2 * s), h = t.length - 1, e = t[h], n = 0; --h >= 0;) i = a * e - n + t[h], n = e, e = i;
             return s + i * Math.sin(2 * s)
         }, Cs = function (t, s) {
@@ -1203,14 +1208,14 @@
                 this.approx && (vs.init.apply(this), this.forward = vs.forward, this.inverse = vs.inverse), this.x0 = void 0 !== this.x0 ? this.x0 : 0, this.y0 = void 0 !== this.y0 ? this.y0 : 0, this.long0 = void 0 !== this.long0 ? this.long0 : 0, this.lat0 = void 0 !== this.lat0 ? this.lat0 : 0, this.cgb = [], this.cbg = [], this.utg = [], this.gtu = [];
                 var t = this.es / (1 + Math.sqrt(1 - this.es)), s = t / (2 - t), i = s;
                 this.cgb[0] = s * (2 + s * (-2 / 3 + s * (s * (116 / 45 + s * (26 / 45 + s * (-2854 / 675))) - 2))), this.cbg[0] = s * (s * (2 / 3 + s * (4 / 3 + s * (-82 / 45 + s * (32 / 45 + s * (4642 / 4725))))) - 2), i *= s, this.cgb[1] = i * (7 / 3 + s * (s * (-227 / 45 + s * (2704 / 315 + s * (2323 / 945))) - 1.6)), this.cbg[1] = i * (5 / 3 + s * (-16 / 15 + s * (-13 / 9 + s * (904 / 315 + s * (-1522 / 945))))), i *= s, this.cgb[2] = i * (56 / 15 + s * (-136 / 35 + s * (-1262 / 105 + s * (73814 / 2835)))), this.cbg[2] = i * (-26 / 15 + s * (34 / 21 + s * (1.6 + s * (-12686 / 2835)))), i *= s, this.cgb[3] = i * (4279 / 630 + s * (-332 / 35 + s * (-399572 / 14175))), this.cbg[3] = i * (1237 / 630 + s * (s * (-24832 / 14175) - 2.4)), i *= s, this.cgb[4] = i * (4174 / 315 + s * (-144838 / 6237)), this.cbg[4] = i * (-734 / 315 + s * (109598 / 31185)), i *= s, this.cgb[5] = i * (601676 / 22275), this.cbg[5] = i * (444337 / 155925), i = Math.pow(s, 2), this.Qn = this.k0 / (1 + s) * (1 + i * (.25 + i * (1 / 64 + i / 256))), this.utg[0] = s * (s * (2 / 3 + s * (-37 / 96 + s * (1 / 360 + s * (81 / 512 + s * (-96199 / 604800))))) - .5), this.gtu[0] = s * (.5 + s * (-2 / 3 + s * (5 / 16 + s * (41 / 180 + s * (-127 / 288 + s * (7891 / 37800)))))), this.utg[1] = i * (-1 / 48 + s * (-1 / 15 + s * (437 / 1440 + s * (-46 / 105 + s * (1118711 / 3870720))))), this.gtu[1] = i * (13 / 48 + s * (s * (557 / 1440 + s * (281 / 630 + s * (-1983433 / 1935360))) - .6)), i *= s, this.utg[2] = i * (-17 / 480 + s * (37 / 840 + s * (209 / 4480 + s * (-5569 / 90720)))), this.gtu[2] = i * (61 / 240 + s * (-103 / 140 + s * (15061 / 26880 + s * (167603 / 181440)))), i *= s, this.utg[3] = i * (-4397 / 161280 + s * (11 / 504 + s * (830251 / 7257600))), this.gtu[3] = i * (49561 / 161280 + s * (-179 / 168 + s * (6601661 / 7257600))), i *= s, this.utg[4] = i * (-4583 / 161280 + s * (108847 / 3991680)), this.gtu[4] = i * (34729 / 80640 + s * (-3418889 / 1995840)), i *= s, this.utg[5] = -.03233083094085698 * i, this.gtu[5] = .6650675310896665 * i;
-                var a = Ns(this.cbg, this.lat0);
+                var a = Es(this.cbg, this.lat0);
                 this.Zb = -this.Qn * (a + Cs(this.gtu, 2 * a))
             },
             forward: function (t) {
                 var s = Ht(t.x - this.long0), i = t.y;
-                i = Ns(this.cbg, i);
+                i = Es(this.cbg, i);
                 var a = Math.sin(i), h = Math.cos(i), e = Math.sin(s), n = Math.cos(s);
-                i = Math.atan2(a, n * h), s = Math.atan2(e * h, ws(a, h * n)), s = Es(Math.tan(s));
+                i = Math.atan2(a, n * h), s = Math.atan2(e * h, ws(a, h * n)), s = As(Math.tan(s));
                 var r = Ss(this.gtu, 2 * i, 2 * s);
                 i += r[0], s += r[1];
                 var o, l;
@@ -1224,7 +1229,7 @@
                     var e = Ss(this.utg, 2 * i, 2 * s);
                     i += e[0], s += e[1], s = Math.atan(bs(s));
                     var n = Math.sin(i), r = Math.cos(i), o = Math.sin(s), l = Math.cos(s);
-                    i = Math.atan2(n * l, ws(o, l * r)), s = Math.atan2(o, l * r), a = Ht(s + this.long0), h = Ns(this.cgb, i)
+                    i = Math.atan2(n * l, ws(o, l * r)), s = Math.atan2(o, l * r), a = Ht(s + this.long0), h = Es(this.cgb, i)
                 } else a = 1 / 0, h = 1 / 0;
                 return t.x = a, t.y = h, t
             },
@@ -1239,19 +1244,19 @@
             init: function () {
                 var t = Os(this.zone, this.long0);
                 if (void 0 === t) throw new Error("unknown utm zone");
-                this.lat0 = 0, this.long0 = (6 * Math.abs(t) - 183) * At, this.x0 = 5e5, this.y0 = this.utmSouth ? 1e7 : 0, this.k0 = .9996, Is.init.apply(this), this.forward = Is.forward, this.inverse = Is.inverse
+                this.lat0 = 0, this.long0 = (6 * Math.abs(t) - 183) * Nt, this.x0 = 5e5, this.y0 = this.utmSouth ? 1e7 : 0, this.k0 = .9996, Is.init.apply(this), this.forward = Is.forward, this.inverse = Is.inverse
             }, names: ["Universal Transverse Mercator System", "utm"], dependsOn: "etmerc"
         }, qs = function (t, s) {
             return Math.pow((1 - t) / (1 + t), s)
         }, Rs = 20, Ls = {
             init: function () {
                 var t = Math.sin(this.lat0), s = Math.cos(this.lat0);
-                s *= s, this.rc = Math.sqrt(1 - this.es) / (1 - this.es * t * t), this.C = Math.sqrt(1 + this.es * s * s / (1 - this.es)), this.phic0 = Math.asin(t / this.C), this.ratexp = .5 * this.C * this.e, this.K = Math.tan(.5 * this.phic0 + Nt) / (Math.pow(Math.tan(.5 * this.lat0 + Nt), this.C) * qs(this.e * t, this.ratexp))
+                s *= s, this.rc = Math.sqrt(1 - this.es) / (1 - this.es * t * t), this.C = Math.sqrt(1 + this.es * s * s / (1 - this.es)), this.phic0 = Math.asin(t / this.C), this.ratexp = .5 * this.C * this.e, this.K = Math.tan(.5 * this.phic0 + Et) / (Math.pow(Math.tan(.5 * this.lat0 + Et), this.C) * qs(this.e * t, this.ratexp))
             }, forward: function (t) {
                 var s = t.x, i = t.y;
-                return t.y = 2 * Math.atan(this.K * Math.pow(Math.tan(.5 * i + Nt), this.C) * qs(this.e * Math.sin(i), this.ratexp)) - xt, t.x = this.C * s, t
+                return t.y = 2 * Math.atan(this.K * Math.pow(Math.tan(.5 * i + Et), this.C) * qs(this.e * Math.sin(i), this.ratexp)) - xt, t.x = this.C * s, t
             }, inverse: function (t) {
-                for (var s = t.x / this.C, i = t.y, a = Math.pow(Math.tan(.5 * i + Nt) / this.K, 1 / this.C), h = Rs; h > 0 && (i = 2 * Math.atan(a * qs(this.e * Math.sin(t.y), -.5 * this.e)) - xt, !(Math.abs(i - t.y) < 1e-14)); --h) t.y = i;
+                for (var s = t.x / this.C, i = t.y, a = Math.pow(Math.tan(.5 * i + Et) / this.K, 1 / this.C), h = Rs; h > 0 && (i = 2 * Math.atan(a * qs(this.e * Math.sin(t.y), -.5 * this.e)) - xt, !(Math.abs(i - t.y) < 1e-14)); --h) t.y = i;
                 return h ? (t.x = s, t.y = i, t) : null
             }, names: ["gauss"]
         }, Ts = {
@@ -1323,9 +1328,9 @@
                 var _ = !1;
                 "alpha" in this && (_ = !0);
                 var x = !1;
-                if ("rectified_grid_angle" in this && (x = !0), _ && (y = this.alpha), x && (c = this.rectified_grid_angle * At), _ || x) M = this.longc; else if (f = this.long1, p = this.lat1, d = this.long2, m = this.lat2, Math.abs(p - m) <= Bs || (t = Math.abs(p)) <= Bs || Math.abs(t - xt) <= Bs || Math.abs(Math.abs(this.lat0) - xt) <= Bs || Math.abs(Math.abs(m) - xt) <= Bs) throw new Error;
+                if ("rectified_grid_angle" in this && (x = !0), _ && (y = this.alpha), x && (c = this.rectified_grid_angle * Nt), _ || x) M = this.longc; else if (f = this.long1, p = this.lat1, d = this.long2, m = this.lat2, Math.abs(p - m) <= Bs || (t = Math.abs(p)) <= Bs || Math.abs(t - xt) <= Bs || Math.abs(Math.abs(this.lat0) - xt) <= Bs || Math.abs(Math.abs(m) - xt) <= Bs) throw new Error;
                 var g = 1 - this.es;
-                s = Math.sqrt(g), Math.abs(this.lat0) > wt ? (r = Math.sin(this.lat0), i = Math.cos(this.lat0), t = 1 - this.es * r * r, this.B = i * i, this.B = Math.sqrt(1 + this.es * this.B * this.B / g), this.A = this.B * this.k0 * s / t, (h = (a = this.B * s / (i * Math.sqrt(t))) * a - 1) <= 0 ? h = 0 : (h = Math.sqrt(h), this.lat0 < 0 && (h = -h)), this.E = h += a, this.E *= Math.pow(Xt(this.e, this.lat0, r), this.B)) : (this.B = 1 / s, this.A = this.k0, this.E = a = h = 1), _ || x ? (_ ? (u = Math.asin(Math.sin(y) / a), x || (c = y)) : (u = c, y = Math.asin(a * Math.sin(u))), this.lam0 = M - Math.asin(.5 * (h - 1 / h) * Math.tan(u)) / this.B) : (e = Math.pow(Xt(this.e, p, Math.sin(p)), this.B), n = Math.pow(Xt(this.e, m, Math.sin(m)), this.B), h = this.E / e, o = (n - e) / (n + e), l = ((l = this.E * this.E) - n * e) / (l + n * e), (t = f - d) < -Math.pi ? d -= Ct : t > Math.pi && (d += Ct), this.lam0 = Ht(.5 * (f + d) - Math.atan(l * Math.tan(.5 * this.B * (f - d)) / o) / this.B), u = Math.atan(2 * Math.sin(this.B * Ht(f - this.lam0)) / (h - 1 / h)), c = y = Math.asin(a * Math.sin(u))), this.singam = Math.sin(u), this.cosgam = Math.cos(u), this.sinrot = Math.sin(c), this.cosrot = Math.cos(c), this.rB = 1 / this.B, this.ArB = this.A * this.rB, this.BrA = 1 / this.ArB, this.no_off ? this.u_0 = 0 : (this.u_0 = Math.abs(this.ArB * Math.atan(Math.sqrt(a * a - 1) / Math.cos(y))), this.lat0 < 0 && (this.u_0 = -this.u_0)), h = .5 * u, this.v_pole_n = this.ArB * Math.log(Math.tan(Nt - h)), this.v_pole_s = this.ArB * Math.log(Math.tan(Nt + h))
+                s = Math.sqrt(g), Math.abs(this.lat0) > wt ? (r = Math.sin(this.lat0), i = Math.cos(this.lat0), t = 1 - this.es * r * r, this.B = i * i, this.B = Math.sqrt(1 + this.es * this.B * this.B / g), this.A = this.B * this.k0 * s / t, (h = (a = this.B * s / (i * Math.sqrt(t))) * a - 1) <= 0 ? h = 0 : (h = Math.sqrt(h), this.lat0 < 0 && (h = -h)), this.E = h += a, this.E *= Math.pow(Xt(this.e, this.lat0, r), this.B)) : (this.B = 1 / s, this.A = this.k0, this.E = a = h = 1), _ || x ? (_ ? (u = Math.asin(Math.sin(y) / a), x || (c = y)) : (u = c, y = Math.asin(a * Math.sin(u))), this.lam0 = M - Math.asin(.5 * (h - 1 / h) * Math.tan(u)) / this.B) : (e = Math.pow(Xt(this.e, p, Math.sin(p)), this.B), n = Math.pow(Xt(this.e, m, Math.sin(m)), this.B), h = this.E / e, o = (n - e) / (n + e), l = ((l = this.E * this.E) - n * e) / (l + n * e), (t = f - d) < -Math.pi ? d -= Ct : t > Math.pi && (d += Ct), this.lam0 = Ht(.5 * (f + d) - Math.atan(l * Math.tan(.5 * this.B * (f - d)) / o) / this.B), u = Math.atan(2 * Math.sin(this.B * Ht(f - this.lam0)) / (h - 1 / h)), c = y = Math.asin(a * Math.sin(u))), this.singam = Math.sin(u), this.cosgam = Math.cos(u), this.sinrot = Math.sin(c), this.cosrot = Math.cos(c), this.rB = 1 / this.B, this.ArB = this.A * this.rB, this.BrA = 1 / this.ArB, this.no_off ? this.u_0 = 0 : (this.u_0 = Math.abs(this.ArB * Math.atan(Math.sqrt(a * a - 1) / Math.cos(y))), this.lat0 < 0 && (this.u_0 = -this.u_0)), h = .5 * u, this.v_pole_n = this.ArB * Math.log(Math.tan(Et - h)), this.v_pole_s = this.ArB * Math.log(Math.tan(Et + h))
             },
             forward: function (t) {
                 var s, i, a, h, e, n, r, o, l = {};
@@ -1375,7 +1380,7 @@
                 } else h = -xt;
                 return e = Ht(o / this.ns + this.long0), t.x = e, t.y = h, t
             },
-            names: ["Lambert Tangential Conformal Conic Projection", "Lambert_Conformal_Conic", "Lambert_Conformal_Conic_1SP", "Lambert_Conformal_Conic_2SP", "lcc"]
+            names: ["Lambert Tangential Conformal Conic Projection", "Lambert_Conformal_Conic", "Lambert_Conformal_Conic_1SP", "Lambert_Conformal_Conic_2SP", "lcc", "Lambert Conic Conformal (1SP)", "Lambert Conic Conformal (2SP)"]
         }, Ds = {
             init: function () {
                 this.a = 6377397.155, this.es = .006674372230614, this.e = Math.sqrt(this.es), this.lat0 || (this.lat0 = .863937979737193), this.long0 || (this.long0 = .4334234309119251), this.k0 || (this.k0 = .9999), this.s45 = .785398163397448, this.s90 = 2 * this.s45, this.fi0 = this.lat0, this.e2 = this.es, this.e = Math.sqrt(this.e2), this.alfa = Math.sqrt(1 + this.e2 * Math.pow(Math.cos(this.fi0), 4) / (1 - this.e2)), this.uq = 1.04216856380474, this.u0 = Math.asin(Math.sin(this.fi0) / this.alfa), this.g = Math.pow((1 + this.e * Math.sin(this.fi0)) / (1 - this.e * Math.sin(this.fi0)), this.alfa * this.e / 2), this.k = Math.tan(this.u0 / 2 + this.s45) / Math.pow(Math.tan(this.fi0 / 2 + this.s45), this.alfa) * this.g, this.k1 = this.k0, this.n0 = this.a * Math.sqrt(1 - this.e2) / (1 - this.e2 * Math.pow(Math.sin(this.fi0), 2)), this.s0 = 1.37008346281555, this.n = Math.sin(this.s0), this.ro0 = this.k1 * this.n0 / Math.tan(this.s0), this.ad = this.s90 - this.uq
@@ -1467,7 +1472,7 @@
                         s = (i = Math.sqrt(2 / i)) * u * Math.sin(c), i *= this.mode === this.EQUIT ? e : this.cosph0 * e - this.sinph0 * u * a
                     } else if (this.mode === this.N_POLE || this.mode === this.S_POLE) {
                         if (this.mode === this.N_POLE && (a = -a), Math.abs(M + this.lat0) < wt) return null;
-                        i = Nt - .5 * M, s = (i = 2 * (this.mode === this.S_POLE ? Math.cos(i) : Math.sin(i))) * Math.sin(c), i *= a
+                        i = Et - .5 * M, s = (i = 2 * (this.mode === this.S_POLE ? Math.cos(i) : Math.sin(i))) * Math.sin(c), i *= a
                     }
                 } else {
                     switch (r = 0, o = 0, l = 0, a = Math.cos(c), h = Math.sin(c), e = Math.sin(M), n = Ys(this.e, e), this.mode !== this.OBLIQ && this.mode !== this.EQUIT || (r = n / this.qp, o = Math.sqrt(1 - r * r)), this.mode) {
@@ -1537,11 +1542,11 @@
             return Math.abs(t) > 1 && (t = t > 1 ? 1 : -1), Math.asin(t)
         }, ri = {
             init: function () {
-                Math.abs(this.lat1 + this.lat2) < wt || (this.temp = this.b / this.a, this.es = 1 - Math.pow(this.temp, 2), this.e3 = Math.sqrt(this.es), this.sin_po = Math.sin(this.lat1), this.cos_po = Math.cos(this.lat1), this.t1 = this.sin_po, this.con = this.sin_po, this.ms1 = Qt(this.e3, this.sin_po, this.cos_po), this.qs1 = Ys(this.e3, this.sin_po, this.cos_po), this.sin_po = Math.sin(this.lat2), this.cos_po = Math.cos(this.lat2), this.t2 = this.sin_po, this.ms2 = Qt(this.e3, this.sin_po, this.cos_po), this.qs2 = Ys(this.e3, this.sin_po, this.cos_po), this.sin_po = Math.sin(this.lat0), this.cos_po = Math.cos(this.lat0), this.t3 = this.sin_po, this.qs0 = Ys(this.e3, this.sin_po, this.cos_po), Math.abs(this.lat1 - this.lat2) > wt ? this.ns0 = (this.ms1 * this.ms1 - this.ms2 * this.ms2) / (this.qs2 - this.qs1) : this.ns0 = this.con, this.c = this.ms1 * this.ms1 + this.ns0 * this.qs1, this.rh = this.a * Math.sqrt(this.c - this.ns0 * this.qs0) / this.ns0)
+                Math.abs(this.lat1 + this.lat2) < wt || (this.temp = this.b / this.a, this.es = 1 - Math.pow(this.temp, 2), this.e3 = Math.sqrt(this.es), this.sin_po = Math.sin(this.lat1), this.cos_po = Math.cos(this.lat1), this.t1 = this.sin_po, this.con = this.sin_po, this.ms1 = Qt(this.e3, this.sin_po, this.cos_po), this.qs1 = Ys(this.e3, this.sin_po), this.sin_po = Math.sin(this.lat2), this.cos_po = Math.cos(this.lat2), this.t2 = this.sin_po, this.ms2 = Qt(this.e3, this.sin_po, this.cos_po), this.qs2 = Ys(this.e3, this.sin_po), this.sin_po = Math.sin(this.lat0), this.cos_po = Math.cos(this.lat0), this.t3 = this.sin_po, this.qs0 = Ys(this.e3, this.sin_po), Math.abs(this.lat1 - this.lat2) > wt ? this.ns0 = (this.ms1 * this.ms1 - this.ms2 * this.ms2) / (this.qs2 - this.qs1) : this.ns0 = this.con, this.c = this.ms1 * this.ms1 + this.ns0 * this.qs1, this.rh = this.a * Math.sqrt(this.c - this.ns0 * this.qs0) / this.ns0)
             }, forward: function (t) {
                 var s = t.x, i = t.y;
                 this.sin_phi = Math.sin(i), this.cos_phi = Math.cos(i);
-                var a = Ys(this.e3, this.sin_phi, this.cos_phi), h = this.a * Math.sqrt(this.c - this.ns0 * a) / this.ns0,
+                var a = Ys(this.e3, this.sin_phi), h = this.a * Math.sqrt(this.c - this.ns0 * a) / this.ns0,
                     e = this.ns0 * Ht(s - this.long0), n = h * Math.sin(e) + this.x0,
                     r = this.rh - h * Math.cos(e) + this.y0;
                 return t.x = n, t.y = r, t
@@ -1647,10 +1652,10 @@
                     var g = _ * _ + x * x;
                     u = (m * _ + y * x) / g, c = (y * _ - m * x) / g
                 }
-                var v = u, b = c, w = 1, A = 0;
-                for (s = 1; s <= 9; s++) w *= v, A += this.D[s] * w;
-                var E = this.lat0 + A * _t * 1e5, N = this.long0 + b;
-                return t.x = N, t.y = E, t
+                var v = u, b = c, w = 1, N = 0;
+                for (s = 1; s <= 9; s++) w *= v, N += this.D[s] * w;
+                var A = this.lat0 + N * _t * 1e5, E = this.long0 + b;
+                return t.x = E, t.y = A, t
             }, names: ["New_Zealand_Map_Grid", "nzmg"]
         }, pi = {
             init: function () {
@@ -1745,17 +1750,17 @@
             init: function () {
                 this.sin_p12 = Math.sin(this.lat0), this.cos_p12 = Math.cos(this.lat0)
             }, forward: function (t) {
-                var s, i, a, h, e, n, r, o, l, u, c, M, f, d, p, m, y, _, x, g, v, b, w, A = t.x, E = t.y,
-                    N = Math.sin(t.y), C = Math.cos(t.y), P = Ht(A - this.long0);
-                return this.sphere ? Math.abs(this.sin_p12 - 1) <= wt ? (t.x = this.x0 + this.a * (xt - E) * Math.sin(P), t.y = this.y0 - this.a * (xt - E) * Math.cos(P), t) : Math.abs(this.sin_p12 + 1) <= wt ? (t.x = this.x0 + this.a * (xt + E) * Math.sin(P), t.y = this.y0 + this.a * (xt + E) * Math.cos(P), t) : (_ = this.sin_p12 * N + this.cos_p12 * C * Math.cos(P), m = Math.acos(_), y = m ? m / Math.sin(m) : 1, t.x = this.x0 + this.a * y * C * Math.sin(P), t.y = this.y0 + this.a * y * (this.cos_p12 * N - this.sin_p12 * C * Math.cos(P)), t) : (s = Qs(this.es), i = Ws(this.es), a = Hs(this.es), h = Xs(this.es), Math.abs(this.sin_p12 - 1) <= wt ? (e = this.a * Us(s, i, a, h, xt), n = this.a * Us(s, i, a, h, E), t.x = this.x0 + (e - n) * Math.sin(P), t.y = this.y0 - (e - n) * Math.cos(P), t) : Math.abs(this.sin_p12 + 1) <= wt ? (e = this.a * Us(s, i, a, h, xt), n = this.a * Us(s, i, a, h, E), t.x = this.x0 + (e + n) * Math.sin(P), t.y = this.y0 + (e + n) * Math.cos(P), t) : (r = N / C, o = Js(this.a, this.e, this.sin_p12), l = Js(this.a, this.e, N), u = Math.atan((1 - this.es) * r + this.es * o * this.sin_p12 / (l * C)), c = Math.atan2(Math.sin(P), this.cos_p12 * Math.tan(u) - this.sin_p12 * Math.cos(P)), x = 0 === c ? Math.asin(this.cos_p12 * Math.sin(u) - this.sin_p12 * Math.cos(u)) : Math.abs(Math.abs(c) - Math.PI) <= wt ? -Math.asin(this.cos_p12 * Math.sin(u) - this.sin_p12 * Math.cos(u)) : Math.asin(Math.sin(P) * Math.cos(u) / Math.sin(c)), M = this.e * this.sin_p12 / Math.sqrt(1 - this.es), f = this.e * this.cos_p12 * Math.cos(c) / Math.sqrt(1 - this.es), d = M * f, p = f * f, g = x * x, v = g * x, b = v * x, w = b * x, m = o * x * (1 - g * p * (1 - p) / 6 + v / 8 * d * (1 - 2 * p) + b / 120 * (p * (4 - 7 * p) - 3 * M * M * (1 - 7 * p)) - w / 48 * d), t.x = this.x0 + m * Math.sin(c), t.y = this.y0 + m * Math.cos(c), t))
+                var s, i, a, h, e, n, r, o, l, u, c, M, f, d, p, m, y, _, x, g, v, b, w, N = t.x, A = t.y,
+                    E = Math.sin(t.y), C = Math.cos(t.y), P = Ht(N - this.long0);
+                return this.sphere ? Math.abs(this.sin_p12 - 1) <= wt ? (t.x = this.x0 + this.a * (xt - A) * Math.sin(P), t.y = this.y0 - this.a * (xt - A) * Math.cos(P), t) : Math.abs(this.sin_p12 + 1) <= wt ? (t.x = this.x0 + this.a * (xt + A) * Math.sin(P), t.y = this.y0 + this.a * (xt + A) * Math.cos(P), t) : (_ = this.sin_p12 * E + this.cos_p12 * C * Math.cos(P), m = Math.acos(_), y = m ? m / Math.sin(m) : 1, t.x = this.x0 + this.a * y * C * Math.sin(P), t.y = this.y0 + this.a * y * (this.cos_p12 * E - this.sin_p12 * C * Math.cos(P)), t) : (s = Qs(this.es), i = Ws(this.es), a = Hs(this.es), h = Xs(this.es), Math.abs(this.sin_p12 - 1) <= wt ? (e = this.a * Us(s, i, a, h, xt), n = this.a * Us(s, i, a, h, A), t.x = this.x0 + (e - n) * Math.sin(P), t.y = this.y0 - (e - n) * Math.cos(P), t) : Math.abs(this.sin_p12 + 1) <= wt ? (e = this.a * Us(s, i, a, h, xt), n = this.a * Us(s, i, a, h, A), t.x = this.x0 + (e + n) * Math.sin(P), t.y = this.y0 + (e + n) * Math.cos(P), t) : (r = E / C, o = Js(this.a, this.e, this.sin_p12), l = Js(this.a, this.e, E), u = Math.atan((1 - this.es) * r + this.es * o * this.sin_p12 / (l * C)), c = Math.atan2(Math.sin(P), this.cos_p12 * Math.tan(u) - this.sin_p12 * Math.cos(P)), x = 0 === c ? Math.asin(this.cos_p12 * Math.sin(u) - this.sin_p12 * Math.cos(u)) : Math.abs(Math.abs(c) - Math.PI) <= wt ? -Math.asin(this.cos_p12 * Math.sin(u) - this.sin_p12 * Math.cos(u)) : Math.asin(Math.sin(P) * Math.cos(u) / Math.sin(c)), M = this.e * this.sin_p12 / Math.sqrt(1 - this.es), f = this.e * this.cos_p12 * Math.cos(c) / Math.sqrt(1 - this.es), d = M * f, p = f * f, g = x * x, v = g * x, b = v * x, w = b * x, m = o * x * (1 - g * p * (1 - p) / 6 + v / 8 * d * (1 - 2 * p) + b / 120 * (p * (4 - 7 * p) - 3 * M * M * (1 - 7 * p)) - w / 48 * d), t.x = this.x0 + m * Math.sin(c), t.y = this.y0 + m * Math.cos(c), t))
             }, inverse: function (t) {
                 t.x -= this.x0, t.y -= this.y0;
-                var s, i, a, h, e, n, r, o, l, u, c, M, f, d, p, m, y, _, x, g, v, b, w, A;
+                var s, i, a, h, e, n, r, o, l, u, c, M, f, d, p, m, y, _, x, g, v, b, w, N;
                 if (this.sphere) {
                     if ((s = Math.sqrt(t.x * t.x + t.y * t.y)) > 2 * xt * this.a) return;
                     return i = s / this.a, a = Math.sin(i), h = Math.cos(i), e = this.long0, Math.abs(s) <= wt ? n = this.lat0 : (n = ni(h * this.sin_p12 + t.y * a * this.cos_p12 / s), r = Math.abs(this.lat0) - xt, e = Ht(Math.abs(r) <= wt ? this.lat0 >= 0 ? this.long0 + Math.atan2(t.x, -t.y) : this.long0 - Math.atan2(-t.x, t.y) : this.long0 + Math.atan2(t.x * a, s * this.cos_p12 * h - t.y * this.sin_p12 * a))), t.x = e, t.y = n, t
                 }
-                return o = Qs(this.es), l = Ws(this.es), u = Hs(this.es), c = Xs(this.es), Math.abs(this.sin_p12 - 1) <= wt ? (M = this.a * Us(o, l, u, c, xt), s = Math.sqrt(t.x * t.x + t.y * t.y), f = M - s, n = Vs(f / this.a, o, l, u, c), e = Ht(this.long0 + Math.atan2(t.x, -1 * t.y)), t.x = e, t.y = n, t) : Math.abs(this.sin_p12 + 1) <= wt ? (M = this.a * Us(o, l, u, c, xt), s = Math.sqrt(t.x * t.x + t.y * t.y), f = s - M, n = Vs(f / this.a, o, l, u, c), e = Ht(this.long0 + Math.atan2(t.x, t.y)), t.x = e, t.y = n, t) : (s = Math.sqrt(t.x * t.x + t.y * t.y), m = Math.atan2(t.x, t.y), d = Js(this.a, this.e, this.sin_p12), y = Math.cos(m), _ = this.e * this.cos_p12 * y, x = -_ * _ / (1 - this.es), g = 3 * this.es * (1 - x) * this.sin_p12 * this.cos_p12 * y / (1 - this.es), v = s / d, b = v - x * (1 + x) * Math.pow(v, 3) / 6 - g * (1 + 3 * x) * Math.pow(v, 4) / 24, w = 1 - x * b * b / 2 - v * b * b * b / 6, p = Math.asin(this.sin_p12 * Math.cos(b) + this.cos_p12 * Math.sin(b) * y), e = Ht(this.long0 + Math.asin(Math.sin(m) * Math.sin(b) / Math.cos(p))), A = Math.sin(p), n = Math.atan2((A - this.es * w * this.sin_p12) * Math.tan(p), A * (1 - this.es)), t.x = e, t.y = n, t)
+                return o = Qs(this.es), l = Ws(this.es), u = Hs(this.es), c = Xs(this.es), Math.abs(this.sin_p12 - 1) <= wt ? (M = this.a * Us(o, l, u, c, xt), s = Math.sqrt(t.x * t.x + t.y * t.y), f = M - s, n = Vs(f / this.a, o, l, u, c), e = Ht(this.long0 + Math.atan2(t.x, -1 * t.y)), t.x = e, t.y = n, t) : Math.abs(this.sin_p12 + 1) <= wt ? (M = this.a * Us(o, l, u, c, xt), s = Math.sqrt(t.x * t.x + t.y * t.y), f = s - M, n = Vs(f / this.a, o, l, u, c), e = Ht(this.long0 + Math.atan2(t.x, t.y)), t.x = e, t.y = n, t) : (s = Math.sqrt(t.x * t.x + t.y * t.y), m = Math.atan2(t.x, t.y), d = Js(this.a, this.e, this.sin_p12), y = Math.cos(m), _ = this.e * this.cos_p12 * y, x = -_ * _ / (1 - this.es), g = 3 * this.es * (1 - x) * this.sin_p12 * this.cos_p12 * y / (1 - this.es), v = s / d, b = v - x * (1 + x) * Math.pow(v, 3) / 6 - g * (1 + 3 * x) * Math.pow(v, 4) / 24, w = 1 - x * b * b / 2 - v * b * b * b / 6, p = Math.asin(this.sin_p12 * Math.cos(b) + this.cos_p12 * Math.sin(b) * y), e = Ht(this.long0 + Math.asin(Math.sin(m) * Math.sin(b) / Math.cos(p))), N = Math.sin(p), n = Math.atan2((N - this.es * w * this.sin_p12) * Math.tan(p), N * (1 - this.es)), t.x = e, t.y = n, t)
             }, names: ["Azimuthal_Equidistant", "aeqd"]
         }, bi = {
             init: function () {
@@ -1768,21 +1773,21 @@
                 return t.x -= this.x0, t.y -= this.y0, s = Math.sqrt(t.x * t.x + t.y * t.y), i = ni(s / this.a), a = Math.sin(i), h = Math.cos(i), n = this.long0, Math.abs(s) <= wt ? (r = this.lat0, t.x = n, t.y = r, t) : (r = ni(h * this.sin_p14 + t.y * a * this.cos_p14 / s), e = Math.abs(this.lat0) - xt, Math.abs(e) <= wt ? (n = Ht(this.lat0 >= 0 ? this.long0 + Math.atan2(t.x, -t.y) : this.long0 - Math.atan2(-t.x, t.y)), t.x = n, t.y = r, t) : (n = Ht(this.long0 + Math.atan2(t.x * a, s * this.cos_p14 * h - t.y * this.sin_p14 * a)), t.x = n, t.y = r, t))
             }, names: ["ortho"]
         }, wi = {FRONT: 1, RIGHT: 2, BACK: 3, LEFT: 4, TOP: 5, BOTTOM: 6},
-        Ai = {AREA_0: 1, AREA_1: 2, AREA_2: 3, AREA_3: 4}, Ei = {
+        Ni = {AREA_0: 1, AREA_1: 2, AREA_2: 3, AREA_3: 4}, Ai = {
             init: function () {
-                this.x0 = this.x0 || 0, this.y0 = this.y0 || 0, this.lat0 = this.lat0 || 0, this.long0 = this.long0 || 0, this.lat_ts = this.lat_ts || 0, this.title = this.title || "Quadrilateralized Spherical Cube", this.lat0 >= xt - Nt / 2 ? this.face = wi.TOP : this.lat0 <= -(xt - Nt / 2) ? this.face = wi.BOTTOM : Math.abs(this.long0) <= Nt ? this.face = wi.FRONT : Math.abs(this.long0) <= xt + Nt ? this.face = this.long0 > 0 ? wi.RIGHT : wi.LEFT : this.face = wi.BACK, 0 !== this.es && (this.one_minus_f = 1 - (this.a - this.b) / this.a, this.one_minus_f_squared = this.one_minus_f * this.one_minus_f)
+                this.x0 = this.x0 || 0, this.y0 = this.y0 || 0, this.lat0 = this.lat0 || 0, this.long0 = this.long0 || 0, this.lat_ts = this.lat_ts || 0, this.title = this.title || "Quadrilateralized Spherical Cube", this.lat0 >= xt - Et / 2 ? this.face = wi.TOP : this.lat0 <= -(xt - Et / 2) ? this.face = wi.BOTTOM : Math.abs(this.long0) <= Et ? this.face = wi.FRONT : Math.abs(this.long0) <= xt + Et ? this.face = this.long0 > 0 ? wi.RIGHT : wi.LEFT : this.face = wi.BACK, 0 !== this.es && (this.one_minus_f = 1 - (this.a - this.b) / this.a, this.one_minus_f_squared = this.one_minus_f * this.one_minus_f)
             }, forward: function (t) {
                 var s, i, a, h, e, n, r = {x: 0, y: 0}, o = {value: 0};
-                if (t.x -= this.long0, s = 0 !== this.es ? Math.atan(this.one_minus_f_squared * Math.tan(t.y)) : t.y, i = t.x, this.face === wi.TOP) h = xt - s, i >= Nt && i <= xt + Nt ? (o.value = Ai.AREA_0, a = i - xt) : i > xt + Nt || i <= -(xt + Nt) ? (o.value = Ai.AREA_1, a = i > 0 ? i - Pt : i + Pt) : i > -(xt + Nt) && i <= -Nt ? (o.value = Ai.AREA_2, a = i + xt) : (o.value = Ai.AREA_3, a = i); else if (this.face === wi.BOTTOM) h = xt + s, i >= Nt && i <= xt + Nt ? (o.value = Ai.AREA_0, a = -i + xt) : i < Nt && i >= -Nt ? (o.value = Ai.AREA_1, a = -i) : i < -Nt && i >= -(xt + Nt) ? (o.value = Ai.AREA_2, a = -i - xt) : (o.value = Ai.AREA_3, a = i > 0 ? -i + Pt : -i - Pt); else {
+                if (t.x -= this.long0, s = 0 !== this.es ? Math.atan(this.one_minus_f_squared * Math.tan(t.y)) : t.y, i = t.x, this.face === wi.TOP) h = xt - s, i >= Et && i <= xt + Et ? (o.value = Ni.AREA_0, a = i - xt) : i > xt + Et || i <= -(xt + Et) ? (o.value = Ni.AREA_1, a = i > 0 ? i - Pt : i + Pt) : i > -(xt + Et) && i <= -Et ? (o.value = Ni.AREA_2, a = i + xt) : (o.value = Ni.AREA_3, a = i); else if (this.face === wi.BOTTOM) h = xt + s, i >= Et && i <= xt + Et ? (o.value = Ni.AREA_0, a = -i + xt) : i < Et && i >= -Et ? (o.value = Ni.AREA_1, a = -i) : i < -Et && i >= -(xt + Et) ? (o.value = Ni.AREA_2, a = -i - xt) : (o.value = Ni.AREA_3, a = i > 0 ? -i + Pt : -i - Pt); else {
                     var l, u, c, M, f, d;
-                    this.face === wi.RIGHT ? i = ct(i, +xt) : this.face === wi.BACK ? i = ct(i, +Pt) : this.face === wi.LEFT && (i = ct(i, -xt)), M = Math.sin(s), f = Math.cos(s), d = Math.sin(i), l = f * Math.cos(i), u = f * d, c = M, this.face === wi.FRONT ? a = ut(h = Math.acos(l), c, u, o) : this.face === wi.RIGHT ? a = ut(h = Math.acos(u), c, -l, o) : this.face === wi.BACK ? a = ut(h = Math.acos(-l), c, -u, o) : this.face === wi.LEFT ? a = ut(h = Math.acos(-u), c, l, o) : (h = a = 0, o.value = Ai.AREA_0)
+                    this.face === wi.RIGHT ? i = ct(i, +xt) : this.face === wi.BACK ? i = ct(i, +Pt) : this.face === wi.LEFT && (i = ct(i, -xt)), M = Math.sin(s), f = Math.cos(s), d = Math.sin(i), l = f * Math.cos(i), u = f * d, c = M, this.face === wi.FRONT ? a = ut(h = Math.acos(l), c, u, o) : this.face === wi.RIGHT ? a = ut(h = Math.acos(u), c, -l, o) : this.face === wi.BACK ? a = ut(h = Math.acos(-l), c, -u, o) : this.face === wi.LEFT ? a = ut(h = Math.acos(-u), c, l, o) : (h = a = 0, o.value = Ni.AREA_0)
                 }
-                return n = Math.atan(12 / Pt * (a + Math.acos(Math.sin(a) * Math.cos(Nt)) - xt)), e = Math.sqrt((1 - Math.cos(h)) / (Math.cos(n) * Math.cos(n)) / (1 - Math.cos(Math.atan(1 / Math.cos(a))))), o.value === Ai.AREA_1 ? n += xt : o.value === Ai.AREA_2 ? n += Pt : o.value === Ai.AREA_3 && (n += 1.5 * Pt), r.x = e * Math.cos(n), r.y = e * Math.sin(n), r.x = r.x * this.a + this.x0, r.y = r.y * this.a + this.y0, t.x = r.x, t.y = r.y, t
+                return n = Math.atan(12 / Pt * (a + Math.acos(Math.sin(a) * Math.cos(Et)) - xt)), e = Math.sqrt((1 - Math.cos(h)) / (Math.cos(n) * Math.cos(n)) / (1 - Math.cos(Math.atan(1 / Math.cos(a))))), o.value === Ni.AREA_1 ? n += xt : o.value === Ni.AREA_2 ? n += Pt : o.value === Ni.AREA_3 && (n += 1.5 * Pt), r.x = e * Math.cos(n), r.y = e * Math.sin(n), r.x = r.x * this.a + this.x0, r.y = r.y * this.a + this.y0, t.x = r.x, t.y = r.y, t
             }, inverse: function (t) {
                 var s, i, a, h, e, n, r, o, l, u = {lam: 0, phi: 0}, c = {value: 0};
-                if (t.x = (t.x - this.x0) / this.a, t.y = (t.y - this.y0) / this.a, i = Math.atan(Math.sqrt(t.x * t.x + t.y * t.y)), s = Math.atan2(t.y, t.x), t.x >= 0 && t.x >= Math.abs(t.y) ? c.value = Ai.AREA_0 : t.y >= 0 && t.y >= Math.abs(t.x) ? (c.value = Ai.AREA_1, s -= xt) : t.x < 0 && -t.x >= Math.abs(t.y) ? (c.value = Ai.AREA_2, s = s < 0 ? s + Pt : s - Pt) : (c.value = Ai.AREA_3, s += xt), l = Pt / 12 * Math.tan(s), e = Math.sin(l) / (Math.cos(l) - 1 / Math.sqrt(2)), n = Math.atan(e), a = Math.cos(s), h = Math.tan(i), (r = 1 - a * a * h * h * (1 - Math.cos(Math.atan(1 / Math.cos(n))))) < -1 ? r = -1 : r > 1 && (r = 1), this.face === wi.TOP) o = Math.acos(r), u.phi = xt - o, c.value === Ai.AREA_0 ? u.lam = n + xt : c.value === Ai.AREA_1 ? u.lam = n < 0 ? n + Pt : n - Pt : c.value === Ai.AREA_2 ? u.lam = n - xt : u.lam = n; else if (this.face === wi.BOTTOM) o = Math.acos(r), u.phi = o - xt, c.value === Ai.AREA_0 ? u.lam = -n + xt : c.value === Ai.AREA_1 ? u.lam = -n : c.value === Ai.AREA_2 ? u.lam = -n - xt : u.lam = n < 0 ? -n - Pt : -n + Pt; else {
+                if (t.x = (t.x - this.x0) / this.a, t.y = (t.y - this.y0) / this.a, i = Math.atan(Math.sqrt(t.x * t.x + t.y * t.y)), s = Math.atan2(t.y, t.x), t.x >= 0 && t.x >= Math.abs(t.y) ? c.value = Ni.AREA_0 : t.y >= 0 && t.y >= Math.abs(t.x) ? (c.value = Ni.AREA_1, s -= xt) : t.x < 0 && -t.x >= Math.abs(t.y) ? (c.value = Ni.AREA_2, s = s < 0 ? s + Pt : s - Pt) : (c.value = Ni.AREA_3, s += xt), l = Pt / 12 * Math.tan(s), e = Math.sin(l) / (Math.cos(l) - 1 / Math.sqrt(2)), n = Math.atan(e), a = Math.cos(s), h = Math.tan(i), (r = 1 - a * a * h * h * (1 - Math.cos(Math.atan(1 / Math.cos(n))))) < -1 ? r = -1 : r > 1 && (r = 1), this.face === wi.TOP) o = Math.acos(r), u.phi = xt - o, c.value === Ni.AREA_0 ? u.lam = n + xt : c.value === Ni.AREA_1 ? u.lam = n < 0 ? n + Pt : n - Pt : c.value === Ni.AREA_2 ? u.lam = n - xt : u.lam = n; else if (this.face === wi.BOTTOM) o = Math.acos(r), u.phi = o - xt, c.value === Ni.AREA_0 ? u.lam = -n + xt : c.value === Ni.AREA_1 ? u.lam = -n : c.value === Ni.AREA_2 ? u.lam = -n - xt : u.lam = n < 0 ? -n - Pt : -n + Pt; else {
                     var M, f, d;
-                    l = (M = r) * M, f = (l += (d = l >= 1 ? 0 : Math.sqrt(1 - l) * Math.sin(n)) * d) >= 1 ? 0 : Math.sqrt(1 - l), c.value === Ai.AREA_1 ? (l = f, f = -d, d = l) : c.value === Ai.AREA_2 ? (f = -f, d = -d) : c.value === Ai.AREA_3 && (l = f, f = d, d = -l), this.face === wi.RIGHT ? (l = M, M = -f, f = l) : this.face === wi.BACK ? (M = -M, f = -f) : this.face === wi.LEFT && (l = M, M = f, f = -l), u.phi = Math.acos(-d) - xt, u.lam = Math.atan2(f, M), this.face === wi.RIGHT ? u.lam = ct(u.lam, -xt) : this.face === wi.BACK ? u.lam = ct(u.lam, -Pt) : this.face === wi.LEFT && (u.lam = ct(u.lam, +xt))
+                    l = (M = r) * M, f = (l += (d = l >= 1 ? 0 : Math.sqrt(1 - l) * Math.sin(n)) * d) >= 1 ? 0 : Math.sqrt(1 - l), c.value === Ni.AREA_1 ? (l = f, f = -d, d = l) : c.value === Ni.AREA_2 ? (f = -f, d = -d) : c.value === Ni.AREA_3 && (l = f, f = d, d = -l), this.face === wi.RIGHT ? (l = M, M = -f, f = l) : this.face === wi.BACK ? (M = -M, f = -f) : this.face === wi.LEFT && (l = M, M = f, f = -l), u.phi = Math.acos(-d) - xt, u.lam = Math.atan2(f, M), this.face === wi.RIGHT ? u.lam = ct(u.lam, -xt) : this.face === wi.BACK ? u.lam = ct(u.lam, -Pt) : this.face === wi.LEFT && (u.lam = ct(u.lam, +xt))
                 }
                 if (0 !== this.es) {
                     var p, m, y;
@@ -1791,9 +1796,9 @@
                 return u.lam += this.long0, t.x = u.lam, t.y = u.phi, t
             }, names: ["Quadrilateralized Spherical Cube", "Quadrilateralized_Spherical_Cube", "qsc"]
         },
-        Ni = [[1, 2.2199e-17, -715515e-10, 31103e-10], [.9986, -482243e-9, -24897e-9, -13309e-10], [.9954, -83103e-8, -448605e-10, -9.86701e-7], [.99, -.00135364, -59661e-9, 36777e-10], [.9822, -.00167442, -449547e-11, -572411e-11], [.973, -.00214868, -903571e-10, 1.8736e-8], [.96, -.00305085, -900761e-10, 164917e-11], [.9427, -.00382792, -653386e-10, -26154e-10], [.9216, -.00467746, -10457e-8, 481243e-11], [.8962, -.00536223, -323831e-10, -543432e-11], [.8679, -.00609363, -113898e-9, 332484e-11], [.835, -.00698325, -640253e-10, 9.34959e-7], [.7986, -.00755338, -500009e-10, 9.35324e-7], [.7597, -.00798324, -35971e-9, -227626e-11], [.7186, -.00851367, -701149e-10, -86303e-10], [.6732, -.00986209, -199569e-9, 191974e-10], [.6213, -.010418, 883923e-10, 624051e-11], [.5722, -.00906601, 182e-6, 624051e-11], [.5322, -.00677797, 275608e-9, 624051e-11]],
+        Ei = [[1, 2.2199e-17, -715515e-10, 31103e-10], [.9986, -482243e-9, -24897e-9, -13309e-10], [.9954, -83103e-8, -448605e-10, -9.86701e-7], [.99, -.00135364, -59661e-9, 36777e-10], [.9822, -.00167442, -449547e-11, -572411e-11], [.973, -.00214868, -903571e-10, 1.8736e-8], [.96, -.00305085, -900761e-10, 164917e-11], [.9427, -.00382792, -653386e-10, -26154e-10], [.9216, -.00467746, -10457e-8, 481243e-11], [.8962, -.00536223, -323831e-10, -543432e-11], [.8679, -.00609363, -113898e-9, 332484e-11], [.835, -.00698325, -640253e-10, 9.34959e-7], [.7986, -.00755338, -500009e-10, 9.35324e-7], [.7597, -.00798324, -35971e-9, -227626e-11], [.7186, -.00851367, -701149e-10, -86303e-10], [.6732, -.00986209, -199569e-9, 191974e-10], [.6213, -.010418, 883923e-10, 624051e-11], [.5722, -.00906601, 182e-6, 624051e-11], [.5322, -.00677797, 275608e-9, 624051e-11]],
         Ci = [[-5.20417e-18, .0124, 1.21431e-18, -8.45284e-11], [.062, .0124, -1.26793e-9, 4.22642e-10], [.124, .0124, 5.07171e-9, -1.60604e-9], [.186, .0123999, -1.90189e-8, 6.00152e-9], [.248, .0124002, 7.10039e-8, -2.24e-8], [.31, .0123992, -2.64997e-7, 8.35986e-8], [.372, .0124029, 9.88983e-7, -3.11994e-7], [.434, .0123893, -369093e-11, -4.35621e-7], [.4958, .0123198, -102252e-10, -3.45523e-7], [.5571, .0121916, -154081e-10, -5.82288e-7], [.6176, .0119938, -241424e-10, -5.25327e-7], [.6769, .011713, -320223e-10, -5.16405e-7], [.7346, .0113541, -397684e-10, -6.09052e-7], [.7903, .0109107, -489042e-10, -104739e-11], [.8435, .0103431, -64615e-9, -1.40374e-9], [.8936, .00969686, -64636e-9, -8547e-9], [.9394, .00840947, -192841e-9, -42106e-10], [.9761, .00616527, -256e-6, -42106e-10], [1, .00328947, -319159e-9, -42106e-10]],
-        Pi = .8487, Si = 1.3523, Ii = Et / 5, Oi = 1 / Ii, ki = 18, qi = function (t, s) {
+        Pi = .8487, Si = 1.3523, Ii = At / 5, Oi = 1 / Ii, ki = 18, qi = function (t, s) {
             return t[0] + s * (t[1] + s * (t[2] + s * t[3]))
         }, Ri = function (t, s) {
             return t[1] + s * (2 * t[2] + 3 * s * t[3])
@@ -1802,12 +1807,12 @@
                 this.x0 = this.x0 || 0, this.y0 = this.y0 || 0, this.long0 = this.long0 || 0, this.es = 0, this.title = this.title || "Robinson"
             }, forward: function (t) {
                 var s = Ht(t.x - this.long0), i = Math.abs(t.y), a = Math.floor(i * Ii);
-                a < 0 ? a = 0 : a >= ki && (a = ki - 1), i = Et * (i - Oi * a);
-                var h = {x: qi(Ni[a], i) * s, y: qi(Ci[a], i)};
+                a < 0 ? a = 0 : a >= ki && (a = ki - 1), i = At * (i - Oi * a);
+                var h = {x: qi(Ei[a], i) * s, y: qi(Ci[a], i)};
                 return t.y < 0 && (h.y = -h.y), h.x = h.x * this.a * Pi + this.x0, h.y = h.y * this.a * Si + this.y0, h
             }, inverse: function (t) {
                 var s = {x: (t.x - this.x0) / (this.a * Pi), y: Math.abs(t.y - this.y0) / (this.a * Si)};
-                if (s.y >= 1) s.x /= Ni[ki][0], s.y = t.y < 0 ? -xt : xt; else {
+                if (s.y >= 1) s.x /= Ei[ki][0], s.y = t.y < 0 ? -xt : xt; else {
                     var i = Math.floor(s.y * ki);
                     for (i < 0 ? i = 0 : i >= ki && (i = ki - 1); ;) if (Ci[i][0] > s.y) --i; else {
                         if (!(Ci[i + 1][0] <= s.y)) break;
@@ -1816,7 +1821,7 @@
                     var a = Ci[i], h = 5 * (s.y - a[0]) / (Ci[i + 1][0] - a[0]);
                     h = Mt(function (t) {
                         return (qi(a, t) - s.y) / Ri(a, t)
-                    }, h, wt, 100), s.x /= qi(Ni[i], h), s.y = (5 * i + h) * At, t.y < 0 && (s.y = -s.y)
+                    }, h, wt, 100), s.x /= qi(Ei[i], h), s.y = (5 * i + h) * Nt, t.y < 0 && (s.y = -s.y)
                 }
                 return s.x = Ht(s.x + this.long0), s
             }, names: ["Robinson", "robin"]
@@ -1841,7 +1846,7 @@
                         if (ji[t].num && isNaN(this[t])) throw new Error("Invalid parameter value, must be numeric " + t + " = " + this[t]);
                         ji[t].num && (this[t] = parseFloat(this[t]))
                     }
-                    ji[t].degrees && (this[t] = this[t] * At)
+                    ji[t].degrees && (this[t] = this[t] * Nt)
                 }.bind(this)), Math.abs(Math.abs(this.lat0) - xt) < wt ? this.mode = this.lat0 < 0 ? Gi.S_POLE : Gi.N_POLE : Math.abs(this.lat0) < wt ? this.mode = Gi.EQUIT : (this.mode = Gi.OBLIQ, this.sinph0 = Math.sin(this.lat0), this.cosph0 = Math.cos(this.lat0)), this.pn1 = this.h / this.a, this.pn1 <= 0 || this.pn1 > 1e10) throw new Error("Invalid height");
                 this.p = 1 + this.pn1, this.rp = 1 / this.p, this.h1 = 1 / this.pn1, this.pfact = (this.p + 1) * this.h1, this.es = 0;
                 var t = this.tilt, s = this.azi;
@@ -1901,13 +1906,43 @@
                 }
                 return t.x = h.x + this.long0, t.y = h.y, t
             }, names: ["Tilted_Perspective", "tpers"]
+        }, zi = {
+            init: function () {
+                if (this.flip_axis = "x" === this.sweep ? 1 : 0, this.h = Number(this.h), this.radius_g_1 = this.h / this.a, this.radius_g_1 <= 0 || this.radius_g_1 > 1e10) throw new Error;
+                if (this.radius_g = 1 + this.radius_g_1, this.C = this.radius_g * this.radius_g - 1, 0 !== this.es) {
+                    var t = 1 - this.es, s = 1 / t;
+                    this.radius_p = Math.sqrt(t), this.radius_p2 = t, this.radius_p_inv2 = s, this.shape = "ellipse"
+                } else this.radius_p = 1, this.radius_p2 = 1, this.radius_p_inv2 = 1, this.shape = "sphere";
+                this.title || (this.title = "Geostationary Satellite View")
+            }, forward: function (t) {
+                var s, i, a, h, e = t.x, n = t.y;
+                if (e -= this.long0, "ellipse" === this.shape) {
+                    n = Math.atan(this.radius_p2 * Math.tan(n));
+                    var r = this.radius_p / ws(this.radius_p * Math.cos(n), Math.sin(n));
+                    if (i = r * Math.cos(e) * Math.cos(n), a = r * Math.sin(e) * Math.cos(n), h = r * Math.sin(n), (this.radius_g - i) * i - a * a - h * h * this.radius_p_inv2 < 0) return t.x = Number.NaN, t.y = Number.NaN, t;
+                    s = this.radius_g - i, this.flip_axis ? (t.x = this.radius_g_1 * Math.atan(a / ws(h, s)), t.y = this.radius_g_1 * Math.atan(h / s)) : (t.x = this.radius_g_1 * Math.atan(a / s), t.y = this.radius_g_1 * Math.atan(h / ws(a, s)))
+                } else "sphere" === this.shape && (s = Math.cos(n), i = Math.cos(e) * s, a = Math.sin(e) * s, h = Math.sin(n), s = this.radius_g - i, this.flip_axis ? (t.x = this.radius_g_1 * Math.atan(a / ws(h, s)), t.y = this.radius_g_1 * Math.atan(h / s)) : (t.x = this.radius_g_1 * Math.atan(a / s), t.y = this.radius_g_1 * Math.atan(h / ws(a, s))));
+                return t.x = t.x * this.a, t.y = t.y * this.a, t
+            }, inverse: function (t) {
+                var s, i, a, h, e = -1, n = 0, r = 0;
+                if (t.x = t.x / this.a, t.y = t.y / this.a, "ellipse" === this.shape) {
+                    this.flip_axis ? (r = Math.tan(t.y / this.radius_g_1), n = Math.tan(t.x / this.radius_g_1) * ws(1, r)) : (n = Math.tan(t.x / this.radius_g_1), r = Math.tan(t.y / this.radius_g_1) * ws(1, n));
+                    var o = r / this.radius_p;
+                    if (s = n * n + o * o + e * e, i = 2 * this.radius_g * e, (a = i * i - 4 * s * this.C) < 0) return t.x = Number.NaN, t.y = Number.NaN, t;
+                    h = (-i - Math.sqrt(a)) / (2 * s), e = this.radius_g + h * e, n *= h, r *= h, t.x = Math.atan2(n, e), t.y = Math.atan(r * Math.cos(t.x) / e), t.y = Math.atan(this.radius_p_inv2 * Math.tan(t.y))
+                } else if ("sphere" === this.shape) {
+                    if (this.flip_axis ? (r = Math.tan(t.y / this.radius_g_1), n = Math.tan(t.x / this.radius_g_1) * Math.sqrt(1 + r * r)) : (n = Math.tan(t.x / this.radius_g_1), r = Math.tan(t.y / this.radius_g_1) * Math.sqrt(1 + n * n)), s = n * n + r * r + e * e, i = 2 * this.radius_g * e, (a = i * i - 4 * s * this.C) < 0) return t.x = Number.NaN, t.y = Number.NaN, t;
+                    h = (-i - Math.sqrt(a)) / (2 * s), e = this.radius_g + h * e, n *= h, r *= h, t.x = Math.atan2(n, e), t.y = Math.atan(r * Math.cos(t.x) / e)
+                }
+                return t.x = t.x + this.long0, t
+            }, names: ["Geostationary Satellite View", "Geostationary_Satellite", "geos"]
         };
     return W.defaultDatum = "WGS84", W.Proj = Projection, W.WGS84 = new W.Proj("WGS84"), W.Point = Point, W.toPoint = es, W.defs = o, W.nadgrid = function (t, s) {
-        var i = new DataView(s), a = A(i), h = E(i, a);
+        var i = new DataView(s), a = N(i), h = A(i, a);
         h.nSubgrids > 1 && console.log("Only single NTv2 subgrids are currently supported, subsequent sub grids are ignored");
         var e = {header: h, subgrids: C(i, h, a)};
         return is[t] = e, e
-    }, W.transform = D, W.mgrs = ms, W.version = "2.7.5", function (proj4) {
-        proj4.Proj.projections.add(vs), proj4.Proj.projections.add(Is), proj4.Proj.projections.add(ks), proj4.Proj.projections.add(Ts), proj4.Proj.projections.add(Gs), proj4.Proj.projections.add(js), proj4.Proj.projections.add(zs), proj4.Proj.projections.add(Fs), proj4.Proj.projections.add(Ds), proj4.Proj.projections.add(Zs), proj4.Proj.projections.add(ei), proj4.Proj.projections.add(ri), proj4.Proj.projections.add(oi), proj4.Proj.projections.add(ui), proj4.Proj.projections.add(ci), proj4.Proj.projections.add(fi), proj4.Proj.projections.add(di), proj4.Proj.projections.add(pi), proj4.Proj.projections.add(yi), proj4.Proj.projections.add(_i), proj4.Proj.projections.add(xi), proj4.Proj.projections.add(gi), proj4.Proj.projections.add(vi), proj4.Proj.projections.add(bi), proj4.Proj.projections.add(Ei), proj4.Proj.projections.add(Li), proj4.Proj.projections.add(Ti), proj4.Proj.projections.add(Bi)
+    }, W.transform = D, W.mgrs = ms, W.version = "2.9.0", function (proj4) {
+        proj4.Proj.projections.add(vs), proj4.Proj.projections.add(Is), proj4.Proj.projections.add(ks), proj4.Proj.projections.add(Ts), proj4.Proj.projections.add(Gs), proj4.Proj.projections.add(js), proj4.Proj.projections.add(zs), proj4.Proj.projections.add(Fs), proj4.Proj.projections.add(Ds), proj4.Proj.projections.add(Zs), proj4.Proj.projections.add(ei), proj4.Proj.projections.add(ri), proj4.Proj.projections.add(oi), proj4.Proj.projections.add(ui), proj4.Proj.projections.add(ci), proj4.Proj.projections.add(fi), proj4.Proj.projections.add(di), proj4.Proj.projections.add(pi), proj4.Proj.projections.add(yi), proj4.Proj.projections.add(_i), proj4.Proj.projections.add(xi), proj4.Proj.projections.add(gi), proj4.Proj.projections.add(vi), proj4.Proj.projections.add(bi), proj4.Proj.projections.add(Ai), proj4.Proj.projections.add(Li), proj4.Proj.projections.add(Ti), proj4.Proj.projections.add(Bi), proj4.Proj.projections.add(zi)
     }(W), W
 });
