@@ -1093,10 +1093,10 @@ id_MarkerConn.on('click', function (th) {
             }, 100);
             */
             cnt_info.animate({
-                'width': '148em'
+                'width': '88em'
             }, 100);
             cnt_info.animate({
-                'width': '148em'
+                'width': '88em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1124,7 +1124,7 @@ id_MarkerConn.on('click', function (th) {
                 */
                 info_icon.css('visibility', 'visible');
                 cnt_info.animate({
-                    'width': '100em'
+                    'width': '48em'
                 }, 100);
                 cnt_nav.animate({
                     'width': '52em', 'display': 'block'
@@ -1143,7 +1143,7 @@ id_MarkerConn.on('click', function (th) {
 
              */
             cnt_info.animate({
-                'width': '148em'
+                'width': '88em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1572,6 +1572,11 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
     } else {
         console.log("<1");
     }
+    if(chk_pconn === 1) {
+        cnt_info.animate({
+            'width': '48em'
+        }, 100);
+    }
 }
 func_delMark = function (th) {
     marker[parseInt(th.attr('id').split('_')[1])] = undefined;
@@ -1596,7 +1601,7 @@ func_delMark = function (th) {
 
              */
             cnt_info.animate({
-                'width': '148em'
+                'width': '88em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1673,7 +1678,7 @@ func_delMark = function (th) {
                 }, 100);
                 */
                 cnt_info.animate({
-                    'width': '100em'
+                    'width': '48em'
                 }, 100);
                 cnt_nav.animate({
                     'width': '52em', 'display': 'block'
@@ -1751,7 +1756,7 @@ func_delMark = function (th) {
 
          */
         cnt_info.animate({
-            'width': '148em'
+            'width': '88em'
         }, 100);
         cnt_nav.animate({
             'width': '0em', 'display': 'none'
@@ -1776,7 +1781,7 @@ func_delMark = function (th) {
 
              */
             cnt_info.animate({
-                'width': '148em'
+                'width': '88em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1948,7 +1953,7 @@ info_icon.on('click', function (e) {
 
              */
             cnt_info.animate({
-                'width': '100em'
+                'width': '48em'
             }, 100);
             cnt_nav.animate({
                 'width': '52em', 'display': 'block'
@@ -1966,7 +1971,7 @@ info_icon.on('click', function (e) {
 
              */
             cnt_info.animate({
-                'width': '148em'
+                'width': '88em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -2052,20 +2057,39 @@ map.on('locationerror', function(e) {
  */
 func_initMap = function () {
     cnt_nav.css('width', '0em');
-    cnt_info.css('width', '148em');
+    cnt_info.css('width', '88em');
     if (LayerMap !== undefined) {
         map.removeLayer(LayerMap);
+    }
+    for(it_tl = 0; it_tl < topLayer.length; it_tl++) {
+        if(topLayer[it_tl] !== undefined) {
+            map.removeLayer(topLayer[it_tl]);
+        }
     }
     if (chk_map == 0) {
         LayerMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+        if ($('.cl_cbEsys:checkbox:checked').length !== 0) {
+            for(it_tl = 0; it_tl < topLayer.length; it_tl++) {
+                if(topLayer[it_tl] !== undefined) {
+                    topLayer[it_tl].addTo(map);
+                }
+            }
+        }
     }
     if (chk_map == 1) {
         LayerMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
             // page 14 Map.locate <watch, enableHighAccuracy, maxZoom>
         }).addTo(map);
+        if ($('.cl_cbEsys:checkbox:checked').length !== 0) {
+            for(it_tl = 0; it_tl < topLayer.length; it_tl++) {
+                if(topLayer[it_tl] !== undefined) {
+                    topLayer[it_tl].addTo(map);
+                }
+            }
+        }
     }
     if (chk_map == 2) {
         mapLink =
@@ -2076,6 +2100,13 @@ func_initMap = function () {
             'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 attribution: '&copy; ' + mapLink + ', ' + wholink
             }).addTo(map);
+        if ($('.cl_cbEsys:checkbox:checked').length !== 0) {
+            for(it_tl = 0; it_tl < topLayer.length; it_tl++) {
+                if(topLayer[it_tl] !== undefined) {
+                    topLayer[it_tl].addTo(map);
+                }
+            }
+        }
     }
     if (ly_ecosys !== undefined) {
         var layer_name = $('#id_addLayer option:selected').text();
@@ -2117,7 +2148,6 @@ func_initMap = function () {
     });
 
      */
-
 }
 map.on('click', function(e) {
     //console.log(e.latlng);

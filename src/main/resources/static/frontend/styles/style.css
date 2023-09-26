@@ -13,7 +13,7 @@ body {
     position: relative;
     float: left;
     width: 100em;
-    height: 100%;
+    height: 1000px;
     z-index: 0;
 }
 #eSys {
@@ -211,8 +211,8 @@ body {
 .cl_esysInf {
     position: relative;
     width: 100%;
-    height: 30em;
-    overflow-y: scroll;
+    max-height: 30em;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 .cl_headID {
@@ -295,7 +295,7 @@ body {
     position: relative;
     height: 0%;
     margin-left: 30em;
-    width: 100em;
+    width: min-content;
     z-index: 2;
 }
 #cnt_map {
@@ -316,9 +316,8 @@ body {
     position: absolute;
     padding-bottom: 3em;
     width: 52em;
-    height: 100em;
     background-color: rgb(255, 255, 255);
-    overflow-y: scroll;
+    overflow: hidden;
     z-index: 2;
     right: 0;
 }
