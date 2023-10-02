@@ -17,6 +17,11 @@ var map = L.map('map', {
 });
 var popup;
 var geoJsonLayer;
+var infoPup = L.popup({
+    className: 'cl_popup3',
+    closeButton: true,
+    closeOnClick: true
+});
 var chk = 0;
 map.locate({
     setView: false
@@ -280,13 +285,15 @@ func_CQLFull = function() {
                         //hide bar if he counts to 5 sec
                         map.closePopup(popup);
                         popup.remove();
-                    },4200);
+                    },6200);
                     geoJsonLayer.on('mouseover', function() {
-                        popup.openOn(map);
-                        if(popup.isOpen()) {
-                            popup.update();
+                        if(!infoPup.isOpen()) {
+                            popup.openOn(map);
+                            if (popup.isOpen()) {
+                                popup.update();
+                            }
+                            clearInterval(time);
                         }
-                        clearInterval(time);
                     });
                     geoJsonLayer.addTo(map);
                 },
@@ -385,7 +392,8 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                     weight: 2,
                                     opacity: 1,
                                     color: 'yellow',  //Outline color
-                                    fillOpacity: 0.8
+                                    fillOpacity: 0.8,
+                                    zIndex: 20000
                                 };
                             }
                             ly_filter = L.geoJSON(response, {style: polystyle});
@@ -407,7 +415,6 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                 }
                                 wktString += wkt[0][0] + " " + wkt[0][1] + ")))";
                                 //console.log(response['features'][0]['properties']['AK_FNR']);
-                                var infoPup;
                                 var str_content = '';
                                 if (response['features'] !== undefined) {
                                     $.ajax({
@@ -532,7 +539,8 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                             infoPup.setLatLng(e.latlng);
                                             infoPup.setContent(str_content);
                                         }
-                                        infoPup.openOn(map);
+                                        map.addLayer(infoPup);
+                                        //infoPup.openOn(map);
                                     }
                                 } else {
                                     $.ajax({
