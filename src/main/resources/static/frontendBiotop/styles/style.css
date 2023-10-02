@@ -8,7 +8,7 @@ body {
 #map {
     position: relative;
     float: left;
-    width: 119em;
+    width: 100em;
     height: 1000px;
 }
 #eSys {
@@ -690,12 +690,6 @@ html, body {
 body {
     padding: 0;
     margin: 0;
-}
-#map {
-    position: relative;
-    float: left;
-    width: 109em;
-    height: 100%;
 }
 #eSys {
     position: relative;
