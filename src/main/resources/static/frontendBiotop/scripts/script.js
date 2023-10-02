@@ -179,7 +179,7 @@ func_CQLFull = function() {
                         // Set the opacity of each feature using setStyle
                         layer.setStyle({ opacity: 0.01 });
                     });
-                    map.fitBounds(geoJsonLayer.getBounds());
+                    //map.fitBounds(geoJsonLayer.getBounds());
                     geoJsonLayer.on('mouseover', function(e) {
                         popup = new L.popup({
                             className: 'cl_popup2',
@@ -374,12 +374,21 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                             cql_filter: resp['filter'][p_id]['cqlQuery']
                         },
                         success: function (response) {
-                            map.removeLayer(ly_biotop);
+                            //map.removeLayer(ly_biotop);
                             map.removeLayer(geoJsonLayer);
                             if (ly_filter !== undefined) {
                                 map.removeLayer(ly_filter);
                             }
-                            ly_filter = L.geoJSON(response);
+                            function polystyle() {
+                                return {
+                                    fillColor: 'yellow',
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'yellow',  //Outline color
+                                    fillOpacity: 0.8
+                                };
+                            }
+                            ly_filter = L.geoJSON(response, {style: polystyle});
                             map.fitBounds(ly_filter.getBounds());
                             ly_filter.on('mouseover', function(event) {
                                 popup.remove();
@@ -698,7 +707,7 @@ func_initMap = function () {
         }
         ly_biotop = L.tileLayer.wms('https://spatial.biodivdev.at/geoserver/ECO/wms', {
             format: 'image/svg',
-            opacity: 0.3,
+            opacity: 0.6,
             layers: "ECO:" + layer_name
         });
         ly_biotop.addTo(map);
@@ -712,7 +721,7 @@ func_initMap = function () {
         //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
         ly_biotop = L.tileLayer.wms('https://spatial.biodivdev.at/geoserver/ECO/wms', {
             format: 'image/svg',
-            opacity: 0.3,
+            opacity: 0.6,
             layers: "ECO:" + layer_name
         });
         ly_biotop.addTo(map);
