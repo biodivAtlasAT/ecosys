@@ -21,7 +21,7 @@ body {
     color: #cccccc;
 }
 .transparent-popup {
-    background: transparent;
+    background-color: rgba(255, 255, 255, 200);
     border: none;
     box-shadow: none;
     padding: 0;
@@ -690,16 +690,6 @@ body {
 #id_welcome {
     color: #cccccc;
 }
-.transparent-popup {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    fontSize: 16px;
-    fontWeight:"bold";
-    color: black;
-    textAlign:"center";
-}
 .cl_habitatTypes {
     overflow-y: scroll;
     height: 39.2em;
@@ -986,7 +976,7 @@ body {
     margin-top: 1em;
 }
 .cl_popup2 .leaflet-popup-content-wrapper {
-    background: transparent;
+    background-color: rgba(255, 255, 255, 200);;
     color:#000000;
     font-size:16px;
     line-height:24px;
