@@ -1075,13 +1075,14 @@ id_MarkerConn.on('click', function (th) {
         if (chk_pconn === 0) {
             chk_pcSet = 1;
             info_icon.css('visibility', 'visible');
-            console.log($('input.cl_cbEsys:checked').length);
-            if (!$('input.cl_cbEsys:checked').length) {
+            if ($('.cl_cbEsys:checkbox:checked').length === 0) {
                 alert("Bitte wählen sie zuerst eine Ökosystemleistung aus!");
                 bt_ecosysCB.click();
             }
-            func_updatePolyLine();
-            id_MarkerConn.val("Verbindung verbergen");
+            if ($('.cl_cbEsys:checkbox:checked').length > 0) {
+                func_updatePolyLine();
+                id_MarkerConn.val("Verbindung verbergen");
+            }
         }
         if (chk_pconn === 1) {
             chk_pcSet = 0;
@@ -1116,23 +1117,25 @@ id_MarkerConn.on('click', function (th) {
             $('.cl_footer').css('margin-top', (0 + parseInt((filteredmarker.length - 1) / 3) * 20) + 'em');
         }
         if (chk_pconn === 0) {
-            if (it_infBt % 2 == 0) {
-                /*
-                cnt_main.animate({
-                    'width': '65%'
-                }, 100);
-                */
-                info_icon.css('visibility', 'visible');
-                cnt_info.animate({
-                    'width': '48em'
-                }, 100);
-                cnt_nav.animate({
-                    'width': '52em', 'display': 'block'
-                }, 100);
-                cnt_info.animate({
-                    'height': 8.5 + (parseInt((filteredmarker.length - 1) / 2) * 20) + 'em'
-                }, 100);
-                $('.cl_footer').css('margin-top', (8.5 + parseInt((filteredmarker.length - 1) / 2) * 20) + 'em');
+            if ($('.cl_cbEsys:checkbox:checked').length !== 0) {
+                if (it_infBt % 2 == 0) {
+                    /*
+                    cnt_main.animate({
+                        'width': '65%'
+                    }, 100);
+                    */
+                    info_icon.css('visibility', 'visible');
+                    cnt_info.animate({
+                        'width': '48em'
+                    }, 100);
+                    cnt_nav.animate({
+                        'width': '52em', 'display': 'block'
+                    }, 100);
+                    cnt_info.animate({
+                        'height': 8.5 + (parseInt((filteredmarker.length - 1) / 2) * 20) + 'em'
+                    }, 100);
+                    $('.cl_footer').css('margin-top', (8.5 + parseInt((filteredmarker.length - 1) / 2) * 20) + 'em');
+                }
             }
         }
         if (it_infBt % 2 == 1) {
@@ -1153,10 +1156,13 @@ id_MarkerConn.on('click', function (th) {
             }, 100);
             $('.cl_footer').css('margin-top', (0 + parseInt((filteredmarker.length - 1) / 3) * 20) + 'em');
         }
-        if (info_icon.css('visibility') === 'visible') {
-            it_infBt = ++it_infBt % 2;
+        if ($('.cl_cbEsys:checkbox:checked').length > 0) {
+            if (info_icon.css('visibility') === 'visible') {
+                it_infBt = ++it_infBt % 2;
+            }
+            chk_pconn = ++iter_conn % 2;
         }
-        chk_pconn = ++iter_conn % 2;
+
     }
 });
 func_createPolygon = function (latLngBounds) {
