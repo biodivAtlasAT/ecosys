@@ -967,7 +967,7 @@ id_newMark.on('click', function (e) {
             zoom: 14
         });
         minimapArr[it_0].addControl(new L.Control.AttrScale({position: 'bottomright', metric: true}));
-        $('minimap_' + it_0).find('.leaflet-control-attribute').css('visibility', 'hidden');
+        $('.cl_minimap').find('.leaflet-control-attribution').css('visibility', 'hidden');
         popupArr[it_0] = L.popup({
             closeOnClick: false,
             autoClose: false
