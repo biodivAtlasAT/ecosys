@@ -962,6 +962,7 @@ id_newMark.on('click', function (e) {
             trackResize: false,
             touchZoom: false,
             scrollWheelZoom: false,
+            attributionControl: false,
             center: [48.3805228, 15.9558588],
             zoom: 14
         });
