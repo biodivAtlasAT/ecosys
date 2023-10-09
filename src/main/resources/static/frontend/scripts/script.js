@@ -1019,7 +1019,8 @@ id_newMark.on('click', function (e) {
                     if (popupMap[tt_0] != undefined) popupMap[tt_0].remove();
                     popupMap[tt_0] = L.map('popup-map_' + tt_0, {
                         dragging: false,
-                        zoomControl: false
+                        zoomControl: false,
+                        attributionControl: false,
                     }).setView(latlng, 6);
 
                     // Create a marker at the clicked point
