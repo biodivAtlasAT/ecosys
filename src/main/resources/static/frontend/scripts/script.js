@@ -203,7 +203,7 @@ func_cbClick = function (p_id) {
                         layers: 'ECO:' + id_fName.toLowerCase(),
                         format: 'image/png',
                         transparent: true,
-                        opacity: 0.4,
+                        opacity: 0.68,
                         version: '1.1.0'
                     }).addTo(map);
                 }
@@ -1841,7 +1841,7 @@ func_updateID = function (tmpT) {
             height: size.y,
             format: 'image/png',
             transparent: true,
-            opacity: 0.4,
+            opacity: 0.68,
             query_layers: ly_ecosys.wmsParams.layers,
             info_format: 'application/json',
             feature_count: 1,
@@ -2125,7 +2125,7 @@ func_initMap = function () {
         }
         ly_ecosys = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ALA/wms', {
             format: 'image/svg',
-            opacity: 0.3,
+            opacity: 0.68,
             layers: "ALA:" + layer_name
         });
         ly_ecosys.addTo(map);
@@ -2138,7 +2138,7 @@ func_initMap = function () {
         var layer_name = $('#id_addLayer option:selected').text();
         ly_ecosys = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ALA/wms', {
             format: 'image/svg',
-            opacity: 0.3,
+            opacity: 0.68,
             layers: "ALA:" + layer_name
         });
         ly_ecosys.addTo(map);
