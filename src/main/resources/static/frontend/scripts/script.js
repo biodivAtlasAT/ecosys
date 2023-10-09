@@ -2062,6 +2062,7 @@ map.on('locationerror', function(e) {
 });
 
  */
+var cntr = 0;
 func_initMap = function () {
     cnt_nav.css('width', '0em');
     cnt_info.css('width', '88em');
@@ -2155,7 +2156,31 @@ func_initMap = function () {
     });
 
      */
-    L.control.attribution({ position: 'bottomright' }).addTo(map);
+    if(cntr === 0) {
+        L.Control.AttrScale = L.Control.Scale.extend({
+            onAdd: function (map) {
+                var className = 'leaflet-control-scale',
+                    wrapper = L.DomUtil.create('div', 'leaflet-control-attr-scale'),
+                    attribution = L.DomUtil.create('div', 'leaflet-control-attribution', wrapper),
+                    container = L.DomUtil.create('div', className, wrapper),
+                    options = this.options;
+
+                wrapper.style.display = "flex";
+                wrapper.style.alignItems = "center";
+
+                attribution.innerHTML = LayerMap.getAttribution();
+
+                this._addScales(options, className + '-line', container);
+
+                map.on(options.updateWhenIdle ? 'moveend' : 'move', this._update, this);
+                map.whenReady(this._update, this);
+
+                return wrapper;
+            },
+        });
+        map.addControl(new L.Control.AttrScale({position: 'bottomright', metric: true}));
+        cntr = 1;
+    }
 }
 map.on('click', function(e) {
     //console.log(e.latlng);

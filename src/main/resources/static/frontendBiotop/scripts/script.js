@@ -1080,6 +1080,7 @@ func_CQLSubm = function(p_id, r_id, p_color) {
         });
      */
 }
+var cntr = 0;
 func_initMap = function () {
     if (LayerMap !== undefined) {
         map.removeLayer(LayerMap);
@@ -1137,6 +1138,31 @@ func_initMap = function () {
         ly_biotop.addTo(map);
 
     });
+    if(cntr === 0) {
+        L.Control.AttrScale = L.Control.Scale.extend({
+            onAdd: function (map) {
+                var className = 'leaflet-control-scale',
+                    wrapper = L.DomUtil.create('div', 'leaflet-control-attr-scale'),
+                    attribution = L.DomUtil.create('div', 'leaflet-control-attribution', wrapper),
+                    container = L.DomUtil.create('div', className, wrapper),
+                    options = this.options;
+
+                wrapper.style.display = "flex";
+                wrapper.style.alignItems = "center";
+
+                attribution.innerHTML = LayerMap.getAttribution();
+
+                this._addScales(options, className + '-line', container);
+
+                map.on(options.updateWhenIdle ? 'moveend' : 'move', this._update, this);
+                map.whenReady(this._update, this);
+
+                return wrapper;
+            },
+        });
+        map.addControl(new L.Control.AttrScale({position: 'bottomright', metric: true}));
+        cntr = 1;
+    }
 
 }
 $(document).ready(function() {
