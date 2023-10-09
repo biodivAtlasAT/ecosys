@@ -963,9 +963,8 @@ id_newMark.on('click', function (e) {
             touchZoom: false,
             scrollWheelZoom: false,
             attributionControl: false,
-            attribution: '',
             center: [48.3805228, 15.9558588],
-            zoom: 13
+            zoom: 14
         });
         minimapArr[it_0].addControl(new L.Control.AttrScale({position: 'bottomright', metric: true}));
         popupArr[it_0] = L.popup({
@@ -975,7 +974,6 @@ id_newMark.on('click', function (e) {
             .setLatLng(p_point[it_0]);
         llBounds[it_0] = L.latLngBounds(L.latLng(marker[it_0].getLatLng().lat - 0.010, marker[it_0].getLatLng().lng - 0.010), L.latLng(marker[it_0].getLatLng().lat + 0.010, marker[it_0].getLatLng().lng + 0.010));
         minimapBox[it_0] = func_createPolygon(llBounds[it_0]);
-
         //minimapArr[it_0].setView(marker[it_0].getLatLng(),19);
         //console.log(minimapBox[it_0]);
         $('#minimap_' + it_0).append(minimapArr[it_0]);
@@ -1723,7 +1721,7 @@ func_delMark = function (th) {
             scrollWheelZoom: false,
             attributionControl: false,
             center: [p_point[it_r].lat, p_point[it_r].lng],
-            zoom: 13
+            zoom: 14
         });
         popupArr[it_r] = L.popup({
             closeOnClick: false,
@@ -1827,7 +1825,7 @@ func_updateID = function (tmpT) {
     marker[parseInt(tmpT.attr('id').split('_')[1])].bindPopup("<div class='cl_popup' id='id_popup_" + parseInt(tmpT.attr('id').split('_')[1]) + "'><div id='id_coords'><div class=\"cl_headID\"><span class=\"cl_IDred\"> ID " + parseInt(tmpT.attr('id').split('_')[1]) + "</span> Coords: " + p_point[parseInt(tmpT.attr('id').split('_')[1])] + "</div><div class='cl_esysInf' id='id_esysInf_" + parseInt(tmpT.attr('id').split('_')[1]) + "'></div></div>", {
         minWidth: "43em"
     });
-    minimapArr[parseInt(tmpT.attr('id').split('_')[1])].setView(point[parseInt(tmpT.attr('id').split('_')[1])], 13);
+    minimapArr[parseInt(tmpT.attr('id').split('_')[1])].setView(point[parseInt(tmpT.attr('id').split('_')[1])], 14);
 
     var tt_0 = parseInt(tmpT.attr('id').split('_')[1]);
     if (ly_ecosys !== undefined) {
