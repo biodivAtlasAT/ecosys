@@ -348,9 +348,6 @@ body {
     stroke: green;
     stroke-width: 1px;
 }
-.leaflet-control-attribution {
-    visibility: hidden;
-}
 #id_addLayer {
     position: relative;
     width: 80%;
