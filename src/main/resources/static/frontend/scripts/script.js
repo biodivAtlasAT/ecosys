@@ -623,12 +623,12 @@ func_reqEcosys = function (m_th, m_id) {
                     for (it_e = 0; it_e < points.length; it_e++) {
                         if (points[it_e] != undefined) {
                             if (points.length > 1 && m_id === undefined) {
-                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
-                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
+                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 3)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 3)}]));
+                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng.toFixed(3)) + '/' + parseFloat(points[it_e].latLng.lat.toFixed(3)) + ')');
                             }
                             if (points.length === 1 && m_id !== undefined) {
-                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
-                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
+                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 3)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 3)}]));
+                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng.toFixed(3)) + '/' + parseFloat(points[it_e].latLng.lat.toFixed(3)) + ')');
                             }
                         }
                     }
@@ -656,12 +656,12 @@ func_reqEcosys = function (m_th, m_id) {
                     for (it_e = 0; it_e < points.length; it_e++) {
                         if (points[it_e] != undefined) {
                             if (points.length > 1 && m_id === undefined) {
-                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
-                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
+                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 3)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 3)}]));
+                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng.toFixed(3)) + '/' + parseFloat(points[it_e].latLng.lat.toFixed(3)) + ')');
                             }
                             if (points.length === 1 && m_id !== undefined) {
-                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
-                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
+                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 3)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 3)}]));
+                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng.toFixed(3)) + '/' + parseFloat(points[it_e].latLng.lat.toFixed(3)) + ')');
                             }
                         }
                     }
@@ -963,9 +963,11 @@ id_newMark.on('click', function (e) {
             touchZoom: false,
             scrollWheelZoom: false,
             attributionControl: false,
+            attribution: '',
             center: [48.3805228, 15.9558588],
-            zoom: 14
+            zoom: 13
         });
+        minimapArr[it_0].addControl(new L.Control.AttrScale({position: 'bottomright', metric: true}));
         popupArr[it_0] = L.popup({
             closeOnClick: false,
             autoClose: false
@@ -1719,8 +1721,9 @@ func_delMark = function (th) {
             trackResize: false,
             touchZoom: false,
             scrollWheelZoom: false,
+            attributionControl: false,
             center: [p_point[it_r].lat, p_point[it_r].lng],
-            zoom: 14
+            zoom: 13
         });
         popupArr[it_r] = L.popup({
             closeOnClick: false,
@@ -1824,7 +1827,7 @@ func_updateID = function (tmpT) {
     marker[parseInt(tmpT.attr('id').split('_')[1])].bindPopup("<div class='cl_popup' id='id_popup_" + parseInt(tmpT.attr('id').split('_')[1]) + "'><div id='id_coords'><div class=\"cl_headID\"><span class=\"cl_IDred\"> ID " + parseInt(tmpT.attr('id').split('_')[1]) + "</span> Coords: " + p_point[parseInt(tmpT.attr('id').split('_')[1])] + "</div><div class='cl_esysInf' id='id_esysInf_" + parseInt(tmpT.attr('id').split('_')[1]) + "'></div></div>", {
         minWidth: "43em"
     });
-    minimapArr[parseInt(tmpT.attr('id').split('_')[1])].setView(point[parseInt(tmpT.attr('id').split('_')[1])], 14);
+    minimapArr[parseInt(tmpT.attr('id').split('_')[1])].setView(point[parseInt(tmpT.attr('id').split('_')[1])], 13);
 
     var tt_0 = parseInt(tmpT.attr('id').split('_')[1]);
     if (ly_ecosys !== undefined) {
@@ -1872,7 +1875,8 @@ func_updateID = function (tmpT) {
                 if (popupMap[tt_0] != undefined) popupMap[tt_0].remove();
                 popupMap[tt_0] = L.map('popup-map_' + tt_0, {
                     dragging: false,
-                    zoomControl: false
+                    zoomControl: false,
+                    attributionControl: false
                 }).setView(latlng, map.getZoom());
 
                 // Create a marker at the clicked point
