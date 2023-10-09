@@ -2155,6 +2155,7 @@ func_initMap = function () {
     });
 
      */
+    L.control.attribution({ position: 'bottomright' }).addTo(map);
 }
 map.on('click', function(e) {
     //console.log(e.latlng);
