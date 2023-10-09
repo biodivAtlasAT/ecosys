@@ -380,9 +380,6 @@ body {
     stroke: green;
     stroke-width: 1px;
 }
-.leaflet-control-attribution {
-    visibility: hidden;
-}
 #id_spList {
     position: relative;
     margin-top: 1em;

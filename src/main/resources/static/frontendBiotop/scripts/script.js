@@ -1136,7 +1136,6 @@ func_initMap = function () {
             layers: "ECO:" + layer_name
         });
         ly_biotop.addTo(map);
-
     });
     if(cntr === 0) {
         L.Control.AttrScale = L.Control.Scale.extend({
@@ -1163,7 +1162,6 @@ func_initMap = function () {
         map.addControl(new L.Control.AttrScale({position: 'bottomright', metric: true}));
         cntr = 1;
     }
-
 }
 $(document).ready(function() {
     // Hide all second and third level items initially
