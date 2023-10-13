@@ -1008,7 +1008,7 @@ id_newMark.on('click', function (e) {
             var pixelPosition = map.latLngToLayerPoint(marker[tt_0].getLatLng());
             var x = size.x * (pixelPosition.x / size.x);
             var y = size.y * (pixelPosition.y / size.y);
-            var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&bbox=" + bbox + "&width=" + size.x + "&height=" + size.y + "&x=" + x + "&y=" + y + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+            var url = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&bbox=" + bbox + "&width=" + size.x + "&height=" + size.y + "&x=" + x + "&y=" + y + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
             $.ajax({
                 url: url,
                 success: function (data) {
@@ -1853,14 +1853,14 @@ func_updateID = function (tmpT) {
             y: Math.round(pt.y)
         };
 
-        var url = 'https://spatial.biodiversityatlas.at/geoserver/ALA/wms?' + Object.keys(params).map(function (key) {
+        var url = 'https://spatial.biodivdev.at/geoserver/ALA/wms?' + Object.keys(params).map(function (key) {
             return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
         }).join('&');
         /*
         var latlng = marker[tt_0].getLatLng();
         var bbox = map.getBounds().toBBoxString();
         var size = map.getSize();
-        var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+        var url = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
          */
         $.ajax({
             url: url,
@@ -2129,7 +2129,7 @@ func_initMap = function () {
                 popupMap[it_l].removeLayer(popupArr[it_l]);
             }
         }
-        ly_ecosys = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ALA/wms', {
+        ly_ecosys = L.tileLayer.wms('https://spatial.biodivdev.at/geoserver/ALA/wms', {
             format: 'image/svg',
             opacity: 0.68,
             layers: "ALA:" + layer_name
@@ -2142,7 +2142,7 @@ func_initMap = function () {
             map.removeLayer(ly_ecosys);
         }
         var layer_name = $('#id_addLayer option:selected').text();
-        ly_ecosys = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ALA/wms', {
+        ly_ecosys = L.tileLayer.wms('https://spatial.biodivdev.at/geoserver/ALA/wms', {
             format: 'image/svg',
             opacity: 0.68,
             layers: "ALA:" + layer_name
@@ -2210,14 +2210,14 @@ map.on('click', function(e) {
             y: Math.round(pt.y)
         };
 
-        var url_wms = 'https://spatial.biodiversityatlas.at/geoserver/ALA/wms?' + Object.keys(params).map(function (key) {
+        var url_wms = 'https://spatial.biodivdev.at/geoserver/ALA/wms?' + Object.keys(params).map(function (key) {
             return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
         }).join('&');
         /*
         var latlng = marker[tt_0].getLatLng();
         var bbox = map.getBounds().toBBoxString();
         var size = map.getSize();
-        var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+        var url = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
          */
         $.ajax({
             url: url_wms,
@@ -2246,7 +2246,7 @@ map.on('click', function(e) {
                 var latlng = marker[tt_0].getLatLng();
                 var bbox = map.getBounds().toBBoxString();
                 var size = map.getSize();
-                var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+                var url = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
                  */
                 var it_r = 0;
                 reqEcosys = new Array();

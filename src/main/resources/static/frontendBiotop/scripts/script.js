@@ -239,6 +239,10 @@ opt_layerID.on('click change', function () {
         if (geoJsonLayer !== undefined) {
             map.removeLayer(geoJsonLayer);
         }
+        map.eachLayer(function (layer) {
+            console.log(layer);
+            map.removeLayer(layer);
+        });
         $.ajax({
             url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
             headers: {"Accept": "application/json"},
@@ -358,6 +362,15 @@ func_CQLCapMatr = function(p_id, p_color) {
                                 }
                                 if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) === 1) {
                                     styleAll[it_a] = {
+                                        fillColor: 'rgb(188, 0, 0)',
+                                        weight: 2,
+                                        opacity: 1,
+                                        color: 'rgb(188, 0, 0)',
+                                        fillOpacity: 0.8
+                                    };
+                                }
+                                if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) === 2) {
+                                    styleAll[it_a] = {
                                         fillColor: 'rgb(255, 0, 0)',
                                         weight: 2,
                                         opacity: 1,
@@ -365,30 +378,21 @@ func_CQLCapMatr = function(p_id, p_color) {
                                         fillOpacity: 0.8
                                     };
                                 }
-                                if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) === 2) {
-                                    styleAll[it_a] = {
-                                        fillColor: 'rgb(128, 0, 0)',
-                                        weight: 2,
-                                        opacity: 1,
-                                        color: 'rgb(128, 0, 0)',
-                                        fillOpacity: 0.8
-                                    };
-                                }
                                 if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) === 3) {
                                     styleAll[it_a] = {
-                                        fillColor: 'rgb(255, 255, 0)',
+                                        fillColor: 'rgb(188, 188, 0)',
                                         weight: 2,
                                         opacity: 1,
-                                        color: 'rgb(255, 255, 0)',
+                                        color: 'rgb(188, 188, 0)',
                                         fillOpacity: 0.8
                                     };
                                 }
                                 if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) === 4) {
                                     styleAll[it_a] = {
-                                        fillColor: 'rgb(128, 128, 0)',
+                                        fillColor: 'rgb(255, 255, 0)',
                                         weight: 2,
                                         opacity: 1,
-                                        color: 'rgb(128, 128, 0)',
+                                        color: 'rgb(255, 255, 0)',
                                         fillOpacity: 0.8
                                     };
                                 }
