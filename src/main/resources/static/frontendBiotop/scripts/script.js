@@ -793,7 +793,7 @@ func_CQLSubm = function(p_id, r_id, p_color) {
                                 };
                             }
                             ly_filter = L.geoJSON(response, {style: polystyle});
-                            map.fitBounds(ly_filter.getBounds());
+                            //map.fitBounds(ly_filter.getBounds());
                             ly_filter.on('click', function(event) {
                                 if(popup !== undefined) {
                                     popup.remove();
