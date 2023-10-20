@@ -515,7 +515,7 @@ func_reqEcosys = function (m_th, m_id) {
                                     .append('div')
                                     .attr('id', 'id_value_' + it_d)
                                     .attr('class', ' cl_value cl_column cl_table_' + it_d)
-                                    .html('<div class="cl_tDw">' + absData[it_d]['vals'][0]['val'] + '</div>');
+                                    .html('<div class="cl_tDw">' + absData[it_d]['vals'][0]['val'].toFixed(2) + '</div>');
                                 d3.select('#id_chr_' + m_id)
                                     .append('div')
                                     .attr('id', 'id_dimension_' + it_d)
