@@ -889,7 +889,7 @@ id_newMark.on('click', function (e) {
     }
     if (it_mmBt == 0) {
         cnt_map.animate({
-            'height': '60%'
+            'height': '100%'
         }, 100);
         bt_close_mark.html('Minimaps schließen');
         bt_close_mark.attr('data-i18n', 'Minimaps schließen');
