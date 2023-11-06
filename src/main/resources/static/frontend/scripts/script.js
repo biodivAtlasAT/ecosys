@@ -1153,7 +1153,7 @@ id_MarkerConn.on('click', function (th) {
 
              */
             cnt_info.animate({
-                'width': '88em'
+                'width': '71em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1614,7 +1614,7 @@ func_delMark = function (th) {
 
              */
             cnt_info.animate({
-                'width': '88em'
+                'width': '71em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1770,7 +1770,7 @@ func_delMark = function (th) {
 
          */
         cnt_info.animate({
-            'width': '88em'
+            'width': '71em'
         }, 100);
         cnt_nav.animate({
             'width': '0em', 'display': 'none'
@@ -1795,7 +1795,7 @@ func_delMark = function (th) {
 
              */
             cnt_info.animate({
-                'width': '88em'
+                'width': '71em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1986,7 +1986,7 @@ info_icon.on('click', function (e) {
 
              */
             cnt_info.animate({
-                'width': '88em'
+                'width': '71em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -2073,7 +2073,7 @@ map.on('locationerror', function(e) {
 var cntr = 0;
 func_initMap = function () {
     cnt_nav.css('width', '0em');
-    cnt_info.css('width', '88em');
+    cnt_info.css('width', '71em');
     if (LayerMap !== undefined) {
         map.removeLayer(LayerMap);
     }
