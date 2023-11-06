@@ -18,5 +18,10 @@
   "Lebensraumtypen auswählen": "Choose habitat types",
   "Capacity Matrix auswählen": "Choose capacity matrix",
   "Projekt auswählen": "choose project",
-  "Kartendarstellung auswählen": "choose map"
+  "Kartendarstellung auswählen": "choose map",
+  "Biotoptypen": "habitat types",
+  "Biotop-Artenliste anzeigen": "display habitat's species list",
+  "Alle Funddaten anzeigen": "display all occurrence data",
+  "Artenliste für das Biotop": "Species list for the habitat",
+  "Legende der Services": "legend of services"
 }

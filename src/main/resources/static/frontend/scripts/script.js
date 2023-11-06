@@ -557,13 +557,19 @@ func_reqEcosys = function (m_th, m_id) {
                                 if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
                                     quantArr[it_d].getElementsByTagName("style")[0].remove();
                                 }
-                                if( absData[it_d]['vals'][0]['val'] > 0) {
-                                    for (it_s = 0; it_s < absData[it_d]['vals'][0]['quantil'] + 1; it_s++) {
+                                for (it_s = 0; it_s < 5; it_s++) {
+                                    if(it_s < absData[it_d]['vals'][0]['quantil'] + 1) {
                                         d3.select('#id_chrIcons_' + it_d)
                                             .append('div')
                                             .attr('class', ' cl_quint')
                                             .attr('id', 'id_quint_' + it_d + '_' + it_s)
                                             .html(new XMLSerializer().serializeToString(quantArr[it_d]));
+                                    } else {
+                                        d3.select('#id_chrIcons_' + it_d)
+                                            .append('div')
+                                            .attr('class', ' cl_quint')
+                                            .attr('id', 'id_quint_' + it_d + '_' + it_s)
+                                            .html('<div style="background-color: #3f3f3f; width: 50px; height: 50px"></div>');
                                     }
                                 }
                                 if( absData[it_d]['vals'][0]['val'] === 0) {
@@ -727,7 +733,7 @@ func_reqSpecies = function () {
                     if(('.cl_clop') != undefined) {
                         $('.cl_clop').remove();
                     }
-                    $('.cl_headID').append('<div class="cl_clop"><a target="_blank" href="' + url_linkBioc + '"<span><i data-i18n="Unterschiedliche Arten">Unterschiedliche Arten: ' + resp[0].count + '</i></span></div>');
+                    $('.cl_headID').append('<div class="cl_clop"><a target="_blank" href="' + url_linkBioc + '"<span><i title="Anzahl der Arten im Biodiversitäts-Atlas Österreich welche für diese Rasterzelle verortet sind (Number of species). Bei Klick auf den Link werden alle Fundvorkommen für die Rasterzelle, die im Atlas hinterlegt sind, in einem neuen Tab angezeigt." data-i18n="Anzahl der verorteten Arten">Anzahl der verorteten Arten ' + resp[0].count + '</i></span></div>');
                 }
             });
         }
@@ -883,7 +889,7 @@ id_newMark.on('click', function (e) {
     }
     if (it_mmBt == 0) {
         cnt_map.animate({
-            'height': '78%'
+            'height': '60%'
         }, 100);
         bt_close_mark.html('Minimaps schließen');
         bt_close_mark.attr('data-i18n', 'Minimaps schließen');
@@ -891,14 +897,14 @@ id_newMark.on('click', function (e) {
     }
     var tt_0 = it_0;
     let svgEmb = '<svg id=\"Ebene_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"100px\" viewBox=\"0 0 1000 1000\" xml:space=\"preserve\"><style type=\"text/css\">.st0{fill:#FF3333;}.cl_nrT{font-size:20em;fill:#FF3333;}</style><g><text x=\"65%\" y=\"95%\" id=\"id_markNr_' + it_0 + '\" class=\"cl_nrT\">' + it_0 + '</text><path id=\"id_path\" class=\"st0\" d=\"M500,42.7c162.1,0,294,131.9,294,294c0,51.6-13.7,102.4-39.5,147L500,924.7l-254.5-441c-25.8-44.6-39.5-95.4-39.5-147C206,174.5,337.9,42.7,500,42.7L500,42.7z M500,451c63,0,114.3-51.3,114.3-114.3S563,222.4,500,222.4s-114.3,51.3-114.3,114.3S437,451,500,451z M500,10c-180.4,0-326.7,146.3-326.7,326.7c0,59.6,16,115.3,43.9,163.3L500,990l282.8-490c27.8-48.1,43.9-103.8,43.9-163.3C826.6,156.3,680.4,10,500,10L500,10L500,10z M500,418.3c-45.1,0-81.7-36.5-81.7-81.6s36.6-81.6,81.7-81.6s81.6,36.6,81.6,81.6C581.7,381.8,545.1,418.3,500,418.3L500,418.3z\"/></g></svg>';
-    marker[it_0] = L.marker([marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lat + 0.002 : map.getCenter().lat, marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lng + 0.002 : map.getCenter().lng], {
+    marker[it_0] = L.marker([map.getCenter().lat, map.getCenter().lng], {
         clickable: true,
         draggable: true,
         icon: L.divIcon({
             html: svgEmb,
-            iconSize: [30, 30],
-            iconAnchor: [15, 30],
-            popupAnchor: [0, -50]
+            iconSize: [60, 60],
+            iconAnchor: [30, 60],
+            popupAnchor: [0, -80]
         })
     }).on('dragstart', function (e) {
     }).on('drag', function (e) {
@@ -1665,9 +1671,9 @@ func_delMark = function (th) {
             draggable: true,
             icon: L.divIcon({
                 html: svgEmb,
-                iconSize: [30, 30],
-                iconAnchor: [15, 30],
-                popupAnchor: [0, -50]
+                iconSize: [60, 60],
+                iconAnchor: [30, 60],
+                popupAnchor: [0, -80]
             })
         }).on('dragstart', function (e) {
         }).on('drag', function (e) {
@@ -2393,14 +2399,20 @@ map.on('click', function(e) {
                             if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
                                 quantArr[it_d].getElementsByTagName("style")[0].remove();
                             }
-                            if(absData[it_d]['vals']['val'] > 0) {
 
-                                for (it_s = 0; it_s < absData[it_d]['vals']['quantil'] + 1; it_s++) {
+                            for (it_s = 0; it_s < 5; it_s++) {
+                                if(it_s < absData[it_d]['vals']['quantil'] + 1) {
                                     d3.select('#id_chrIcons_' + it_d)
                                         .append('div')
                                         .attr('class', ' cl_quint')
                                         .attr('id', 'id_quint_' + it_d + '_' + it_s)
                                         .html(new XMLSerializer().serializeToString(quantArr[it_d]));
+                                } else {
+                                    d3.select('#id_chrIcons_' + it_d)
+                                        .append('div')
+                                        .attr('class', ' cl_quint')
+                                        .attr('id', 'id_quint_' + it_d + '_' + it_s)
+                                        .html('<div style="background-color: #3f3f3f; width: 50px; height: 50px"></div>');
                                 }
                             }
                             if(absData[it_d]['vals']['val'] === 0) {
