@@ -53,7 +53,7 @@
                 <nav aria-label="Breadcrumb" role="navigation">
                     <ol class="breadcrumb-list">
                         <li><a href="https://biodiversityatlas.at" style="font-size: 1em; color: white;">Home</a></li>
-                        <li class="active" data-i18n="Biotop- & Lebensraumtypen" style="font-size: 1em; color: white;">Biotop- & Lebensraumtypen</li> <!-- Biological Habitats -->
+                        <li class="active" data-i18n="Biotoptypen" style="font-size: 1em; color: white;">Biotoptypen</li> <!-- Biological Habitats -->
                     </ol>
                 </nav>
             </div>
@@ -72,23 +72,25 @@
                     <input class="cl_search" type="text" />
                     <button class="cl_button" onclick="func_CQLSubm();"></button>
                 </div>-->
-                <div class="cl_descrH" data-i18n="Projekt auswählen"><b>Projekt auswählen</b></div>
+                <div class="cl_descrH"><b data-i18n="Projekt auswählen">Projekt auswählen</b></div>
                 <div  id="id_mod_2">
                     <select class="cl_select" id="id_addLayer">
                     </select>
                 </div>
-                <div class="cl_descrH" data-i18n="Kartendarstellung auswählen"><b>Kartendarstellung auswählen</b></div>
+                <div class="cl_descrH"><b data-i18n="Kartendarstellung auswählen">Kartendarstellung auswählen</b></div>
                 <select class="cl_select" id="id_mapLayer">
                     <option class="cl_option" data-i18n="Karte auswählen" selected='true' disabled>Karte auswählen</option>
                     <option class="cl_option" data-i18n="Straßenkarte" value="0">Straßenkarte</option>
                     <option class="cl_option" data-i18n="Topographiekarte" value="1">Topographiekarte</option>
                     <option class="cl_option" data-i18n="Satelitenkarte" value="2">Satelitenkarte</option>
                 </select>
-                <div class="cl_descrH"><b>Lebensraumtypen auswählen</b></div>
+                <div class="cl_descrH" id="id_title"><b style="visibility: hidden" id="id_dataI"></b></div>
                 <div class="cl_habitatTypes">
                     <ul class='cl_habitats'>
 
                     </ul>
+                </div>
+                <div class="cl_legend">
                 </div>
             </div>
             <div id="map"></div>
@@ -100,7 +102,7 @@
         </div>
     </div>
     <div id="cnt_nav">
-        <div class="cl_descrH"><b data-i18n="Artenliste für Bereich">Artenliste für Bereich</b></div>
+        <div class="cl_descrH"><b data-i18n="Artenliste für das Biotop">Artenliste für das Biotop</b></div>
         <div id="id_spList">
 
         </div>

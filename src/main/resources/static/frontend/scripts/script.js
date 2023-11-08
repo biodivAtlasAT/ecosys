@@ -203,7 +203,7 @@ func_cbClick = function (p_id) {
                         layers: 'ECO:' + id_fName.toLowerCase(),
                         format: 'image/png',
                         transparent: true,
-                        opacity: 0.4,
+                        opacity: 0.54,
                         version: '1.1.0'
                     }).addTo(map);
                 }
@@ -515,7 +515,7 @@ func_reqEcosys = function (m_th, m_id) {
                                     .append('div')
                                     .attr('id', 'id_value_' + it_d)
                                     .attr('class', ' cl_value cl_column cl_table_' + it_d)
-                                    .html('<div class="cl_tDw">' + absData[it_d]['vals'][0]['val'] + '</div>');
+                                    .html('<div class="cl_tDw">' + absData[it_d]['vals'][0]['val'].toFixed(2) + '</div>');
                                 d3.select('#id_chr_' + m_id)
                                     .append('div')
                                     .attr('id', 'id_dimension_' + it_d)
@@ -557,13 +557,19 @@ func_reqEcosys = function (m_th, m_id) {
                                 if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
                                     quantArr[it_d].getElementsByTagName("style")[0].remove();
                                 }
-                                if( absData[it_d]['vals'][0]['val'] > 0) {
-                                    for (it_s = 0; it_s < absData[it_d]['vals'][0]['quantil'] + 1; it_s++) {
+                                for (it_s = 0; it_s < 5; it_s++) {
+                                    if(it_s < absData[it_d]['vals'][0]['quantil'] + 1) {
                                         d3.select('#id_chrIcons_' + it_d)
                                             .append('div')
                                             .attr('class', ' cl_quint')
                                             .attr('id', 'id_quint_' + it_d + '_' + it_s)
                                             .html(new XMLSerializer().serializeToString(quantArr[it_d]));
+                                    } else {
+                                        d3.select('#id_chrIcons_' + it_d)
+                                            .append('div')
+                                            .attr('class', ' cl_quint')
+                                            .attr('id', 'id_quint_' + it_d + '_' + it_s)
+                                            .html('<div style="background-color: #3f3f3f; width: 50px; height: 50px"></div>');
                                     }
                                 }
                                 if( absData[it_d]['vals'][0]['val'] === 0) {
@@ -623,12 +629,12 @@ func_reqEcosys = function (m_th, m_id) {
                     for (it_e = 0; it_e < points.length; it_e++) {
                         if (points[it_e] != undefined) {
                             if (points.length > 1 && m_id === undefined) {
-                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
-                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
+                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 3)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 3)}]));
+                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng.toFixed(3)) + '/' + parseFloat(points[it_e].latLng.lat.toFixed(3)) + ')');
                             }
                             if (points.length === 1 && m_id !== undefined) {
-                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
-                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
+                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 3)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 3)}]));
+                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng.toFixed(3)) + '/' + parseFloat(points[it_e].latLng.lat.toFixed(3)) + ')');
                             }
                         }
                     }
@@ -656,12 +662,12 @@ func_reqEcosys = function (m_th, m_id) {
                     for (it_e = 0; it_e < points.length; it_e++) {
                         if (points[it_e] != undefined) {
                             if (points.length > 1 && m_id === undefined) {
-                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
-                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
+                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 3)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 3)}]));
+                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng.toFixed(3)) + '/' + parseFloat(points[it_e].latLng.lat.toFixed(3)) + ')');
                             }
                             if (points.length === 1 && m_id !== undefined) {
-                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 6)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 6)}]));
-                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng) + '/' + parseFloat(points[it_e].latLng.lat) + ')');
+                                reqRefID.push(new Object([{lat: toFixedTrunc(points[it_e].latLng.lat, 3)}, {lng: toFixedTrunc(points[it_e].latLng.lng, 3)}]));
+                                reqMarker.push('(' + parseFloat(points[it_e].latLng.lng.toFixed(3)) + '/' + parseFloat(points[it_e].latLng.lat.toFixed(3)) + ')');
                             }
                         }
                     }
@@ -727,7 +733,7 @@ func_reqSpecies = function () {
                     if(('.cl_clop') != undefined) {
                         $('.cl_clop').remove();
                     }
-                    $('.cl_headID').append('<div class="cl_clop"><a target="_blank" href="' + url_linkBioc + '"<span><i data-i18n="Unterschiedliche Arten">Unterschiedliche Arten: ' + resp[0].count + '</i></span></div>');
+                    $('.cl_headID').append('<div class="cl_clop"><a target="_blank" href="' + url_linkBioc + '"<span><i title="Anzahl der Arten im Biodiversitäts-Atlas Österreich welche für diese Rasterzelle verortet sind (Number of species). Bei Klick auf den Link werden alle Fundvorkommen für die Rasterzelle, die im Atlas hinterlegt sind, in einem neuen Tab angezeigt." data-i18n="Anzahl der verorteten Arten">Anzahl der verorteten Arten ' + resp[0].count + '</i></span></div>');
                 }
             });
         }
@@ -869,7 +875,7 @@ id_newMark.on('click', function (e) {
     bt_close_mark.css('display', 'block');
     if (it_mmBt == 1) {
         cnt_map.animate({
-            'height': '100%'
+            'height': '62%'
         }, 100);
         cnt_info.animate({
             'height': '0%',
@@ -883,7 +889,7 @@ id_newMark.on('click', function (e) {
     }
     if (it_mmBt == 0) {
         cnt_map.animate({
-            'height': '78%'
+            'height': '62%'
         }, 100);
         bt_close_mark.html('Minimaps schließen');
         bt_close_mark.attr('data-i18n', 'Minimaps schließen');
@@ -891,14 +897,14 @@ id_newMark.on('click', function (e) {
     }
     var tt_0 = it_0;
     let svgEmb = '<svg id=\"Ebene_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"100px\" viewBox=\"0 0 1000 1000\" xml:space=\"preserve\"><style type=\"text/css\">.st0{fill:#FF3333;}.cl_nrT{font-size:20em;fill:#FF3333;}</style><g><text x=\"65%\" y=\"95%\" id=\"id_markNr_' + it_0 + '\" class=\"cl_nrT\">' + it_0 + '</text><path id=\"id_path\" class=\"st0\" d=\"M500,42.7c162.1,0,294,131.9,294,294c0,51.6-13.7,102.4-39.5,147L500,924.7l-254.5-441c-25.8-44.6-39.5-95.4-39.5-147C206,174.5,337.9,42.7,500,42.7L500,42.7z M500,451c63,0,114.3-51.3,114.3-114.3S563,222.4,500,222.4s-114.3,51.3-114.3,114.3S437,451,500,451z M500,10c-180.4,0-326.7,146.3-326.7,326.7c0,59.6,16,115.3,43.9,163.3L500,990l282.8-490c27.8-48.1,43.9-103.8,43.9-163.3C826.6,156.3,680.4,10,500,10L500,10L500,10z M500,418.3c-45.1,0-81.7-36.5-81.7-81.6s36.6-81.6,81.7-81.6s81.6,36.6,81.6,81.6C581.7,381.8,545.1,418.3,500,418.3L500,418.3z\"/></g></svg>';
-    marker[it_0] = L.marker([marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lat + 0.002 : map.getCenter().lat, marker[it_0 - 1] !== undefined ? marker[it_0 - 1].getLatLng().lng + 0.002 : map.getCenter().lng], {
+    marker[it_0] = L.marker([map.getCenter().lat, map.getCenter().lng], {
         clickable: true,
         draggable: true,
         icon: L.divIcon({
             html: svgEmb,
-            iconSize: [30, 30],
-            iconAnchor: [15, 30],
-            popupAnchor: [0, -50]
+            iconSize: [60, 60],
+            iconAnchor: [30, 60],
+            popupAnchor: [0, -80]
         })
     }).on('dragstart', function (e) {
     }).on('drag', function (e) {
@@ -951,7 +957,7 @@ id_newMark.on('click', function (e) {
         var popupHtml = "<div class='cl_popup' id='id_popup_" + it_0 + "'><div class=\"cl_headID\"><span class=\"cl_IDred\"> ID " + it_0 + " </span>Coords: " + p_point[it_0] + "</div><div class='cl_esysInf' id='id_esysInf_" + it_0 + "'></div></div>";
         marker[it_0].addTo(map).bindPopup(popupHtml);
 
-        info.append('<div class="markers" id="marker_' + it_0 + '" onchange="func_updateID($(this))"><div class="minimapNr"><span class=\"cl_IDred\"> ID<br>' + it_0 + '</span></div><button onclick="func_delMark($(this).parent())" type="button" class="cl_delMark" id="del_mark_' + it_0 + '"></button><div class="cl_mark" id="id_mark_' + it_0 + '">Lat: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_0].lat + '" onchange="func_nPosLatLng(' + it_0 + ');"></input> Lng: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_0].lng + '" onchange="func_nPosLatLng(' + it_0 + ');"></input></div><div class="cl_cntInf"></div><div class="cl_popupmap" id="popup-map_' + it_0 + '"></div><div class="cl_minimap" id="minimap_' + it_0 + '"></div></div></div></div>');
+        info.append('<div class="markers" id="marker_' + it_0 + '" onchange="func_updateID($(this))"><div class="minimapNr"><span class=\"cl_IDred\"> ID<br>' + it_0 + '</span></div><button onclick="func_delMark($(this).parent())" type="button" class="cl_delMark" id="del_mark_' + it_0 + '"></button><div class="cl_mark" id="id_mark_' + it_0 + '">Lat: <input type="number" min="-90.000000" max="90.000000" step="0.001" value="' + p_point[it_0].lat.toFixed(3) + '" onchange="func_nPosLatLng(' + it_0 + ');"></input> Lng: <input type="number" min="-90.000000" max="90.000000" step="0.001" value="' + p_point[it_0].lng.toFixed(3) + '" onchange="func_nPosLatLng(' + it_0 + ');"></input></div><div class="cl_cntInf"></div><div class="cl_popupmap" id="popup-map_' + it_0 + '"></div><div class="cl_minimap" id="minimap_' + it_0 + '"></div></div></div></div>');
         minimapArr[it_0] = L.map('minimap_' + it_0, {
             doubleClickZoom: false,
             closePopupOnClick: false,
@@ -962,9 +968,12 @@ id_newMark.on('click', function (e) {
             trackResize: false,
             touchZoom: false,
             scrollWheelZoom: false,
+            attributionControl: false,
             center: [48.3805228, 15.9558588],
             zoom: 14
         });
+        minimapArr[it_0].addControl(new L.Control.AttrScale({position: 'bottomright', metric: true}));
+        $('.cl_minimap').find('.leaflet-control-attribution').css('visibility', 'hidden');
         popupArr[it_0] = L.popup({
             closeOnClick: false,
             autoClose: false
@@ -972,7 +981,6 @@ id_newMark.on('click', function (e) {
             .setLatLng(p_point[it_0]);
         llBounds[it_0] = L.latLngBounds(L.latLng(marker[it_0].getLatLng().lat - 0.010, marker[it_0].getLatLng().lng - 0.010), L.latLng(marker[it_0].getLatLng().lat + 0.010, marker[it_0].getLatLng().lng + 0.010));
         minimapBox[it_0] = func_createPolygon(llBounds[it_0]);
-
         //minimapArr[it_0].setView(marker[it_0].getLatLng(),19);
         //console.log(minimapBox[it_0]);
         $('#minimap_' + it_0).append(minimapArr[it_0]);
@@ -1006,7 +1014,7 @@ id_newMark.on('click', function (e) {
             var pixelPosition = map.latLngToLayerPoint(marker[tt_0].getLatLng());
             var x = size.x * (pixelPosition.x / size.x);
             var y = size.y * (pixelPosition.y / size.y);
-            var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&bbox=" + bbox + "&width=" + size.x + "&height=" + size.y + "&x=" + x + "&y=" + y + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+            var url = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&bbox=" + bbox + "&width=" + size.x + "&height=" + size.y + "&x=" + x + "&y=" + y + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
             $.ajax({
                 url: url,
                 success: function (data) {
@@ -1018,7 +1026,8 @@ id_newMark.on('click', function (e) {
                     if (popupMap[tt_0] != undefined) popupMap[tt_0].remove();
                     popupMap[tt_0] = L.map('popup-map_' + tt_0, {
                         dragging: false,
-                        zoomControl: false
+                        zoomControl: false,
+                        attributionControl: false,
                     }).setView(latlng, 6);
 
                     // Create a marker at the clicked point
@@ -1095,10 +1104,7 @@ id_MarkerConn.on('click', function (th) {
             }, 100);
             */
             cnt_info.animate({
-                'width': '88em'
-            }, 100);
-            cnt_info.animate({
-                'width': '88em'
+                'width': '71em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1147,7 +1153,7 @@ id_MarkerConn.on('click', function (th) {
 
              */
             cnt_info.animate({
-                'width': '88em'
+                'width': '71em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1608,7 +1614,7 @@ func_delMark = function (th) {
 
              */
             cnt_info.animate({
-                'width': '88em'
+                'width': '71em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1662,9 +1668,9 @@ func_delMark = function (th) {
             draggable: true,
             icon: L.divIcon({
                 html: svgEmb,
-                iconSize: [30, 30],
-                iconAnchor: [15, 30],
-                popupAnchor: [0, -50]
+                iconSize: [60, 60],
+                iconAnchor: [30, 60],
+                popupAnchor: [0, -80]
             })
         }).on('dragstart', function (e) {
         }).on('drag', function (e) {
@@ -1706,7 +1712,7 @@ func_delMark = function (th) {
         p_point[it_r] = point[it_r];
         // page 14 Map.locate <watch, enableHighAccuracy, maxZoom>
         marker[it_r].addTo(map).bindPopup("<div class='cl_popup' id='id_popup_" + it_r + "'><div class=\"cl_headID\"><span class=\"cl_IDred\"> ID " + it_r + " </span> Coords: " + p_point[it_r] + "</div><div class='cl_esysInf' id='id_esysInf_" + it_r + "'></div></div>");
-        info.append('<div class="markers" id="marker_' + it_r + '" onchange="func_updateID($(this))"><div class="minimapNr"><span class=\"cl_IDred\"> ID<br>' + it_r + '</span></div><button onclick="func_delMark($(this).parent())" type="button" class="cl_delMark" id="del_mark_' + it_r + '"></button><div class="cl_mark" id="id_mark_' + it_r + '">Lat: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_r].lat + '" onchange="func_nPosLatLng(' + it_r + ');"></input> Lng: <input type="number" min="-90.000000" max="90.000000" step="0.000001" value="' + p_point[it_r].lng + '" onchange="func_nPosLatLng(' + it_r + ');"></input></div><div class="cl_cntInf"></div><div class="cl_popupmap" id="popup-map_' + it_r + '"></div><div class="cl_minimap" id="minimap_' + it_r + '"></div></div></div></div>');
+        info.append('<div class="markers" id="marker_' + it_r + '" onchange="func_updateID($(this))"><div class="minimapNr"><span class=\"cl_IDred\"> ID<br>' + it_r + '</span></div><button onclick="func_delMark($(this).parent())" type="button" class="cl_delMark" id="del_mark_' + it_r + '"></button><div class="cl_mark" id="id_mark_' + it_r + '">Lat: <input type="number" min="-90.000000" max="90.000000" step="0.001" value="' + p_point[it_r].lat.toFixed(3) + '" onchange="func_nPosLatLng(' + it_r + ');"></input> Lng: <input type="number" min="-90.000000" max="90.000000" step="0.001" value="' + p_point[it_r].lng.toFixed(3) + '" onchange="func_nPosLatLng(' + it_r + ');"></input></div><div class="cl_cntInf"></div><div class="cl_popupmap" id="popup-map_' + it_r + '"></div><div class="cl_minimap" id="minimap_' + it_r + '"></div></div></div></div>');
         minimapArr[it_r] = L.map('minimap_' + it_r, {
             doubleClickZoom: false,
             closePopupOnClick: false,
@@ -1717,6 +1723,7 @@ func_delMark = function (th) {
             trackResize: false,
             touchZoom: false,
             scrollWheelZoom: false,
+            attributionControl: false,
             center: [p_point[it_r].lat, p_point[it_r].lng],
             zoom: 14
         });
@@ -1763,7 +1770,7 @@ func_delMark = function (th) {
 
          */
         cnt_info.animate({
-            'width': '88em'
+            'width': '71em'
         }, 100);
         cnt_nav.animate({
             'width': '0em', 'display': 'none'
@@ -1788,7 +1795,7 @@ func_delMark = function (th) {
 
              */
             cnt_info.animate({
-                'width': '88em'
+                'width': '71em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1801,7 +1808,7 @@ func_delMark = function (th) {
     }
     if (filteredmarker.length === 0) {
         cnt_map.animate({
-            'height': '100%'
+            'height': '62%'
         }, 100);
         cnt_info.animate({
             'height': '0%',
@@ -1816,7 +1823,7 @@ func_delMark = function (th) {
 func_updateID = function (tmpT) {
     point[parseInt(tmpT.attr('id').split('_')[1])] = map.latLngToLayerPoint(marker[parseInt(tmpT.attr('id').split('_')[1])].getLatLng());
     point[parseInt(tmpT.attr('id').split('_')[1])] = map.layerPointToLatLng(point[parseInt(tmpT.attr('id').split('_')[1])]);
-    $('#id_mark_' + parseInt(tmpT.attr('id').split('_')[1])).html("Lat: <input id='id_lat_" + parseInt(tmpT.attr('id').split('_')[1]) + "' type='number' min='-90.000000' max='90.000000' step='0.000001' value='" + point[parseInt(tmpT.attr('id').split('_')[1])].lat + "' onchange='func_nPosLatLng(" + parseInt(tmpT.attr('id').split('_')[1]) + ");'></input> Lng: <input type='number' id='id_lng_" + parseInt(tmpT.attr('id').split('_')[1]) + "' min='-90.000000' max='90.000000' step='0.000001' value='" + point[parseInt(tmpT.attr('id').split('_')[1])].lng + "' onchange='func_nPosLatLng(" + parseInt(tmpT.attr('id').split('_')[1]) + ");'/>");
+    $('#id_mark_' + parseInt(tmpT.attr('id').split('_')[1])).html("Lat: <input id='id_lat_" + parseInt(tmpT.attr('id').split('_')[1]) + "' type='number' min='-90.000000' max='90.000000' step='0.001' value='" + point[parseInt(tmpT.attr('id').split('_')[1])].lat.toFixed(3) + "' onchange='func_nPosLatLng(" + parseInt(tmpT.attr('id').split('_')[1]) + ");'></input> Lng: <input type='number' id='id_lng_" + parseInt(tmpT.attr('id').split('_')[1]) + "' min='-90.000000' max='90.000000' step='0.001' value='" + point[parseInt(tmpT.attr('id').split('_')[1])].lng.toFixed(3) + "' onchange='func_nPosLatLng(" + parseInt(tmpT.attr('id').split('_')[1]) + ");'/>");
     p_point[parseInt(tmpT.attr('id').split('_')[1])] = point[parseInt(tmpT.attr('id').split('_')[1])];
 
     marker[parseInt(tmpT.attr('id').split('_')[1])].bindPopup("<div class='cl_popup' id='id_popup_" + parseInt(tmpT.attr('id').split('_')[1]) + "'><div id='id_coords'><div class=\"cl_headID\"><span class=\"cl_IDred\"> ID " + parseInt(tmpT.attr('id').split('_')[1]) + "</span> Coords: " + p_point[parseInt(tmpT.attr('id').split('_')[1])] + "</div><div class='cl_esysInf' id='id_esysInf_" + parseInt(tmpT.attr('id').split('_')[1]) + "'></div></div>", {
@@ -1841,7 +1848,7 @@ func_updateID = function (tmpT) {
             height: size.y,
             format: 'image/png',
             transparent: true,
-            opacity: 0.4,
+            opacity: 0.54,
             query_layers: ly_ecosys.wmsParams.layers,
             info_format: 'application/json',
             feature_count: 1,
@@ -1849,14 +1856,14 @@ func_updateID = function (tmpT) {
             y: Math.round(pt.y)
         };
 
-        var url = 'https://spatial.biodiversityatlas.at/geoserver/ALA/wms?' + Object.keys(params).map(function (key) {
+        var url = 'https://spatial.biodivdev.at/geoserver/ALA/wms?' + Object.keys(params).map(function (key) {
             return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
         }).join('&');
         /*
         var latlng = marker[tt_0].getLatLng();
         var bbox = map.getBounds().toBBoxString();
         var size = map.getSize();
-        var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+        var url = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
          */
         $.ajax({
             url: url,
@@ -1870,7 +1877,8 @@ func_updateID = function (tmpT) {
                 if (popupMap[tt_0] != undefined) popupMap[tt_0].remove();
                 popupMap[tt_0] = L.map('popup-map_' + tt_0, {
                     dragging: false,
-                    zoomControl: false
+                    zoomControl: false,
+                    attributionControl: false
                 }).setView(latlng, map.getZoom());
 
                 // Create a marker at the clicked point
@@ -1978,7 +1986,7 @@ info_icon.on('click', function (e) {
 
              */
             cnt_info.animate({
-                'width': '88em'
+                'width': '71em'
             }, 100);
             cnt_nav.animate({
                 'width': '0em', 'display': 'none'
@@ -1996,7 +2004,7 @@ bt_close_mark.on('click', function (e) {
     if (filteredmarker.length > 0 && marker[0] !== undefined) {
         if (it_mmBt == 0) {
             cnt_map.animate({
-                'height': '100%'
+                'height': '62%'
             }, 100);
             cnt_info.animate({
                 'height': '0%',
@@ -2007,7 +2015,7 @@ bt_close_mark.on('click', function (e) {
         }
         if (it_mmBt == 1) {
             cnt_map.animate({
-                'height': '78%'
+                'height': '62%'
             }, 100);
             if (chk_pconn === 0) {
                 cnt_info.animate({
@@ -2062,9 +2070,10 @@ map.on('locationerror', function(e) {
 });
 
  */
+var cntr = 0;
 func_initMap = function () {
     cnt_nav.css('width', '0em');
-    cnt_info.css('width', '88em');
+    cnt_info.css('width', '71em');
     if (LayerMap !== undefined) {
         map.removeLayer(LayerMap);
     }
@@ -2123,9 +2132,9 @@ func_initMap = function () {
                 popupMap[it_l].removeLayer(popupArr[it_l]);
             }
         }
-        ly_ecosys = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ALA/wms', {
+        ly_ecosys = L.tileLayer.wms('https://spatial.biodivdev.at/geoserver/ALA/wms', {
             format: 'image/svg',
-            opacity: 0.3,
+            opacity: 0.54,
             layers: "ALA:" + layer_name
         });
         ly_ecosys.addTo(map);
@@ -2136,9 +2145,9 @@ func_initMap = function () {
             map.removeLayer(ly_ecosys);
         }
         var layer_name = $('#id_addLayer option:selected').text();
-        ly_ecosys = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ALA/wms', {
+        ly_ecosys = L.tileLayer.wms('https://spatial.biodivdev.at/geoserver/ALA/wms', {
             format: 'image/svg',
-            opacity: 0.3,
+            opacity: 0.54,
             layers: "ALA:" + layer_name
         });
         ly_ecosys.addTo(map);
@@ -2155,6 +2164,31 @@ func_initMap = function () {
     });
 
      */
+    if(cntr === 0) {
+        L.Control.AttrScale = L.Control.Scale.extend({
+            onAdd: function (map) {
+                var className = 'leaflet-control-scale',
+                    wrapper = L.DomUtil.create('div', 'leaflet-control-attr-scale'),
+                    attribution = L.DomUtil.create('div', 'leaflet-control-attribution', wrapper),
+                    container = L.DomUtil.create('div', className, wrapper),
+                    options = this.options;
+
+                wrapper.style.display = "flex";
+                wrapper.style.alignItems = "center";
+
+                attribution.innerHTML = LayerMap.getAttribution();
+
+                this._addScales(options, className + '-line', container);
+
+                map.on(options.updateWhenIdle ? 'moveend' : 'move', this._update, this);
+                map.whenReady(this._update, this);
+
+                return wrapper;
+            },
+        });
+        map.addControl(new L.Control.AttrScale({position: 'bottomright', metric: true}));
+        cntr = 1;
+    }
 }
 map.on('click', function(e) {
     //console.log(e.latlng);
@@ -2179,14 +2213,14 @@ map.on('click', function(e) {
             y: Math.round(pt.y)
         };
 
-        var url_wms = 'https://spatial.biodiversityatlas.at/geoserver/ALA/wms?' + Object.keys(params).map(function (key) {
+        var url_wms = 'https://spatial.biodivdev.at/geoserver/ALA/wms?' + Object.keys(params).map(function (key) {
             return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
         }).join('&');
         /*
         var latlng = marker[tt_0].getLatLng();
         var bbox = map.getBounds().toBBoxString();
         var size = map.getSize();
-        var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+        var url = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
          */
         $.ajax({
             url: url_wms,
@@ -2215,7 +2249,7 @@ map.on('click', function(e) {
                 var latlng = marker[tt_0].getLatLng();
                 var bbox = map.getBounds().toBBoxString();
                 var size = map.getSize();
-                var url = "https://spatial.biodiversityatlas.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
+                var url = "https://spatial.biodivdev.at/geoserver/ALA/wms?service=WMS&version=1.1.0&request=GetFeatureInfo&layers=" + ly_ecosys.wmsParams.layers + "&query_layers=" + ly_ecosys.wmsParams.layers + "&info_format=application/json&srs=EPSG:4326&format=image/svg";
                  */
                 var it_r = 0;
                 reqEcosys = new Array();
@@ -2362,14 +2396,20 @@ map.on('click', function(e) {
                             if (quantArr[it_d].getElementsByTagName("style")[0] !== undefined) {
                                 quantArr[it_d].getElementsByTagName("style")[0].remove();
                             }
-                            if(absData[it_d]['vals']['val'] > 0) {
 
-                                for (it_s = 0; it_s < absData[it_d]['vals']['quantil'] + 1; it_s++) {
+                            for (it_s = 0; it_s < 5; it_s++) {
+                                if(it_s < absData[it_d]['vals']['quantil'] + 1) {
                                     d3.select('#id_chrIcons_' + it_d)
                                         .append('div')
                                         .attr('class', ' cl_quint')
                                         .attr('id', 'id_quint_' + it_d + '_' + it_s)
                                         .html(new XMLSerializer().serializeToString(quantArr[it_d]));
+                                } else {
+                                    d3.select('#id_chrIcons_' + it_d)
+                                        .append('div')
+                                        .attr('class', ' cl_quint')
+                                        .attr('id', 'id_quint_' + it_d + '_' + it_s)
+                                        .html('<div style="background-color: #3f3f3f; width: 50px; height: 50px"></div>');
                                 }
                             }
                             if(absData[it_d]['vals']['val'] === 0) {
