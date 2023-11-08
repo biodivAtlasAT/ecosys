@@ -809,9 +809,10 @@ $.ajax({
         $("#id_addLayer").append("<option class='cl_option' id='id_defLy' selected='true' value='noL'>Kein Layer</option>");
         $("#id_defLy").attr('data-i18n', 'Kein Layer');
         $.each(resp.layers, function (index, item) { // Iterates through a collection
+            console.log(item.name.split('_')[0].toUpperCase());
             $("#id_addLayer").append( // Append an object to the inside of the select box
                 $("<option></option>") // Yes you can do this.
-                    .text(item.name)
+                    .text(item.name.split('_')[0].toUpperCase())
                     .val(item.id)
             );
         });
