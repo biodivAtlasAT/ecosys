@@ -348,9 +348,6 @@ body {
     stroke: green;
     stroke-width: 1px;
 }
-.leaflet-control-attribution {
-    visibility: hidden;
-}
 #id_addLayer {
     position: relative;
     width: 80%;
@@ -641,4 +638,14 @@ body {
         margin-left: 10px;
         max-width: 800px;
     }
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
 }
