@@ -160,7 +160,69 @@ func_legend = function (p_id) {
 
 };
 func_info = function(p_id) {
-    console.log('steckbriefe' + p_id);
+    console.log(p_id);
+    switch(p_id) {
+        case "Trinkwasserversorgung": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V05_Trinkwasserversorgung-aus-GW_online-Version_Vorlage-final.pdf");
+            break;
+        case "Grundwasser verfügbare Ressource": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V05_Trinkwasserversorgung-aus-GW_online-Version_Vorlage-final.pdf");
+            break;
+        case "Holzzuwachs stoffliche Nutzung": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V02_Holzzuwachs_forstl_Nutzung_I2_I3_online-Version_final.pdf");
+            break;
+        case "Holzzuwachs energetische Nutzung": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V02_Holzzuwachs_forstl_Nutzung_I2_I3_online-Version_final.pdf");
+            break;
+        case "Holzzuwachs gesamt": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V02_Holzzuwachs_forstl_Nutzung_I1_online-Version_final.pdf");
+            break;
+        case "Landwirtschaftlicher Ertrag Getreide": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V01_Produktion-pflanzlicher-Rohstoffe_online-Version_final.pdf");
+            break;
+        case "Landwirtschaftlicher Ertrag Mais": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V01_Produktion-pflanzlicher-Rohstoffe_online-Version_final.pdf");
+            break;
+        case "Landwirtschaftlicher Ertrag Soja": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V01_Produktion-pflanzlicher-Rohstoffe_online-Version_final.pdf");
+            break;
+        case "Landwirtschaftlicher Ertrag Grünland": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V01_Produktion-pflanzlicher-Rohstoffe_online-Version_final.pdf");
+            break;
+        case "Landwirtschaftlicher Ertrag Bestäubung": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S15_Vielfalt_bestaeubender_Insekten_online_Version_final.pdf");
+            break;
+        case "Zustand Fließgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S14_Natuerliche-Fliessgewaesser_online_Version_final.pdf");
+            break;
+        case "Unzerschnittene Lebensräume": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S13_Unzerschnittene-Lebensraeume_online-Version_final.pdf");
+            break;
+        case "Naturnahe Lebensräume": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S12_Arten-und_Lebensraumvielfalt_online-Version_final.pdf");
+            break;
+        case "Waldschutzgebiete": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S11_NatuerlicheVielfalt_Wald_SchutzgebieteFE_online-Version_final.pdf");
+            break;
+        case "Objektschutzwald": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S11_NatuerlicheVielfalt_Wald_SchutzgebieteFE_online-Version_final.pdf");
+            break;
+        case "Totholz": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S11_Anteil_Totholz_online-Version_final.pdf");
+            break;
+        case "High Nature Value Farmland": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S10_Natuerliche-Vielfalt-in-der-LW_HNVF_online-Version_final.pdf");
+            break;
+        case "Kohlenstoffvorrat": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S08_Speicherung-von-CO2_online_Version_final.pdf");
+            break;
+        case "Selbstreinigungspotential Fießgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S07_Selbstreinigungspotenzial-von-Fliessgewaessern_online-Version_final.pdf");
+            break;
+        case "Fruchbarer Boden Landwirtschaft": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S06_Steckbrief_Fruchtbarer-Boden-LW-Nutzung_online-Version_final.pdf");
+            break;
+        case "Fruchtbarer Boden Forstwirtschaft": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S06_Fruchtbarer-Boden_Forstwirtschaft_online-Version_final.pdf");
+            break;
+        case "Bestäubungspotential": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S05_Bestaeubung-durch-Insekten_online-Version_final.pdf");
+            break;
+        case "Hochwasserschutz Wasserrückhalt": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S04_Schutz_vor_HW-Hochwasserretention_online-Version_Vorlage-final.pdf");
+            break;
+        case "Hochwasserschutz Retention": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S04_Schutz_vor_HW-Hochwasserretention_online-Version_Vorlage-final.pdf");
+            break;
+        case "": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S03_Schutzleistung_Naturgefahren_online-Version_final.pdf");
+            break;
+        case "Erosionsschutz": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S02_Schutz-vor-Erosion_online-Version_final.pdf");
+            break;
+        case "Erholung Wegenetz": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/K01_Erholungsleistung-Wander-Rad-Mountainbike_online-Version_final.pdf");
+            break;
+        case "Erholung Hausgärten": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/K01_Erholungsleistung-Hausgaerten_online-Version_final.pdf");
+            break;
+        case "Erholungswälder": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/K01_Erholungsleistung-Erholungswaelder_online-Version_final.pdf");
+            break;
+        case "Erholung Badegewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/K01_Erholungsleistung-Badegewaesser_online-Version_final.pdf");
+            break;
+    }
 }
 func_cbClick = function (p_id) {
     if ($('.cl_cbEsys:checkbox:checked').length === 0) {
@@ -311,21 +373,21 @@ $.ajax({
                     sortEsys[0].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_5 = 1;
                 }
-                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color:black'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
+                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color:black'>L.</b></div><span onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
             }
             if(categories[index].catID === 3) {
                 if(it_3 === 0) {
                     sortEsys[1].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_3 = 1;
                 }
-                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
+                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><span onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
             }
             if(categories[index].catID === 2) {
                 if(it_2 === 0) {
                     sortEsys[2].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_2 = 1;
                 }
-                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
+                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><span onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
             }
         });
         for(it_se = 0; it_se < 3; it_se++) {
@@ -367,7 +429,7 @@ opt_packageID.on('change', function () {
                 categories[index] = new Object();
                 categories[index].servID = item.id;
                 categories[index].catID = item['category']['id'];
-                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + item.id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></div></li>");
+                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><span onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='1.3em' style='margin-right:0.8em' class='cl_ptinfo'><circle cy='24' cx='24' r='24' fill='#36c'></circle><g fill='#fff'><circle cx='24' cy='11.6' r='4.7'></circle><path d='m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6'></path></g></svg></span></div></li>");
             });
             //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
             map.closePopup();

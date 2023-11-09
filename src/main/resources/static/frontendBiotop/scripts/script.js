@@ -51,7 +51,70 @@ $(function () {
     });
 });
 func_info = function(p_id) {
-    console.log('steckbriefe' + p_id);
+    switch(p_id) {
+        case "Trockenmauern": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/F5_Steckbriefe_Biotoptypen_Trockenmauern.pdf");
+            break;
+        case "Wände": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/F3_Steckbriefe_Biotoptypen_Waende.pdf");
+            break;
+        case "Fels": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/F1_Steckbriefe_Biotoptypen_Fels.pdf");
+            break;
+        case "Stillgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/B2_Steckbriefe_Biotoptypen_Stillgewaesser.pdf");
+            break;
+        case "Fließgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/B1_Steckbriefe_Biotoptypen_Fliessgewaesser.pdf");
+            break;
+        case "Waldsäume": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A7_Steckbriefe_Biotoptypen_Waldsaeume.pdf");
+            break;
+        case "Hochstaudenfluren": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A6_Steckbriefe_Biotoptypen_Hochstaudenfluren.pdf");
+            break;
+        case "Ruderalfluren": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A5_Steckbriefe_Biotoptypen_Ruderalfluren.pdf");
+            break;
+        case "Raine": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A4_Steckbriefe_Biotoptypen_Raine.pdf");
+            break;
+        case "Ackerbrachen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A3_Steckbriefe_Biotoptypen_Ackerbrachen.pdf");
+            break;
+        case "Wein": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A2_Steckbriefe_Biotoptypen_Wein.pdf");
+            break;
+        case "Äcker": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A1_Steckbriefe_Biotoptypen_Aecker.pdf");
+            break;
+        case "Forste": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W7_Steckbriefe_Biotoptypen_Forste.pdf");
+            break;
+        case "Vorwälder": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W6_Steckbriefe_Biotoptypen_Vorwaelder.pdf");
+            break;
+        case "Eichenwälder": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W3_Steckbriefe_Biotoptypen_Eichenwaelder.pdf");
+            break;
+        case "Hangwälder": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W2_Steckbriefe_Biotoptypen_Hangwaelder.pdf");
+            break;
+        case "Auwälder": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W1_Steckbriefe_Biotoptypen_Auwaelder.pdf");
+            break;
+        case "Siedlungsbiotoptypen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/S_Steckbriefe_Biotoptypen_Siedlungsbiotoptypen.pdf");
+            break;
+        case "Sümpfe": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/M1_Steckbriefe_Biotoptypen_Suempfe.pdf");
+            break;
+        case "Kultivierte Gehölze": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H9_Steckbriefe_Biotoptypen_KultivierteGehoelze.pdf");
+            break;
+        case "Gebüsche": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H7_Steckbriefe_Biotoptypen_Gebuesche.pdf");
+            break;
+        case "BaumgruppenAllen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H6_Steckbriefe_Biotoptypen_BaumgruppenAlleen.pdf");
+            break;
+        case "Gehölzgruppen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H5_Steckbriefe_Biotoptypen_Gehoelzgruppen.pdf");
+            break;
+        case "Einzelhölze": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H4_Steckbriefe_Biotoptypen_Einzelgehoelze.pdf");
+            break;
+        case "Feldgehölze": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H3_Steckbriefe_Biotoptypen_Feldgehoelze.pdf");
+            break;
+        case "Ufergehölze": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H2_Steckbriefe_Biotoptypen_Ufergehoelze.pdf");
+            break;
+        case "Hecken": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H1_Steckbriefe_Biotoptypen_Hecken.pdf");
+            break;
+        case "Zwergstrauchheiden": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/G5_Steckbriefe_Biotoptypen_Zwergstrauchheiden.pdf");
+            break;
+        case "Trockenrasen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/G4_Steckbriefe_Biotoptypen_Trockenrasen.pdf");
+            break;
+        case "Halbtruckenrasen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/G3_Steckbriefe_Biotoptypen_Halbtrockenrasen.pdf");
+            break;
+        case "Gruenland": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/G2_Steckbriefe_Biotoptypen_Gruenland.pdf");
+            break;
+    }
 }
 function decode_utf8(s) {
     return decodeURIComponent(escape(s));
@@ -164,7 +227,7 @@ opt_layerID.on('click change', function () {
                                 if (resp2['filter'][it_h]['cqlQuery'].split('in').length > 1) {
                                     if (resp2['filter'][it_h]['levelNumber'] >= 0) {
                                         if (resp2['filter'][it_h]['levelNumber'] == 1) {
-                                            $('.cl_habitatTypes').append("<ul style='padding-left:1em' class='cl_toggle cl_l1_" + (it_f - 1) + " cl_tDescr_" + it_t + "'><b onclick='func_toggle(" + it_t + ")'>" + resp2['filter'][it_h]['description'] + "</b></ul>");
+                                            $('.cl_habitatTypes').append("<ul style='padding-left:1em' id='idSb_"+ resp2['filter'][it_h]['description'] +"' class='cl_toggle cl_idSb cl_l1_" + (it_f - 1) + " cl_tDescr_" + it_t + "'><b id='id_stb_" + it_h +"' onclick='func_toggle(" + it_t + ")'>" + resp2['filter'][it_h]['description'] + "</b><span class='cl_infoIcon' onclick='func_info(" + JSON.stringify(resp2['filter'][it_h]['description']) + ");'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='1.3em' style='margin-right:0.8em' class='cl_ptinfo'><circle cy='24' cx='24' r='24' fill='#36c'></circle><g fill='#fff'><circle cx='24' cy='11.6' r='4.7'></circle><path d='m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6'></path></g></svg></span></ul>");
                                             $('.cl_l1_' + (it_f - 1)).hide();
                                             it_t++;
                                         }
@@ -173,7 +236,7 @@ opt_layerID.on('click change', function () {
                                             $('.cl_l2_' + (it_t - 1)).hide();
                                         }
                                         if (resp2['filter'][it_h]['levelNumber'] == 0) {
-                                            $('.cl_habitatTypes').append("<ul style='padding-left:0em' class='cl_toggle cl_tDescr_0_" + it_f + "'><h4 onclick='func_toggle_t(" + it_f + ");'>" + resp2['filter'][it_h]['description'] + "<span class='cl_infoIcon'><svg xmlns=\"http://www.w3.org/2000/svg\" onclick=\"func_info(" + id + ");\" viewBox=\"0 0 48 48\" width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></h4></ul>");
+                                            $('.cl_habitatTypes').append("<ul style='padding-left:0em' class='cl_toggle cl_tDescr_0_" + it_f + "'><h4 onclick='func_toggle_t(" + it_f + ");'>" + resp2['filter'][it_h]['description'] + "</h4></ul>");
                                             it_f++;
                                             it_t++;
                                         }
