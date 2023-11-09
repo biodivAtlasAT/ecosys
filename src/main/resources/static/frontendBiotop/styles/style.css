@@ -8,7 +8,7 @@ body {
 #map {
     position: relative;
     float: left;
-    width: 120em;
+    width: 100em;
     height: 760px;
 }
 #eSys {
@@ -31,6 +31,7 @@ body {
     textAlign:"center";
 }
 .cl_habitatTypes {
+    overflow-y: scroll;
     height: 38.2em;
     margin-top: 1em;
 }
