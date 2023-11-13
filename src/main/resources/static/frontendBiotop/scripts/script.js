@@ -13,8 +13,8 @@ var ly_filter = undefined;
 var wkt = new Array();
 var wktString = new Array();
 var map = L.map('map', {
-    center: [48.3805228, 15.3758588],
-    zoom: 10
+    center: [48.3805228, 15.9558588],
+    zoom: 8
 });
 var popup;
 var geoJsonLayer;
@@ -46,7 +46,7 @@ $(function () {
         resize: function (event, ui) {
             // Adjust the width of the adjacent div when resizing
             var currentDiv = $(this);
-            $('#map').css('width', "80em");
+            $('#map').css('width', $(window).width() - currentDiv.width() - 38);
         }
     });
 });
@@ -78,9 +78,6 @@ $.ajax({
         opt_layerID = $('#id_addLayer').val(1);
     }
 });
-func_toggle_t = function (p_it_t) {
-    $('.cl_l1_' + (p_it_t)).toggle();
-}
 func_toggle = function (p_it_t) {
     $('.cl_hov_' + (p_it_t)).toggle();
 }
@@ -146,7 +143,6 @@ opt_layerID.on('click change', function () {
                         var it_a = 0;
                         var it_b = 0;
                         var it_t = 0;
-                        var it_f = 0;
                         var it_cnt = 0;
                         var tmpCh = new Array();
                         var tmpFiltAlph = new Array();
@@ -157,37 +153,14 @@ opt_layerID.on('click change', function () {
                             var id = resp2['filter'][it_h]['id'];
                             if (resp2['filter'][it_h] !== undefined && (resp2['filter'][it_h]['cqlQuery'] !== null)) {
                                 if (resp2['filter'][it_h]['cqlQuery'].split('in').length > 1) {
-                                    if (resp2['filter'][it_h]['levelNumber'] >= 0) {
-                                        if (resp2['filter'][it_h]['levelNumber'] == 1) {
-                                            $('.cl_habitatTypes').append("<ul style='padding-left:2em' class='cl_toggle cl_l1_" + (it_f - 1) + " cl_tDescr_" + it_t + "'><b onclick='func_toggle(" + it_t + ")'>" + resp2['filter'][it_h]['description'] + ' ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('in')[1] + "</b></ul>");
-                                            $('.cl_l1_' + (it_f - 1)).hide();
-                                        }
-                                        if (resp2['filter'][it_h]['levelNumber'] == 0) {
-                                            $('.cl_habitatTypes').append("<ul style='padding-left:0em' class='cl_toggle cl_tDescr_0_" + it_f + "'><h4 onclick='func_toggle_t(" + it_f + ");'>" + resp2['filter'][it_h]['description'] + "</h4></ul>");
-                                            it_f++;
-                                        }
+                                    if (resp2['filter'][it_h]['levelNumber'] >= 1) {
+                                        $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_t + "'><b onclick='func_toggle(" + it_t + ")'>" + resp2['filter'][it_h]['description'] + "</b></ul>");
                                         it_t++;
                                     }
-
                                 }
                                 if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
-                                    if (resp2['filter'][it_h]['levelNumber'] == 0) {
-                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:2em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
-                                        $('.cl_hov_' + (it_t - 1)).hide();
-                                    }
-                                    if (resp2['filter'][it_h]['levelNumber'] == 1) {
-                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:4em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '  ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
-                                        $('.cl_hov_' + (it_t - 1)).hide();
-                                    }
-                                    if (resp2['filter'][it_h]['levelNumber'] == 2) {
-                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:6em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '   ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
-                                        $('.cl_hov_' + (it_t - 1)).hide();
-                                    }
-                                    if (resp2['filter'][it_h]['levelNumber'] == 3) {
-                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:8em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '    ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
-                                        $('.cl_hov_' + (it_t - 1)).hide();
-                                    }
-
+                                    $('.cl_tDescr_' + (it_t - 1)).append('<li class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
+                                    $('.cl_hov_' + (it_t - 1)).hide();
                                 }
                             }
                         }
@@ -265,89 +238,6 @@ opt_layerID.on('click change', function () {
                 $('.cl_hov_' + (it_CMx_4)).hide();
             }
         });
-        $('.cl_habitatTypes').css('height', '26em');
-        $('.cl_legend').children().remove();
-
-        d3.selectAll('.cl_legend').append('div')
-            .style('padding-left', '0.5em')
-            .style('width', '50%')
-            .style('height', '25em')
-            .attr('class', 'cl_leg_1')
-            .style('float', 'left')
-
-        d3.selectAll('.cl_legend').append('div')
-            .style('padding-left', '0.5em')
-            .style('width', '50%')
-            .style('height', '25em')
-            .attr('class', 'cl_leg_2')
-            .style('float', 'left')
-
-        d3.selectAll('.cl_leg_1').append('div')
-            .attr('class', 'cl_tLeg_1')
-
-        d3.selectAll('.cl_tLeg_1').append('h4')
-            .style('margin-left', '2em')
-            .style('width', '12em')
-            .attr('data-i18n', 'Legende der Services')
-            .html('Legende der Services')
-
-        d3.selectAll('.cl_leg_2').append('div')
-            .attr('class', 'cl_tLeg_2')
-
-        d3.selectAll('.cl_tLeg_2').append('h4')
-            .style('margin-left', '2em')
-            .style('width', '12em')
-            .attr('data-i18n', 'Legende Total Value')
-            .html('Legende Total Value')
-
-        d3.selectAll('.cl_leg_2').append('div')
-            .attr('class', 'cl_tLeg_2')
-            .style('float', 'left')
-
-
-        var it_0 = 0;
-        var arrCol1 = new Array();
-        arrCol1[0] = "rgb(255, 0, 0)";
-        arrCol1[1] = "rgb(255,165,0)";
-        arrCol1[2] = "rgb(255, 255, 0)";
-        arrCol1[3] = "rgb(0, 188, 0)";
-        arrCol1[4] = "rgb(0, 255, 0)";
-
-        for(it_0 = 0; it_0 < 5; it_0++) {
-
-            d3.selectAll('.cl_leg_1').append('div')
-                .attr('class', 'cl_' + it_0)
-                .style('margin-left', '6em')
-                .style('margin-bottom', '1em')
-                .style('width', '3em')
-                .style('height', '2em')
-                .html('<b style="background-color: white; margin:auto">' + (it_0 + 1) + '</b>')
-                .style('background-color', arrCol1[it_0])
-        }
-        it_0 = 0;
-        var arrCol2 = new Array();
-        arrCol2[0] = "rgb(250, 25, 0)";
-        arrCol2[1] = "rgb(250,50,0)";
-        arrCol2[2] = "rgb(225, 75, 0)";
-        arrCol2[3] = "rgb(225, 100, 0)";
-        arrCol2[4] = "rgb(200, 125, 0)";
-        arrCol2[5] = "rgb(200, 150, 0)";
-        arrCol2[6] = "rgb(175, 175,0)";
-        arrCol2[7] = "rgb(175, 200, 0)";
-        arrCol2[8] = "rgb(150, 225, 0)";
-        arrCol2[9] = "rgb(150, 250, 0)";
-
-        for(it_0 = 0; it_0 < 10; it_0++) {
-
-            d3.selectAll('.cl_leg_2').append('div')
-                .attr('class', 'cl_2' + it_0)
-                .style('margin-left', '6em')
-                .style('margin-bottom', '1em')
-                .style('width', '3em')
-                .style('height', '2em')
-                .html('<b style="background-color: white; margin:auto">' + (it_0 + 1) + '</b>')
-                .style('background-color', arrCol2[it_0])
-        }
     }
 });
 func_closedPopup = function () {
@@ -653,93 +543,49 @@ func_CQLCapMatr = function(p_id, p_color) {
                                     if (geoJsonLayer !== undefined) {
                                         map.removeLayer(geoJsonLayer);
                                     }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 0) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 1)) {
+                                    console.log((((92 - 26) / 5) * 0));
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 0) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 5) * 1)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(250, 25, 0)',
+                                            fillColor: 'rgb(255, 0, 0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(250, 25, 0)',
+                                            color: 'rgb(255, 0, 0)',
                                             fillOpacity: 1
                                         };
                                     }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 1) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 2)) {
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 1) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 5) * 2)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(225,50,0)',
+                                            fillColor: 'rgb(255,165,0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(225,50,0)',
+                                            color: 'rgb(255,165,0)',
                                             fillOpacity: 1
                                         };
                                     }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 2) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 3)) {
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 2) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 5) * 3)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(200, 75, 0)',
+                                            fillColor: 'rgb(255, 255, 0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(200, 75, 0)',
+                                            color: 'rgb(255, 255, 0)',
                                             fillOpacity: 1
                                         };
                                     }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 3) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 4)) {
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 3) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 5) * 4)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(175, 100, 0)',
+                                            fillColor: 'rgb(0, 188, 0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(175, 100, 0)',
+                                            color: 'rgb(0, 188, 0)',
                                             fillOpacity: 1
                                         };
                                     }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 4)) {
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 4)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(150, 125, 0)',
+                                            fillColor: 'rgb(0, 255, 0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(150, 125, 0)',
-                                            fillOpacity: 1
-                                        };
-                                    }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 4) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 5)) {
-                                        styleAll[it_a] = {
-                                            fillColor: 'rgb(150, 150, 0)',
-                                            weight: 2,
-                                            opacity: 1,
-                                            color: 'rgb(150, 150, 0)',
-                                            fillOpacity: 1
-                                        };
-                                    }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 5) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 6)) {
-                                        styleAll[it_a] = {
-                                            fillColor: 'rgb(125,175,0)',
-                                            weight: 2,
-                                            opacity: 1,
-                                            color: 'rgb(125,175,0)',
-                                            fillOpacity: 1
-                                        };
-                                    }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 6) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 7)) {
-                                        styleAll[it_a] = {
-                                            fillColor: 'rgb(100, 200, 0)',
-                                            weight: 2,
-                                            opacity: 1,
-                                            color: 'rgb(100, 200, 0)',
-                                            fillOpacity: 1
-                                        };
-                                    }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 7) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 8)) {
-                                        styleAll[it_a] = {
-                                            fillColor: 'rgb(100, 225, 0)',
-                                            weight: 2,
-                                            opacity: 1,
-                                            color: 'rgb(100, 225, 0)',
-                                            fillOpacity: 1
-                                        };
-                                    }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 8)) {
-                                        styleAll[it_a] = {
-                                            fillColor: 'rgb(75, 250, 0)',
-                                            weight: 2,
-                                            opacity: 1,
-                                            color: 'rgb(75, 250, 0)',
+                                            color: 'rgb(0, 255, 0)',
                                             fillOpacity: 1
                                         };
                                     }
@@ -848,8 +694,8 @@ func_CQLCapMatr = function(p_id, p_color) {
                                             closeOnClick: true
                                         });
 
-                                        str_contentAll += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroupsAll);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
-                                        str_contentAll += "<div onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt)' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
+                                        str_contentAll += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroupsAll);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
+                                        str_contentAll += "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>";
                                         if (response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
                                             infoPupAll.setLatLng(e.latlng);
                                             infoPupAll.setContent(str_contentAll);
@@ -1103,8 +949,8 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                         closeOnClick: true
                                     });
 
-                                    str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
-                                    str_content += "<div  onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
+                                    str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
+                                    str_content += "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>";
                                     if (response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
                                         infoPup.setLatLng(e.latlng);
                                         infoPup.setContent(str_content);
@@ -1231,7 +1077,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                     }
 
                                     //str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
-                                    str_content += "<div onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
+                                    str_content += "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>";
                                     if ($('.cl_capMatr').length !== 0) {
                                         $('.cl_capMatr').remove();
                                     }

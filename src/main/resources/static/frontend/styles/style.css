@@ -12,8 +12,8 @@ body {
 #map {
     position: relative;
     float: left;
-    width: 80em;
-    height: 760px;
+    width: 100em;
+    height: 1000px;
     z-index: 0;
 }
 #eSys {
@@ -111,6 +111,7 @@ body {
 .leaflet-popup {
     position: relative;
     width: 56em;
+    height: 26em;
     z-index: 1200;
 }
 .cl_popup {
@@ -294,7 +295,7 @@ body {
     position: relative;
     height: 0%;
     margin-left: 30em;
-    width: 71em;
+    width: min-content;
     z-index: 2;
 }
 #cnt_map {
