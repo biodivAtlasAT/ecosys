@@ -945,7 +945,7 @@ id_newMark.on('click', function (e) {
     bt_close_mark.css('display', 'block');
     if (it_mmBt == 1) {
         cnt_map.animate({
-            'height': '62%'
+            'height': '54.7em'
         }, 100);
         cnt_info.animate({
             'height': '0%',
@@ -959,7 +959,7 @@ id_newMark.on('click', function (e) {
     }
     if (it_mmBt == 0) {
         cnt_map.animate({
-            'height': '62%'
+            'height': '54.7em'
         }, 100);
         bt_close_mark.html('Minimaps schließen');
         bt_close_mark.attr('data-i18n', 'Minimaps schließen');
@@ -1878,7 +1878,7 @@ func_delMark = function (th) {
     }
     if (filteredmarker.length === 0) {
         cnt_map.animate({
-            'height': '62%'
+            'height': '54.7em'
         }, 100);
         cnt_info.animate({
             'height': '0%',
@@ -2074,7 +2074,7 @@ bt_close_mark.on('click', function (e) {
     if (filteredmarker.length > 0 && marker[0] !== undefined) {
         if (it_mmBt == 0) {
             cnt_map.animate({
-                'height': '62%'
+                'height': '54.7em'
             }, 100);
             cnt_info.animate({
                 'height': '0%',
@@ -2085,7 +2085,7 @@ bt_close_mark.on('click', function (e) {
         }
         if (it_mmBt == 1) {
             cnt_map.animate({
-                'height': '62%'
+                'height': '54.7em'
             }, 100);
             if (chk_pconn === 0) {
                 cnt_info.animate({
