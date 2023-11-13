@@ -13,8 +13,8 @@ var ly_filter = undefined;
 var wkt = new Array();
 var wktString = new Array();
 var map = L.map('map', {
-    center: [48.3805228, 15.9558588],
-    zoom: 8
+    center: [48.3805228, 15.3758588],
+    zoom: 10
 });
 var popup;
 var geoJsonLayer;
@@ -46,11 +46,76 @@ $(function () {
         resize: function (event, ui) {
             // Adjust the width of the adjacent div when resizing
             var currentDiv = $(this);
-            $('#map').css('width', $(window).width() - currentDiv.width() - 38);
+            $('#map').css('width', $('#cnt_main').width() - $('#eSys').width());
         }
     });
 });
-
+func_info = function(p_id) {
+    switch(p_id) {
+        case "Trockenmauern": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/F5_Steckbriefe_Biotoptypen_Trockenmauern.pdf");
+            break;
+        case "Wände": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/F3_Steckbriefe_Biotoptypen_Waende.pdf");
+            break;
+        case "Fels": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/F1_Steckbriefe_Biotoptypen_Fels.pdf");
+            break;
+        case "Stillgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/B2_Steckbriefe_Biotoptypen_Stillgewaesser.pdf");
+            break;
+        case "Fließgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/B1_Steckbriefe_Biotoptypen_Fliessgewaesser.pdf");
+            break;
+        case "Waldsäume": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A7_Steckbriefe_Biotoptypen_Waldsaeume.pdf");
+            break;
+        case "Hochstaudenfluren": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A6_Steckbriefe_Biotoptypen_Hochstaudenfluren.pdf");
+            break;
+        case "Ruderalfluren": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A5_Steckbriefe_Biotoptypen_Ruderalfluren.pdf");
+            break;
+        case "Raine": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A4_Steckbriefe_Biotoptypen_Raine.pdf");
+            break;
+        case "Ackerbrachen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A3_Steckbriefe_Biotoptypen_Ackerbrachen.pdf");
+            break;
+        case "Wein": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A2_Steckbriefe_Biotoptypen_Wein.pdf");
+            break;
+        case "Äcker": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/A1_Steckbriefe_Biotoptypen_Aecker.pdf");
+            break;
+        case "Forste": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W7_Steckbriefe_Biotoptypen_Forste.pdf");
+            break;
+        case "Vorwälder": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W6_Steckbriefe_Biotoptypen_Vorwaelder.pdf");
+            break;
+        case "Eichenwälder": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W3_Steckbriefe_Biotoptypen_Eichenwaelder.pdf");
+            break;
+        case "Hangwälder": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W2_Steckbriefe_Biotoptypen_Hangwaelder.pdf");
+            break;
+        case "Auwälder": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/W1_Steckbriefe_Biotoptypen_Auwaelder.pdf");
+            break;
+        case "Siedlungsbiotoptypen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/S_Steckbriefe_Biotoptypen_Siedlungsbiotoptypen.pdf");
+            break;
+        case "Sümpfe": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/M1_Steckbriefe_Biotoptypen_Suempfe.pdf");
+            break;
+        case "Kultivierte Gehölze": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H9_Steckbriefe_Biotoptypen_KultivierteGehoelze.pdf");
+            break;
+        case "Gebüsche": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H7_Steckbriefe_Biotoptypen_Gebuesche.pdf");
+            break;
+        case "BaumgruppenAllen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H6_Steckbriefe_Biotoptypen_BaumgruppenAlleen.pdf");
+            break;
+        case "Gehölzgruppen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H5_Steckbriefe_Biotoptypen_Gehoelzgruppen.pdf");
+            break;
+        case "Einzelhölze": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H4_Steckbriefe_Biotoptypen_Einzelgehoelze.pdf");
+            break;
+        case "Feldgehölze": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H3_Steckbriefe_Biotoptypen_Feldgehoelze.pdf");
+            break;
+        case "Ufergehölze": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H2_Steckbriefe_Biotoptypen_Ufergehoelze.pdf");
+            break;
+        case "Hecken": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/H1_Steckbriefe_Biotoptypen_Hecken.pdf");
+            break;
+        case "Zwergstrauchheiden": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/G5_Steckbriefe_Biotoptypen_Zwergstrauchheiden.pdf");
+            break;
+        case "Trockenrasen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/G4_Steckbriefe_Biotoptypen_Trockenrasen.pdf");
+            break;
+        case "Halbtruckenrasen": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/G3_Steckbriefe_Biotoptypen_Halbtrockenrasen.pdf");
+            break;
+        case "Gruenland": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/11/G2_Steckbriefe_Biotoptypen_Gruenland.pdf");
+            break;
+    }
+}
 function decode_utf8(s) {
     return decodeURIComponent(escape(s));
 }
@@ -78,8 +143,14 @@ $.ajax({
         opt_layerID = $('#id_addLayer').val(1);
     }
 });
+func_toggle_t = function (p_it_t) {
+    $('.cl_l1_' + (p_it_t)).toggle();
+}
 func_toggle = function (p_it_t) {
     $('.cl_hov_' + (p_it_t)).toggle();
+}
+func_toggle_2 = function (p_it_t) {
+    $('.cl_l2_' + (p_it_t)).toggle();
 }
 func_hide = function (p_it_t) {
     $('.cl_hov_' + (p_it_t)).hide();
@@ -143,6 +214,7 @@ opt_layerID.on('click change', function () {
                         var it_a = 0;
                         var it_b = 0;
                         var it_t = 0;
+                        var it_f = 0;
                         var it_cnt = 0;
                         var tmpCh = new Array();
                         var tmpFiltAlph = new Array();
@@ -153,14 +225,43 @@ opt_layerID.on('click change', function () {
                             var id = resp2['filter'][it_h]['id'];
                             if (resp2['filter'][it_h] !== undefined && (resp2['filter'][it_h]['cqlQuery'] !== null)) {
                                 if (resp2['filter'][it_h]['cqlQuery'].split('in').length > 1) {
-                                    if (resp2['filter'][it_h]['levelNumber'] >= 1) {
-                                        $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_t + "'><b onclick='func_toggle(" + it_t + ")'>" + resp2['filter'][it_h]['description'] + "</b></ul>");
-                                        it_t++;
+                                    if (resp2['filter'][it_h]['levelNumber'] >= 0) {
+                                        if (resp2['filter'][it_h]['levelNumber'] == 1) {
+                                            $('.cl_habitatTypes').append("<ul style='padding-left:1em' id='idSb_"+ resp2['filter'][it_h]['description'] +"' class='cl_toggle cl_idSb cl_l1_" + (it_f - 1) + " cl_tDescr_" + it_t + "'><b id='id_stb_" + it_h +"' onclick='func_toggle(" + it_t + ")'>" + resp2['filter'][it_h]['description'] + "</b><span class='cl_infoIcon' onclick='func_info(" + JSON.stringify(resp2['filter'][it_h]['description']) + ");'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='1.3em' style='margin-right:0.8em' class='cl_ptinfo'><circle cy='24' cx='24' r='24' fill='#36c'></circle><g fill='#fff'><circle cx='24' cy='11.6' r='4.7'></circle><path d='m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6'></path></g></svg></span></ul>");
+                                            $('.cl_l1_' + (it_f - 1)).hide();
+                                            it_t++;
+                                        }
+                                        if (resp2['filter'][it_h]['levelNumber'] == 2) {
+                                            $('.cl_tDescr_' + (it_t - 1)).append("<li style='padding-left:2em' class='cl_hov cl_toggle cl_l2_" + (it_t - 1) + " cl_tDescr_" + (it_t - 1) + "'><b onclick='func_toggle_2(" + (it_t) + ")'>" + resp2['filter'][it_h]['description'] + "</b></li>");
+                                            $('.cl_l2_' + (it_t - 1)).hide();
+                                        }
+                                        if (resp2['filter'][it_h]['levelNumber'] == 0) {
+                                            $('.cl_habitatTypes').append("<ul style='padding-left:0em' class='cl_toggle cl_tDescr_0_" + it_f + "'><h4 onclick='func_toggle_t(" + it_f + ");'>" + resp2['filter'][it_h]['description'] + "</h4></ul>");
+                                            it_f++;
+                                            it_t++;
+                                        }
+                                    }
+
+                                }
+                                if (resp2['filter'][it_h]['levelNumber'] == 0) {
+                                    $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:1em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['description'] + '</i></li>');
+                                    $('.cl_hov_' + (it_t - 1)).hide();
+                                }
+                                if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
+                                    if (resp2['filter'][it_h]['levelNumber'] == 1) {
+                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:2em" class="cl_hov_' + (it_f - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['description'] + '</i></li>');
+                                        $('.cl_hov_' + (it_t - 1)).hide();
                                     }
                                 }
                                 if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
-                                    $('.cl_tDescr_' + (it_t - 1)).append('<li class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
-                                    $('.cl_hov_' + (it_t - 1)).hide();
+                                    if (resp2['filter'][it_h]['levelNumber'] == 2) {
+                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:3em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '   ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
+                                        $('.cl_hov_' + (it_t - 1)).hide();
+                                    }
+                                    if (resp2['filter'][it_h]['levelNumber'] == 3) {
+                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:3em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '   ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
+                                        $('.cl_hov_' + (it_t - 1)).hide();
+                                    }
                                 }
                             }
                         }
@@ -238,6 +339,112 @@ opt_layerID.on('click change', function () {
                 $('.cl_hov_' + (it_CMx_4)).hide();
             }
         });
+        if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') === 'Capacity Matrix') {
+            $('.cl_habitatTypes').css('height', '26em');
+            $('.cl_legend').children().remove();
+
+            d3.selectAll('.cl_legend').append('div')
+                .style('padding-left', '0.5em')
+                .style('width', '200px')
+                .style('height', '25em')
+                .attr('class', 'cl_leg_1')
+                .style('float', 'left')
+
+            d3.selectAll('.cl_legend').append('div')
+                .style('padding-left', '0.5em')
+                .style('width', '200px')
+                .style('height', '25em')
+                .attr('class', 'cl_leg_2')
+                .style('float', 'left')
+
+            d3.selectAll('.cl_leg_1').append('div')
+                .attr('class', 'cl_tLeg_1')
+
+            d3.selectAll('.cl_tLeg_1').append('h4')
+                .style('margin-left', '2em')
+                .style('width', '12em')
+                .attr('data-i18n', 'Legende der Services')
+                .html('Legende der Services')
+
+            d3.selectAll('.cl_leg_2').append('div')
+                .attr('class', 'cl_tLeg_2')
+
+            d3.selectAll('.cl_leg_2').append('div')
+                .attr('class', 'cl_leg_2_a')
+                .style('float', 'left')
+            d3.selectAll('.cl_leg_2').append('div')
+                .attr('class', 'cl_leg_2_b')
+                .style('margin-left', '1em')
+                .style('float', 'left')
+
+            d3.selectAll('.cl_tLeg_2').append('h4')
+                .style('margin-left', '2em')
+                .style('width', '12em')
+                .attr('data-i18n', 'Legende Total Value')
+                .html('Legende Total Value')
+
+            d3.selectAll('.cl_leg_2').append('div')
+                .attr('class', 'cl_tLeg_2')
+                .style('float', 'left')
+
+
+            var it_0 = 0;
+            var arrCol1 = new Array();
+            arrCol1[0] = "rgb(255, 0, 0)";
+            arrCol1[1] = "rgb(255,165,0)";
+            arrCol1[2] = "rgb(255, 255, 0)";
+            arrCol1[3] = "rgb(0, 188, 0)";
+            arrCol1[4] = "rgb(0, 255, 0)";
+
+            for (it_0 = 0; it_0 < 5; it_0++) {
+
+                d3.selectAll('.cl_leg_1').append('div')
+                    .attr('class', 'cl_' + it_0)
+                    .style('margin-left', '4.5em')
+                    .style('margin-bottom', '1em')
+                    .style('width', '2em')
+                    .style('height', '1em')
+                    .html('<b style="background-color: white;  margin-left: -2em">' + (it_0 + 1) + '</b>')
+                    .style('background-color', arrCol1[it_0])
+            }
+            it_0 = 0;
+            var arrCol2 = new Array();
+            arrCol2[0] = "rgb(250, 25, 0)";
+            arrCol2[1] = "rgb(250,50,0)";
+            arrCol2[2] = "rgb(225, 75, 0)";
+            arrCol2[3] = "rgb(225, 100, 0)";
+            arrCol2[4] = "rgb(200, 125, 0)";
+            arrCol2[5] = "rgb(200, 150, 0)";
+            arrCol2[6] = "rgb(175, 175,0)";
+            arrCol2[7] = "rgb(175, 200, 0)";
+            arrCol2[8] = "rgb(150, 225, 0)";
+            arrCol2[9] = "rgb(150, 250, 0)";
+
+            for (it_0 = 0; it_0 < 5; it_0++) {
+
+                d3.selectAll('.cl_leg_2_a').append('div')
+                    .attr('class', 'cl_2' + it_0)
+                    .style('margin-left', '4.5em')
+                    .style('margin-bottom', '1em')
+                    .style('width', '2em')
+                    .style('height', '1em')
+                    .html('<b style="background-color: white; margin-left: -2em">' + (it_0 + 1) + '</b>')
+                    .style('background-color', arrCol2[it_0])
+            }
+            for (it_0 = 5; it_0 < 10; it_0++) {
+
+                d3.selectAll('.cl_leg_2_b').append('div')
+                    .attr('class', 'cl_2' + it_0)
+                    .style('margin-left', '2.5em')
+                    .style('margin-bottom', '1em')
+                    .style('width', '2em')
+                    .style('height', '1em')
+                    .html('<b style="background-color: white; margin-left: -2em">' + (it_0 + 1) + '</b>')
+                    .style('background-color', arrCol2[it_0])
+            }
+        }
+    } else {
+        $('.cl_legend').children().remove();
     }
 });
 func_closedPopup = function () {
@@ -543,49 +750,93 @@ func_CQLCapMatr = function(p_id, p_color) {
                                     if (geoJsonLayer !== undefined) {
                                         map.removeLayer(geoJsonLayer);
                                     }
-                                    console.log((((92 - 26) / 5) * 0));
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 0) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 5) * 1)) {
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 0) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 1)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(255, 0, 0)',
+                                            fillColor: 'rgb(250, 25, 0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(255, 0, 0)',
+                                            color: 'rgb(250, 25, 0)',
                                             fillOpacity: 1
                                         };
                                     }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 1) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 5) * 2)) {
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 1) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 2)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(255,165,0)',
+                                            fillColor: 'rgb(225,50,0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(255,165,0)',
+                                            color: 'rgb(225,50,0)',
                                             fillOpacity: 1
                                         };
                                     }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 2) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 5) * 3)) {
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 2) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 3)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(255, 255, 0)',
+                                            fillColor: 'rgb(200, 75, 0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(255, 255, 0)',
+                                            color: 'rgb(200, 75, 0)',
                                             fillOpacity: 1
                                         };
                                     }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 3) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 5) * 4)) {
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 3) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 4)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(0, 188, 0)',
+                                            fillColor: 'rgb(175, 100, 0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(0, 188, 0)',
+                                            color: 'rgb(175, 100, 0)',
                                             fillOpacity: 1
                                         };
                                     }
-                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 5) * 4)) {
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 4)) {
                                         styleAll[it_a] = {
-                                            fillColor: 'rgb(0, 255, 0)',
+                                            fillColor: 'rgb(150, 125, 0)',
                                             weight: 2,
                                             opacity: 1,
-                                            color: 'rgb(0, 255, 0)',
+                                            color: 'rgb(150, 125, 0)',
+                                            fillOpacity: 1
+                                        };
+                                    }
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 4) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 5)) {
+                                        styleAll[it_a] = {
+                                            fillColor: 'rgb(150, 150, 0)',
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'rgb(150, 150, 0)',
+                                            fillOpacity: 1
+                                        };
+                                    }
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 5) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 6)) {
+                                        styleAll[it_a] = {
+                                            fillColor: 'rgb(125,175,0)',
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'rgb(125,175,0)',
+                                            fillOpacity: 1
+                                        };
+                                    }
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 6) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 7)) {
+                                        styleAll[it_a] = {
+                                            fillColor: 'rgb(100, 200, 0)',
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'rgb(100, 200, 0)',
+                                            fillOpacity: 1
+                                        };
+                                    }
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 7) && parseInt(response['features'][0]['properties'][tmp_CMx_name]) < 26 + (((92 - 26) / 10) * 8)) {
+                                        styleAll[it_a] = {
+                                            fillColor: 'rgb(100, 225, 0)',
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'rgb(100, 225, 0)',
+                                            fillOpacity: 1
+                                        };
+                                    }
+                                    if (parseInt(response['features'][0]['properties'][tmp_CMx_name]) >= 26 + (((92 - 26) / 10) * 8)) {
+                                        styleAll[it_a] = {
+                                            fillColor: 'rgb(75, 250, 0)',
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'rgb(75, 250, 0)',
                                             fillOpacity: 1
                                         };
                                     }
@@ -694,8 +945,8 @@ func_CQLCapMatr = function(p_id, p_color) {
                                             closeOnClick: true
                                         });
 
-                                        str_contentAll += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroupsAll);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
-                                        str_contentAll += "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>";
+                                        str_contentAll += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroupsAll);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
+                                        str_contentAll += "<div onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt)' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
                                         if (response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
                                             infoPupAll.setLatLng(e.latlng);
                                             infoPupAll.setContent(str_contentAll);
@@ -949,8 +1200,8 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                         closeOnClick: true
                                     });
 
-                                    str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
-                                    str_content += "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>";
+                                    str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
+                                    str_content += "<div  onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
                                     if (response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
                                         infoPup.setLatLng(e.latlng);
                                         infoPup.setContent(str_content);
@@ -1077,7 +1328,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                     }
 
                                     //str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
-                                    str_content += "<div onclick='func_wktData(wktString);'><i data-i18n='Funddaten für Polygon'>Funddaten für Polygon</i></div></div>";
+                                    str_content += "<div onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
                                     if ($('.cl_capMatr').length !== 0) {
                                         $('.cl_capMatr').remove();
                                     }

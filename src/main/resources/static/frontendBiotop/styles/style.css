@@ -9,7 +9,7 @@ body {
     position: relative;
     float: left;
     width: 100em;
-    height: 1000px;
+    height: 760px;
 }
 #eSys {
     position: relative;
@@ -32,7 +32,7 @@ body {
 }
 .cl_habitatTypes {
     overflow-y: scroll;
-    height: 39.2em;
+    height: 38.2em;
     margin-top: 1em;
 }
 .cl_tdesc {
@@ -633,7 +633,10 @@ body {
     padding: 10px;
     color: black;
 }
-
+li :hover {
+    background-color: #49754a;
+    color: white;
+}
 /* RESPONSIVE */
 
 @media only screen and (max-width: 1210px) {
@@ -686,11 +689,6 @@ body {
 }
 #id_welcome {
     color: #cccccc;
-}
-.cl_habitatTypes {
-    overflow-y: scroll;
-    height: 39.2em;
-    margin-top: 1em;
 }
 .cl_tdesc {
     margin: 0.4em;
@@ -1005,7 +1003,7 @@ body {
     color:rgba(255,255,255,0.0);
 }
 .cl_popup3 .leaflet-popup-tip-container {
-    background: white;
+    background: transparent;
     width:30px;
     height: 1em;
 }
@@ -1013,6 +1011,7 @@ body {
     background: white;
     border: none;
     box-shadow: none;
+    transform: rotate(45deg);
 }
 .cl_button {
     position: relative;
@@ -1406,4 +1405,17 @@ ul.cl_accord {
     content: "-";
     float: right;
     margin-right: 2%;
+}
+.cl_toggle {
+    cursor: pointer;
+}
+.cl_toggle {
+    color: #49754a;
+    font-style: italic;
+    font-weight: bold;
+}
+.cl_infoIcon {
+    position: relative;
+    left: 1em;
+    top: 0.2em;
 }
