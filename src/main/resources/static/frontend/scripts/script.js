@@ -211,7 +211,7 @@ func_info = function(p_id) {
             break;
         case "": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S03_Schutzleistung_Naturgefahren_online-Version_final.pdf");
             break;
-        case "Erosionsschutz": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S02_Schutz-vor-Erosion_online-Version_final.pdf");
+        case "Erosionsschutz Landwirtschaft": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S02_Schutz-vor-Erosion_online-Version_final.pdf");
             break;
         case "Erholung Wegenetz": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/K01_Erholungsleistung-Wander-Rad-Mountainbike_online-Version_final.pdf");
             break;
