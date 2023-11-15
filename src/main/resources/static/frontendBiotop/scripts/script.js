@@ -46,7 +46,7 @@ $(function () {
         resize: function (event, ui) {
             // Adjust the width of the adjacent div when resizing
             var currentDiv = $(this);
-            $('#map').css('width', $('#cnt_main').width() - $('#eSys').width());
+            $('#map').css('width', $('#cnt_map').width() - $('#eSys').width());
         }
     });
 });
