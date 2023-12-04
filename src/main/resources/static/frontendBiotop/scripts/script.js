@@ -582,6 +582,7 @@ func_CQLFull = function () {
                                                 },
                                                 //data: JSON.stringify({"packageID":opt_layerID.val()}),
                                                 success: function (resp) {
+                                                    $('#id_spList').children().remove();
                                                     console.log(wktString);
                                                     for (it_d = 0; it_d < resp['speciesGroup']['list'].length; it_d++) {
                                                         $.ajax({
@@ -949,13 +950,15 @@ func_CQLCapMatr = function(p_id, p_color) {
                                         str_contentAll += '<div><b>' + decode_utf8(response['features'][0]['properties']['BT_Lang']) + '</b></div>';
 
                                         console.log(response['features'][0]['properties']);
+
                                         infoPupAll = L.popup({
                                             className: 'cl_popup3',
                                             closeButton: true,
                                             closeOnClick: true
                                         });
-
-                                        str_contentAll += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroupsAll);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
+                                        if (speciesGroupsAll.length > 0) {
+                                            str_contentAll += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroupsAll);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
+                                        }
                                         str_contentAll += "<div onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt)' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
                                         if (response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
                                             infoPupAll.setLatLng(e.latlng);
@@ -1052,9 +1055,11 @@ func_wktData = function (p_wkt) {
 }
 func_spData = function (item) {
     $('#id_spList').children().remove();
-    cnt_nav.animate({
-        'width': '52em', 'display': 'block'
-    }, 100);
+    if(item.length > 0) {
+        cnt_nav.animate({
+            'width': '52em', 'display': 'block'
+        }, 100);
+    }
     var listContainer = document.getElementById("id_spList");
     var list = document.createElement("ul");
     var listItem = new Array();
@@ -1084,6 +1089,9 @@ func_spData = function (item) {
 }
 var chk_id = 0;
 func_CQLSubm = function (p_id, r_id, p_color) {
+    if(infoPup !== undefined) {
+        map.closePopup(infoPup);
+    }
     if (chk_id === r_id) {
         opt_layerID.click();
     } else {
@@ -1170,6 +1178,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                         },
                                         //data: JSON.stringify({"packageID":opt_layerID.val()}),
                                         success: function (resp2) {
+                                            $('#id_spList').children().remove();
                                             console.log(wktString);
                                             speciesGroups = new Array();
                                             //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
@@ -1209,8 +1218,9 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                         closeButton: true,
                                         closeOnClick: true
                                     });
-
-                                    str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
+                                    if (speciesGroups.length > 0) {
+                                        str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
+                                    }
                                     str_content += "<div  onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
                                     if (response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
                                         infoPup.setLatLng(e.latlng);
@@ -1296,6 +1306,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                         },
                                         //data: JSON.stringify({"packageID":opt_layerID.val()}),
                                         success: function (resp2) {
+                                            $('#id_spList').children().remove();
                                             console.log(wktString);
                                             speciesGroups = new Array();
                                             //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
