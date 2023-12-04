@@ -100,14 +100,18 @@
     <div id="cnt_nav">
         <div class="cl_descrH cl_optDia" data-i18n="Optionen anpassen"><b>Optionen anpassen</b></div>
         <select class="cl_cmp cl_optDia" id="id_viewQ" onchange="func_selectQ()">
-            <option data-i18n="Quintile" value="1">Quintile</option>
+            <option data-i18n="Klassen 0-5" value="1">Klassen 0-5</option>
             <option data-i18n="Absolutwert" value="0">Absolutwert</option>
         </select>
         <select class="cl_cmp cl_optDia" id="id_viewP" onchange="func_selectP()">
-            <option data-i18n="nur gesetzte Marker" value="1">nur gesetzte Marker</option>
-            <option data-i18n="integrierte Marker" value="0">integrierte Marker</option>
+            <option data-i18n="nur gesetzte Marker" value="1" data-i18n="nur gesetzte Marker">nur gesetzte Marker</option>
+            <option data-i18n="integrierte Marker" value="0" data-i18n="integrierte Marker">integrierte Marker</option>
         </select>
-        <input class="cl_cmp cl_optDia" id="id_numIv" type="number" min="1000" max="400000" value="1000"></input>
+        <div class="cl_cmp cl_optDia">
+            <input style="float: left" class="cl_cmp cl_optDia" id="id_numIv" type="number" min="1000" max="400000" value="1000"></input>
+            <div style="float: left; margin-top: 2em; margin-left: 1em;" class="cl_descrH" id="id_numMt" data-i18n="Meter">Meter</div>
+            <button style="float: left; margin-top: 1.6em; margin-left: 1em;" class="cl_cmp cl_optDia" type="button" id="id_numBt" data-i18n="Abstand setzen">Abstand setzen</button>
+        </div>
         <div id="id_nav" class="cl_nav">
         </div>
     </div>

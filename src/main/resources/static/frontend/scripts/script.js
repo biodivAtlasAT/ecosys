@@ -311,7 +311,7 @@ $("#sortable").sortable({
 });
 */
 $(function() {
-    $('#id_numIv').on('blur' , function() {
+    $('#id_numBt').on('click' , function() {
         map.closePopup();
         for (it_r = 0; it_r < marker.length; it_r++) {
             marker[it_r].fire('dragend');
@@ -372,21 +372,21 @@ $.ajax({
                     sortEsys[0].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_5 = 1;
                 }
-                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color:black'>L.</b></div><span title='Detailinformationen zur Ökosystemleistungen.' onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns=\"http://www.w3.org/2000/svg\"  viewBox=\"0 0 48 48\"  width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
+                sortEsys[0].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div title='Legende einblenden' style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color:black'>L.</b></div><span title='Detailinformationen zur Ökosystemleistungen.' onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns=\"http://www.w3.org/2000/svg\"  viewBox=\"0 0 48 48\"  width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
             }
             if(categories[index].catID === 3) {
                 if(it_3 === 0) {
                     sortEsys[1].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_3 = 1;
                 }
-                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><span title='Detailinformationen zur Ökosystemleistungen.' onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns=\"http://www.w3.org/2000/svg\"  viewBox=\"0 0 48 48\"  width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
+                sortEsys[1].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div title='Legende einblenden' style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><span title='Detailinformationen zur Ökosystemleistungen.' onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns=\"http://www.w3.org/2000/svg\"  viewBox=\"0 0 48 48\"  width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
             }
             if(categories[index].catID === 2) {
                 if(it_2 === 0) {
                     sortEsys[2].push('<div class="cl_descrH">' + item['category']['name'] + '</div>');
                     it_2 = 1;
                 }
-                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><span title='Detailinformationen zur Ökosystemleistungen.' onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns=\"http://www.w3.org/2000/svg\"  viewBox=\"0 0 48 48\"  width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
+                sortEsys[2].push("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' type='checkbox' id='id_esys_" + item.id + "' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div title='Legende einblenden' style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><span title='Detailinformationen zur Ökosystemleistungen.' onclick='func_info(" + JSON.stringify(item.name) + ");'><svg xmlns=\"http://www.w3.org/2000/svg\"  viewBox=\"0 0 48 48\"  width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
             }
         });
         for(it_se = 0; it_se < 3; it_se++) {
@@ -428,7 +428,7 @@ opt_packageID.on('change', function () {
                 categories[index] = new Object();
                 categories[index].servID = item.id;
                 categories[index].catID = item['category']['id'];
-                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><span title='Detailinformationen zur Ökosystemleistungen.' onclick='func_info(func_info(" + JSON.stringify(item.name) + ");' <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"  width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
+                $("#sortable").append("<li id='id_wrapEsys_" + index + "' class='cl_catL_" + item['category']['id'] + " cl_catR_" + item['category']['id'] + " cl_wrapEsys ui-state-default'><div class='cl_innerCOB'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span><input class='cl_cbEsys cl_cbNR_" + index + " cl_cob_" + item['category']['id'] + "' id='id_esys_" + item.id + "' type='checkbox' onchange='func_cbClick(" + item.id + ");'></input><div class='cl_SName' id='id_divName_" + item.id + "' style='float: left' data-i18n='" + item.name + "'>" + item.name + "</div><div title='Legende einblenden' style=\"color: white; float: left; margin-left: 0.3em\" class=\"cl_ptleg\" onclick='func_legend(" + item.id + ");'><b style='background-color: black'>L.</b></div><span title='Detailinformationen zur Ökosystemleistungen.' onclick='func_info(func_info(" + JSON.stringify(item.name) + ");' <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"  width=\"1.3em\" style=\"margin-right:0.8em\" class=\"cl_ptinfo\"><circle cy=\"24\" cx=\"24\" r=\"24\" fill=\"#36c\"></circle><g fill=\"#fff\"><circle cx=\"24\" cy=\"11.6\" r=\"4.7\"></circle><path d=\"m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6\"></path></g></svg></span></div></li>");
             });
             //$("#sortable").append("<button className='cl_submEsys' type='button' id='id_submEsys' onClick='func_submEsys();' data-i18n='bestätigen'>bestätigen</button>");
             map.closePopup();
@@ -667,6 +667,8 @@ func_reqEcosys = function (m_th, m_id) {
                     // Get number of points based on desired interval and total length
                     var interval = 1000;
                     $('#id_numIv').css('display', 'block');
+                    $('#id_numBt').css('display', 'block');
+                    $('#id_numMt').css('display', 'block');
                     if($('#id_numIv').val() >= 1000) {
                         interval = parseInt($('#id_numIv').val()); // input set
                     }
@@ -704,6 +706,8 @@ func_reqEcosys = function (m_th, m_id) {
                 if(parseInt($('#id_viewP option:selected').val()) === 1) {
                     // Get number of points based on desired interval and total length
                     $('#id_numIv').css('display', 'none');
+                    $('#id_numBt').css('display', 'none');
+                    $('#id_numMt').css('display', 'none');
                     const totalPoints = m_th.length - 1;
 
                     // Get rations of each point along the polyline
@@ -794,7 +798,8 @@ func_reqSpecies = function () {
                     if(('.cl_clop') != undefined) {
                         $('.cl_clop').remove();
                     }
-                    $('.cl_headID').append('<div class="cl_clop"><a target="_blank" href="' + url_linkBioc + '"<span><i title="Anzahl der Arten im Biodiversitäts-Atlas Österreich welche für diese Rasterzelle verortet sind (Number of species). Bei Klick auf den Link werden alle Fundvorkommen für die Rasterzelle, die im Atlas hinterlegt sind, in einem neuen Tab angezeigt." data-i18n="Anzahl der verorteten Arten">Anzahl der verorteten Arten ' + resp[0].count + '</i></span></div>');
+                    $('.cl_headID').append('<div class="cl_clop"><a target="_blank" href="' + url_linkBioc + '"<span><i title="Anzahl der Arten im Biodiversitäts-Atlas Österreich welche für diese Rasterzelle verortet sind (Number of species). Bei Klick auf den Link werden alle Fundvorkommen für die Rasterzelle, die im Atlas hinterlegt sind, in einem neuen Tab angezeigt."><span data-i18n="Anzahl der verorteten Arten">Anzahl der verorteten Arten</span> ' + resp[0].count + '</i></span></div>');
+                    do_translate();
                 }
             });
         }
@@ -1396,12 +1401,34 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                 .attr("class", "x-axis")
                 .attr("transform", "translate(" + margin.left + "," + (height - margin.bottom) + ")")
                 .call(xAxis[it_d]);
-
-            svg[it_d].append("text")
-                .attr("class", "x-text")
-                .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom) + ")")
-                .text("Distanz: " + parseInt(distance * 0.001) + "km Dimension: " + data[it_d]['dim']);
-
+            if(location.href.split('lang=')[1] === 'de_AT') {
+                if (chk_quint === 0) {
+                    svg[it_d].append("text")
+                        .attr("class", "x-text")
+                        .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom) + ")")
+                        .text("Distanz: " + parseInt(distance * 0.001) + "km Dimension: " + data[it_d]['dim']);
+                }
+                if (chk_quint === 1) {
+                    svg[it_d].append("text")
+                        .attr("class", "x-text")
+                        .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom) + ")")
+                        .text("Distanz: " + parseInt(distance * 0.001) + "km");
+                }
+            }
+            if(location.href.split('lang=')[1] === 'en') {
+                if (chk_quint === 0) {
+                    svg[it_d].append("text")
+                        .attr("class", "x-text")
+                        .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom) + ")")
+                        .text("distance: " + parseInt(distance * 0.001) + "km dimension: " + data[it_d]['dim']);
+                }
+                if (chk_quint === 1) {
+                    svg[it_d].append("text")
+                        .attr("class", "x-text")
+                        .attr("transform", "translate(" + margin.left + "," + (height + margin.bottom) + ")")
+                        .text("distance: " + parseInt(distance * 0.001) + "km");
+                }
+            }
 // Y axis
             svg[it_d].append("g")
                 .attr("class", "y-axis")
