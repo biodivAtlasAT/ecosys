@@ -126,6 +126,60 @@ func_info = function(p_id) {
             break;
     }
 }
+var do_translate = function () {
+    $("[data-i18n]").each(function () {
+        var prop = $(this).attr('data-i18n');
+        $(this).i18n();
+    });
+}
+func_init_i18n = function () {
+    $.i18n().load({
+        'en': url_i18n + 'messages.json',
+        'de_AT': url_i18n + 'messages_de_AT.json'
+    }).done(function () {
+        console.log(location.href.split('lang=')[1]);
+        if(location.href.split('lang=')[1] !== undefined) {
+            $("html").attr("lang", location.href.split('lang=')[1]);
+            $.i18n().locale = location.href.split('lang=')[1];
+        } else {
+            $.i18n().locale = 'de_AT';
+        }
+        do_translate();
+    });
+}
+func_init_i18n();
+$('button').attrchange({
+    trackValues: true, /* Default to false, if set to true the event object is
+                updated with old and new value.*/
+    callback: function (event) {
+        if (event['newValue'].length > 1) {
+            //console.log($(event['target']));
+            $("html").attr("lang", location.href.split('lang=')[1]);
+            $.i18n().locale = location.href.split('lang=')[1];
+            if ($(event['target']).attr('class') === 'cl_button') {
+                $(event['target']).html($.i18n().parse(event['newValue']));
+                //$(this).attr('value', prop.replace('[value]', ''));
+            }
+            if ($(event['target']).attr('class') === 'cl_submEsys') {
+                $(event['target']).html($.i18n().parse(event['newValue']));
+                //$(this).attr('value', prop.replace('[value]', ''));
+            }
+        }
+        //event               - event object
+        //event.attributeName - Name of the attribute modified
+        //event.oldValue      - Previous value of the modified attribute
+        //event.newValue      - New value of the modified attribute
+        //Triggered when the selected elements attribute is added/updated/removed
+    }
+});
+(function() {
+    orig = $.fn.css;
+    $.fn.css = function() {
+        var result = orig.apply(this, arguments);
+        $(this).trigger('stylechanged');
+        return result;
+    }
+})();
 function decode_utf8(s) {
     return decodeURIComponent(escape(s));
 }
