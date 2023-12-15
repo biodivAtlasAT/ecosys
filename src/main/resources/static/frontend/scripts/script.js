@@ -1166,7 +1166,8 @@ id_MarkerConn.on('click', function (th) {
             }
             if ($('.cl_cbEsys:checkbox:checked').length > 0) {
                 func_updatePolyLine();
-                id_MarkerConn.val("Verbindung verbergen");
+                id_MarkerConn.val("Verbindung aufheben");
+                id_MarkerConn.attr('data-i18n', 'Verbindung aufheben');
             }
         }
         if (chk_pconn === 1) {
@@ -1185,6 +1186,7 @@ id_MarkerConn.on('click', function (th) {
                 'width': '0em', 'display': 'none'
             }, 100);
             id_MarkerConn.val("Verbindung setzen");
+            id_MarkerConn.attr('data-i18n', 'Verbindung setzen');
             if (it_infBt % 2 == 0) {
                 cnt_info.animate({
                     'height': 8.5 + (parseInt((filteredmarker.length - 1) / 2) * 20) + 'em'
@@ -1721,6 +1723,7 @@ func_delMark = function (th) {
             }, 100);
             $('.cl_footer').css('margin-top', (0 + parseInt((filteredmarker.length - 1) / 3) * 20) + 'em');
             id_MarkerConn.val("Verbindung setzen");
+            id_MarkerConn.attr('data-i18n', 'Verbindung setzen');
             iter_conn = 0;
         }
         if (id_MarkerConn.val() === 'Verbindung setzen') {
