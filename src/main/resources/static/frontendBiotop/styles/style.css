@@ -13,9 +13,9 @@ body {
 }
 #eSys {
     position: relative;
-    width: 23%;
+    width: 24%;
     float: left;
-    min-width: 23%;
+    min-width: 24%;
 }
 #id_welcome {
     color: #cccccc;
