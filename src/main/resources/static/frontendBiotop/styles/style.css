@@ -680,12 +680,6 @@ body {
     padding: 0;
     margin: 0;
 }
-#eSys {
-    position: relative;
-    width: 20%;
-    float: left;
-    min-width: 20%;
-}
 #id_welcome {
     color: #cccccc;
 }
