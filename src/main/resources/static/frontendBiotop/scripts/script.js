@@ -529,7 +529,7 @@ func_CQLFull = function () {
         //data: JSON.stringify({"packageID":opt_layerID.val()}),
         success: function (resp) {
             $.ajax({
-                url: 'https://spatial.biodivdev.at/geoserver/ECO/wfs',
+                url: 'https://spatial.biodiversityatlas.at/geoserver/ECO/wfs',
                 type: 'GET',
                 data: {
                     service: 'WFS',
@@ -577,7 +577,7 @@ func_CQLFull = function () {
                         map.on('popupclose', func_closedPopup);
                         // Create a custom popup
                         $.ajax({
-                            url: 'https://spatial.biodivdev.at/geoserver/ECO/wfs',
+                            url: 'https://spatial.biodiversityatlas.at/geoserver/ECO/wfs',
                             type: 'GET',
                             data: {
                                 service: 'WFS',
@@ -640,7 +640,7 @@ func_CQLFull = function () {
                                                     console.log(wktString);
                                                     for (it_d = 0; it_d < resp['speciesGroup']['list'].length; it_d++) {
                                                         $.ajax({
-                                                            //url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
+                                                            //url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
                                                             url: 'https://biocache-ws.biodiversityatlas.at/webportal/params?',
                                                             data: {
                                                                 q: resp['speciesGroup']['list'][it_d]['description'],
@@ -715,7 +715,7 @@ func_CQLCapMatr = function(p_id, p_color) {
             for(it_a = 0; it_a < resp['filter'].length; it_a++) {
                 if (resp['filter'][it_a]['cqlQuery'] !== undefined && ('' + resp['filter'][it_a]['cqlQuery']).split('(').length < 2) {
                     $.ajax({
-                        url: 'https://spatial.biodivdev.at/geoserver/ECO/wfs',
+                        url: 'https://spatial.biodiversityatlas.at/geoserver/ECO/wfs',
                         type: 'GET',
                         data: {
                             service: 'WFS',
@@ -975,8 +975,8 @@ func_CQLCapMatr = function(p_id, p_color) {
                                                 }
                                                 for (it_d = 0; it_d < speciesListAll.length; it_d++) {
                                                     $.ajax({
-                                                        //url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
-                                                        url: 'https://biocache.biodivdev.at/ws/webportal/params?',
+                                                        //url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
+                                                        url: 'https://biocache.biodiversityatlas.at/ws/webportal/params?',
                                                         data: {
                                                             q: encodeURIComponent(speciesListAll[it_d]['description']),
                                                             wkt: wktString
@@ -985,7 +985,7 @@ func_CQLCapMatr = function(p_id, p_color) {
                                                         type: 'POST',
                                                         success: function (occurrence) {
                                                             $.ajax({
-                                                                url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=qid:' + occurrence,
+                                                                url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=qid:' + occurrence,
                                                                 type: 'GET',
                                                                 success: function (result) {
                                                                     if (result['totalRecords'] !== 0) {
@@ -1104,7 +1104,7 @@ func_SpeciesInfo = function (spData) {
     console.log("clicked");
 }
 func_wktData = function (p_wkt) {
-    url_linkBioc = "https://biocache.biodivdev.at/occurrences/search?q=*%3A*&qc=&wkt=" + p_wkt;
+    url_linkBioc = "https://biocache.biodiversityatlas.at/occurrences/search?q=*%3A*&qc=&wkt=" + p_wkt;
     window.open(url_linkBioc, '_blank');
 }
 func_spData = function (item) {
@@ -1170,7 +1170,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                 if (resp['filter'][p_id]['cqlQuery'] !== undefined) {
                     console.log("check1");
                     $.ajax({
-                        url: 'https://spatial.biodivdev.at/geoserver/ECO/wfs',
+                        url: 'https://spatial.biodiversityatlas.at/geoserver/ECO/wfs',
                         type: 'GET',
                         data: {
                             service: 'WFS',
@@ -1238,8 +1238,8 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                             //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
                                             for (it_d = 0; it_d < resp2['speciesGroup']['list'].length; it_d++) {
                                                 $.ajax({
-                                                    //url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
-                                                    url: 'https://biocache.biodivdev.at/ws/webportal/params?',
+                                                    //url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
+                                                    url: 'https://biocache.biodiversityatlas.at/ws/webportal/params?',
                                                     data: {
                                                         q: resp2['speciesGroup']['list'][it_d]['description'],
                                                         wkt: wktString
@@ -1248,7 +1248,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                                     type: 'POST',
                                                     success: function (occurrence) {
                                                         $.ajax({
-                                                            url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=qid:' + occurrence,
+                                                            url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=qid:' + occurrence,
                                                             type: 'GET',
                                                             success: function (result) {
                                                                 if (result['totalRecords'] !== 0) {
@@ -1366,8 +1366,8 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                             //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
                                             for (it_d = 0; it_d < resp2['speciesGroup']['list'].length; it_d++) {
                                                 $.ajax({
-                                                    //url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
-                                                    url: 'https://biocache.biodivdev.at/ws/webportal/params?',
+                                                    //url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
+                                                    url: 'https://biocache.biodiversityatlas.at/ws/webportal/params?',
                                                     data: {
                                                         q: resp2['speciesGroup']['list'][it_d]['description'],
                                                         wkt: wktString
@@ -1376,7 +1376,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                                     type: 'POST',
                                                     success: function (occurrence) {
                                                         $.ajax({
-                                                            url: 'https://biocache.biodivdev.at/ws/occurrences/search?q=qid:' + occurrence,
+                                                            url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=qid:' + occurrence,
                                                             type: 'GET',
                                                             success: function (result) {
                                                                 if (result['totalRecords'] !== 0) {
@@ -1467,7 +1467,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
     /*
     if($('.cl_search').val().length > 0) {
         $.ajax({
-            url: 'http://spatial.biodivdev.at/geoserver/ECO/wfs',
+            url: 'http://spatial.biodiversityatlas.at/geoserver/ECO/wfs',
             type: 'GET',
             data: {
                 service: 'WFS',
@@ -1523,7 +1523,7 @@ func_initMap = function () {
                 popupMap[it_l].removeLayer(popupArr[it_l]);
             }
         }
-        ly_biotop = L.tileLayer.wms('https://spatial.biodivdev.at/geoserver/ECO/wms', {
+        ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
             format: 'image/svg',
             opacity: 1,
             layers: "ECO:" + layer_name
@@ -1537,7 +1537,7 @@ func_initMap = function () {
             map.removeLayer(geoJsonLayer);
         }
         //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
-        ly_biotop = L.tileLayer.wms('https://spatial.biodivdev.at/geoserver/ECO/wms', {
+        ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
             format: 'image/svg',
             opacity: 1,
             layers: "ECO:" + layer_name

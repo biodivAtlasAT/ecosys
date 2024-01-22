@@ -388,7 +388,7 @@ func_reqSpecies = function () {
     str_bBox += "\"))";
     console.log(str_bBox);
     /*
-    URL="https://biocache-ws.biodivdev.at/occurrences/search?q=*:*&pageSize=1&spatial&wkt=" + str_bBox;
+    URL="https://biocache-ws.biodiversityatlas.at/occurrences/search?q=*:*&pageSize=1&spatial&wkt=" + str_bBox;
     $.ajax({
         url: URL,
         type: 'GET',

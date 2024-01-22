@@ -9,7 +9,7 @@ info:
 servers:
 - url: "https://ecosys.biodiversityatlas.at"
   description: "Live - Service"
-- url: "https://ecosys.biodivdev.at"
+- url: "https://ecosys.biodiversityatlas.at"
   description: "Development System"
 - url: "http://127.0.0.1:8080"
   description: "Local Development System"
