@@ -641,7 +641,7 @@ func_CQLFull = function () {
                                                     for (it_d = 0; it_d < resp['speciesGroup']['list'].length; it_d++) {
                                                         $.ajax({
                                                             //url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
-                                                            url: 'https://biocache-ws.biodiversityatlas.at/webportal/params?',
+                                                            url: 'https://biocache.biodiversityatlas.at/ws/webportal/params?',
                                                             data: {
                                                                 q: resp['speciesGroup']['list'][it_d]['description'],
                                                                 wkt: wktString
@@ -650,7 +650,7 @@ func_CQLFull = function () {
                                                             type: 'POST',
                                                             success: function (occurrence) {
                                                                 $.ajax({
-                                                                    url: 'https://biocache-ws.biodiversityatlas.at/occurrences/search?q=qid:' + occurrence,
+                                                                    url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=qid:' + occurrence,
                                                                     type: 'GET',
                                                                     success: function (result) {
                                                                         console.log(result);
