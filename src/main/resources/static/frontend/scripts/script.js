@@ -81,7 +81,6 @@ func_init_i18n = function () {
         'de_AT': url_i18n + 'messages_de_AT.json'
     }).done(function () {
         if(window.getCookie('lang') !== undefined) {
-            $("html").attr("lang", window.getCookie('lang'));
             $.i18n().locale = window.getCookie('lang');
         } else {
             $.i18n().locale = 'de_AT';
@@ -97,8 +96,7 @@ $('button').attrchange({
     callback: function (event) {
         if (event['newValue'].length > 1) {
             //console.log($(event['target']));
-            $("html").attr("lang", location.href.split('lang=')[1]);
-            $.i18n().locale = location.href.split('lang=')[1];
+            $.i18n().locale = window.getCookie('lang');
             if ($(event['target']).attr('class') === 'cl_button') {
                 $(event['target']).html($.i18n().parse(event['newValue']));
                 //$(this).attr('value', prop.replace('[value]', ''));
@@ -1402,7 +1400,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                 .attr("class", "x-axis")
                 .attr("transform", "translate(" + margin.left + "," + (height - margin.bottom) + ")")
                 .call(xAxis[it_d]);
-            if(location.href.split('lang=')[1] === 'de_AT') {
+            if(window.getCookie('lang') === 'de_AT') {
                 if (chk_quint === 0) {
                     svg[it_d].append("text")
                         .attr("class", "x-text")
@@ -1416,7 +1414,7 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
                         .text("Distanz: " + parseInt(distance * 0.001) + "km");
                 }
             }
-            if(location.href.split('lang=')[1] === 'en') {
+            if(window.getCookie('lang') === 'en') {
                 if (chk_quint === 0) {
                     svg[it_d].append("text")
                         .attr("class", "x-text")

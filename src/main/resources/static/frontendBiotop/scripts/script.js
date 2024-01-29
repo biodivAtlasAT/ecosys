@@ -138,7 +138,6 @@ func_init_i18n = function () {
         'de_AT': url_i18n + 'messages_de_AT.json'
     }).done(function () {
         if(window.getCookie('lang') !== undefined) {
-            $("html").attr("lang", window.getCookie('lang'));
             $.i18n().locale = window.getCookie('lang');
         } else {
             $.i18n().locale = 'de_AT';
@@ -153,8 +152,7 @@ $('button').attrchange({
     callback: function (event) {
         if (event['newValue'].length > 1) {
             //console.log($(event['target']));
-            $("html").attr("lang", location.href.split('lang=')[1]);
-            $.i18n().locale = location.href.split('lang=')[1];
+            $.i18n().locale = window.getCookie('lang');
             if ($(event['target']).attr('class') === 'cl_button') {
                 $(event['target']).html($.i18n().parse(event['newValue']));
                 //$(this).attr('value', prop.replace('[value]', ''));
