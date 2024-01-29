@@ -80,10 +80,9 @@ func_init_i18n = function () {
         'en': url_i18n + 'messages.json',
         'de_AT': url_i18n + 'messages_de_AT.json'
     }).done(function () {
-        console.log(location.href.split('lang=')[1]);
-        if(location.href.split('lang=')[1] !== undefined) {
-            $("html").attr("lang", location.href.split('lang=')[1]);
-            $.i18n().locale = location.href.split('lang=')[1];
+        if(window.getCookie('lang') !== undefined) {
+            $("html").attr("lang", window.getCookie('lang'));
+            $.i18n().locale = window.getCookie('lang');
         } else {
             $.i18n().locale = 'de_AT';
         }
