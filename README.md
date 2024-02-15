@@ -1,6 +1,9 @@
 # ecosys
 Ökosystemleistungen und Lebensraumtypen / Ecosystem services and habitat types
-https://biodiversityatlas.at/
+
+Biodiversity-Atlas Austria: https://biodiversityatlas.at/
+ecosystem service: https://ecosys.biodiversityatlas.at/
+habitat service: https://ecosys.biodiversityatlas.at/biotop
 
 Anwenderdokumentation/User documentation: ApplicationDoc.docx
 
