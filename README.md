@@ -1,11 +1,13 @@
 # ecosys
-Ökosystemleistungen und Lebensraumtypen
+Ökosystemleistungen und Lebensraumtypen / Ecosystem services and habitat types
 
-Anwenderdokumentation siehe: ApplicationDoc.docx
+Anwenderdokumentation/User documentation: ApplicationDoc.docx
 
-Entwicklerdokumentation siehe: ServerDoc.docx
+Entwicklerdokumentation/Developer documentation: ServerDoc.docx
 
-Presentation for the TDWG 2023: 
+Presentation for the TDWG 2023: SYM07_3_TH_M_112315.pdf
+
+Frontend description
 
 User Guide functionality
 
