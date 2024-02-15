@@ -7,7 +7,7 @@ Entwicklerdokumentation/Developer documentation: ServerDoc.docx
 
 Presentation for the TDWG 2023: SYM07_3_TH_M_112315.pdf
 
-Frontend description
+Frontend description: 
 
 User Guide functionality
 
