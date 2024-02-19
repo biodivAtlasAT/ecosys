@@ -26,9 +26,8 @@ Under the following terms:
   - mentioning that your work is derived from work that is
     Copyright © Software Carpentry, Data Carpentry, Library Carpentry,
     or The Carpentries.
-  - where practical, linking to the respective lesson program website
-    (https://software-carpentry.org/, https://datacarpentry.org, https://librarycarpentry.org, or
-    https://carpentries.org), provide a [link to the license][cc-by-human]
+  - where practical, linking to the respective lesson program websites,
+    provide a [link to the license][cc-by-human]
   - and indicate if changes were made. You may do so in any reasonable manner, but not in any way
     that suggests the licensor endorses you or your use.
 
