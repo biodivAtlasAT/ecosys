@@ -791,7 +791,7 @@ func_reqSpecies = function () {
                 str_bBox = "MULTIPOLYGON(((" + minimapBox[it_x]._latlngs[0][0].lng + "%20" + minimapBox[it_x]._latlngs[0][0].lat + "," + minimapBox[it_x]._latlngs[0][1].lng + "%20" + minimapBox[it_x]._latlngs[0][1].lat + "," + minimapBox[it_x]._latlngs[0][2].lng + "%20" + minimapBox[it_x]._latlngs[0][2].lat + "," + minimapBox[it_x]._latlngs[0][3].lng + "%20" + minimapBox[it_x]._latlngs[0][3].lat + "," + minimapBox[it_x]._latlngs[0][0].lng + "%20" + minimapBox[it_x]._latlngs[0][3].lat + "," + minimapBox[it_x]._latlngs[0][0].lng + "%20" + minimapBox[it_x]._latlngs[0][0].lat + ")))";
             }
             url_linkBioc = "https://biocache.biodiversityatlas.at/occurrences/search?q=*%3A*&qc=&wkt=" + str_bBox;
-            url_biocache_ws = 'https://biocache.biodiversityatlas.at/ws/occurrences/facets.json?q=*%3A*&qc=&wkt=' + str_bBox + '&facets=taxon_name'; //"https://biocache-ws.biodiversityatlas.at/occurrence/facets.json?q=*:*&qc=&wkt=" + str_bBox + "&facets=taxon_name";
+            url_biocache_ws = 'https://biocache.biodiversityatlas.at/ws/occurrence/facets.json?q=*%3A*&qc=&wkt=' + str_bBox + '&facets=taxon_name'; //"https://biocache-ws.biodiversityatlas.at/occurrence/facets.json?q=*:*&qc=&wkt=" + str_bBox + "&facets=taxon_name";
             $.ajax({
                 url: url_biocache_ws,
                 type: 'GET',
