@@ -198,7 +198,7 @@ func_info = function(p_id) {
             break;
         case "Kohlenstoffvorrat": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S08_Speicherung-von-CO2_online_Version_final.pdf");
             break;
-        case "Selbstreinigungspotenzial Fießgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S07_Selbstreinigungspotenzial-von-Fliessgewaessern_online-Version_final.pdf");
+        case "Selbstreinigungspotenzial Fließgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S07_Selbstreinigungspotenzial-von-Fliessgewaessern_online-Version_final.pdf");
             break;
         case "Fruchbarer Boden Landwirtschaft": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S06_Steckbrief_Fruchtbarer-Boden-LW-Nutzung_online-Version_final.pdf");
             break;
