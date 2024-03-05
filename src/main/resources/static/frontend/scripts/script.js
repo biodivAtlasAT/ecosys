@@ -198,13 +198,13 @@ func_info = function(p_id) {
             break;
         case "Kohlenstoffvorrat": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S08_Speicherung-von-CO2_online_Version_final.pdf");
             break;
-        case "Selbstreinigungspotential Fießgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S07_Selbstreinigungspotenzial-von-Fliessgewaessern_online-Version_final.pdf");
+        case "Selbstreinigungspotenzial Fießgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S07_Selbstreinigungspotenzial-von-Fliessgewaessern_online-Version_final.pdf");
             break;
         case "Fruchbarer Boden Landwirtschaft": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S06_Steckbrief_Fruchtbarer-Boden-LW-Nutzung_online-Version_final.pdf");
             break;
         case "Fruchtbarer Boden Forstwirtschaft": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S06_Fruchtbarer-Boden_Forstwirtschaft_online-Version_final.pdf");
             break;
-        case "Bestäubungspotential": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S05_Bestaeubung-durch-Insekten_online-Version_final.pdf");
+        case "Bestäubungspotenzial": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S05_Bestaeubung-durch-Insekten_online-Version_final.pdf");
             break;
         case "Hochwasserschutz Wasserrückhalt": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S04_Schutz_vor_HW-Hochwasserretention_online-Version_Vorlage-final.pdf");
             break;
@@ -791,7 +791,7 @@ func_reqSpecies = function () {
                 str_bBox = "MULTIPOLYGON(((" + minimapBox[it_x]._latlngs[0][0].lng + "%20" + minimapBox[it_x]._latlngs[0][0].lat + "," + minimapBox[it_x]._latlngs[0][1].lng + "%20" + minimapBox[it_x]._latlngs[0][1].lat + "," + minimapBox[it_x]._latlngs[0][2].lng + "%20" + minimapBox[it_x]._latlngs[0][2].lat + "," + minimapBox[it_x]._latlngs[0][3].lng + "%20" + minimapBox[it_x]._latlngs[0][3].lat + "," + minimapBox[it_x]._latlngs[0][0].lng + "%20" + minimapBox[it_x]._latlngs[0][3].lat + "," + minimapBox[it_x]._latlngs[0][0].lng + "%20" + minimapBox[it_x]._latlngs[0][0].lat + ")))";
             }
             url_linkBioc = "https://biocache.biodiversityatlas.at/occurrences/search?q=*%3A*&qc=&wkt=" + str_bBox;
-            url_biocache_ws = 'https://biocache.biodiversityatlas.at/ws/occurrences/facets.json?q=*:*&qc=&wkt=' + str_bBox + '&facets=taxon_name'; //"https://biocache-ws.biodiversityatlas.at/occurrence/facets.json?q=*:*&qc=&wkt=" + str_bBox + "&facets=taxon_name";
+            url_biocache_ws = 'https://biocache.biodiversityatlas.at/ws/occurrences/facets.json?q=*%3A*&qc=&wkt=' + str_bBox + '&facets=taxon_name'; //"https://biocache-ws.biodiversityatlas.at/occurrence/facets.json?q=*:*&qc=&wkt=" + str_bBox + "&facets=taxon_name";
             $.ajax({
                 url: url_biocache_ws,
                 type: 'GET',
