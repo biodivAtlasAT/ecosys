@@ -194,7 +194,7 @@ func_info = function(p_id) {
             break;
         case "Kohlenstoffvorrat": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S08_Speicherung-von-CO2_online_Version_final.pdf");
             break;
-        case "Selbstreinigungspotenzial Fießgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S07_Selbstreinigungspotenzial-von-Fliessgewaessern_online-Version_final.pdf");
+        case "Selbstreinigungspotenzial Fließgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S07_Selbstreinigungspotenzial-von-Fliessgewaessern_online-Version_final.pdf");
             break;
         case "Fruchbarer Boden Landwirtschaft": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S06_Steckbrief_Fruchtbarer-Boden-LW-Nutzung_online-Version_final.pdf");
             break;
@@ -768,19 +768,13 @@ func_reqEcosys = function (m_th, m_id) {
         }
     }
 }
-func_reqSpecies = function () {
-    var it_x = 0;
+func_reqSpecies = function (it_x) {
     var url_biocache_ws = '';
     var url_linkBioc = '';
     if ($('input.cl_cbEsys:checked').length !== 0) {
         if (marker.length > 0) {
             $('.cl_esysInf').children().remove();
-            for (it_r = 0; it_r < marker.length; it_r++) {
-                if (marker[it_r]._map.hasLayer(marker[it_r]._popup)) {
-                    it_x = it_r;
-                    break;
-                }
-            }
+
             llBounds[it_x] = L.latLngBounds(L.latLng(marker[it_x].getLatLng().lat - 0.010, marker[it_x].getLatLng().lng - 0.010), L.latLng(marker[it_x].getLatLng().lat + 0.010, marker[it_x].getLatLng().lng + 0.010));
             minimapBox[it_x] = func_createPolygon(llBounds[it_x]);
             if (minimapBox[it_x] !== undefined) {
@@ -1689,15 +1683,20 @@ func_initChart = function (data, p_hashID, p_refID, chk_quint, p_catID) {
     }
 }
 func_delMark = function (th) {
+
+    for(it_r = 0; it_r < marker.length; it_r++) {
+        map.removeLayer(marker[it_r]);
+    }
+
     marker[parseInt(th.attr('id').split('_')[1])] = undefined;
     minimapArr[parseInt(th.attr('id').split('_')[1])] = undefined;
     point[parseInt(th.attr('id').split('_')[1])] = undefined;
     p_point[parseInt(th.attr('id').split('_')[1])] = undefined;
     llBounds[parseInt(th.attr('id').split('_')[1])] = undefined;
 
-    map.removeLayer(filteredmarker[parseInt(th.attr('id').split('_')[1])]);
 
     filteredmarker = marker.filter(x => x !== undefined);
+
     if (filteredmarker.length === 1) {
         if (chk_pconn === 1) {
             func_updatePolyLine();
@@ -1735,10 +1734,9 @@ func_delMark = function (th) {
     }
     */
 
-    //console.log(marker);
     th.remove();
 
-    filteredmarker = marker.filter(x => x !== undefined);
+    //filteredmarker = marker.filter(x => x !== undefined);
     filteredminimaps = minimapArr.filter(x => x !== undefined);
     filteredPoint = point.filter(x => x !== undefined);
     filteredp_Point = p_point.filter(x => x !== undefined);
@@ -1746,9 +1744,6 @@ func_delMark = function (th) {
     filteredpopupMap = popupMap.filter(x => x !== undefined);
     filteredpolygonLayer = polygonLayer.filter(x => x !== undefined);
 
-    for (it_r = 0; it_r < filteredmarker.length; it_r++) {
-        map.removeLayer(filteredmarker[it_r]);
-    }
 
     marker = new Array();
     point = new Array();
@@ -1797,7 +1792,7 @@ func_delMark = function (th) {
             }
         });
     }
-    filteredmarker = marker.filter(x => x !== undefined);
+    //filteredmarker = marker.filter(x => x !== undefined);
     if (filteredmarker.length > 1 && it_infBt === 1) {
         if (info_icon.css('visibility') === 'hidden') {
             it_infBt = ++it_infBt % 2;
@@ -1916,6 +1911,7 @@ func_delMark = function (th) {
         $('.cl_footer').css('margin-top', '0%');
         it_mmBt = ++it_mmBt % 2;
     }
+
     it_0 = filteredmarker.length;
 };
 func_updateID = function (tmpT) {
@@ -2146,9 +2142,7 @@ map.on('popupopen', function (e) {
     } else {
         chk_pcSet = 0;
         func_reqEcosys(new Array(marker[$(e.popup._content).attr('id').split('_')[2]]), $(e.popup._content).attr('id').split('_')[2]);
-        if(chk_lyClick === 1) {
-            func_reqSpecies();
-        }
+        func_reqSpecies($(e.popup._content).attr('id').split('_')[2]);
     }
 });
 map.on('popupclose', function (e) {
@@ -2403,6 +2397,7 @@ map.on('click', function(e) {
                             }
                         });
                         */
+
                         var popup = L.popup({
                             minWidth: "43em"
                         })
