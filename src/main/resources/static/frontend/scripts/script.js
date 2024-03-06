@@ -176,7 +176,7 @@ func_info = function(p_id) {
             break;
         case "Landwirtschaftlicher Ertrag Grünland": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V01_Produktion-pflanzlicher-Rohstoffe_online-Version_final.pdf");
             break;
-        case "Bestäubungspotential": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S15_Vielfalt_bestaeubender_Insekten_online_Version_final.pdf");
+        case "Bestäubungspotenzial": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S15_Vielfalt_bestaeubender_Insekten_online_Version_final.pdf");
             break;
         case "Zustand Fließgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S14_Natuerliche-Fliessgewaesser_online_Version_final.pdf");
             break;
@@ -194,7 +194,7 @@ func_info = function(p_id) {
             break;
         case "Kohlenstoffvorrat": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S08_Speicherung-von-CO2_online_Version_final.pdf");
             break;
-        case "Selbstreinigungspotential Fießgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S07_Selbstreinigungspotenzial-von-Fliessgewaessern_online-Version_final.pdf");
+        case "Selbstreinigungspotenzial Fießgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S07_Selbstreinigungspotenzial-von-Fliessgewaessern_online-Version_final.pdf");
             break;
         case "Fruchbarer Boden Landwirtschaft": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S06_Steckbrief_Fruchtbarer-Boden-LW-Nutzung_online-Version_final.pdf");
             break;
