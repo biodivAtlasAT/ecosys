@@ -176,7 +176,7 @@ func_info = function(p_id) {
             break;
         case "Landwirtschaftlicher Ertrag Grünland": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/V01_Produktion-pflanzlicher-Rohstoffe_online-Version_final.pdf");
             break;
-        case "Landwirtschaftlicher Ertrag Bestäubung": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S15_Vielfalt_bestaeubender_Insekten_online_Version_final.pdf");
+        case "Bestäubungspotential": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S15_Vielfalt_bestaeubender_Insekten_online_Version_final.pdf");
             break;
         case "Zustand Fließgewässer": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S14_Natuerliche-Fliessgewaesser_online_Version_final.pdf");
             break;
@@ -200,7 +200,7 @@ func_info = function(p_id) {
             break;
         case "Fruchtbarer Boden Forstwirtschaft": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S06_Fruchtbarer-Boden_Forstwirtschaft_online-Version_final.pdf");
             break;
-        case "Bestäubungspotential": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S05_Bestaeubung-durch-Insekten_online-Version_final.pdf");
+        case "Landwirtschaftlicher Ertrag Bestäubung": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S05_Bestaeubung-durch-Insekten_online-Version_final.pdf");
             break;
         case "Hochwasserschutz Wasserrückhalt": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S04_Schutz_vor_HW-Hochwasserretention_online-Version_Vorlage-final.pdf");
             break;
