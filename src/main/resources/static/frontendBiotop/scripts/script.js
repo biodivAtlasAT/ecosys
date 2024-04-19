@@ -622,9 +622,9 @@ func_CQLFull = function () {
                                             }, 'wkt');
                                             wktString = "MULTIPOLYGON(((";
                                             for (it_w = 0; it_w < wkt.length; it_w++) {
-                                                wktString += wkt[it_w][0].toFixed(6) + " " + wkt[it_w][1].toFixed(6) + ",";
+                                                wktString += wkt[it_w][0].tofixed(5) + " " + wkt[it_w][1].tofixed(5) + ",";
                                             }
-                                            wktString += wkt[0][0].toFixed(6) + " " + wkt[0][1].toFixed(6) + ")))";
+                                            wktString += wkt[0][0].tofixed(5) + " " + wkt[0][1].tofixed(5) + ")))";
                                             console.log(response['features'][0]['properties']['AK_FNR']);
                                             $.ajax({
                                                 url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/' + response['features'][0]['properties']['AK_FNR'],
@@ -946,9 +946,9 @@ func_CQLCapMatr = function(p_id, p_color) {
                                     }, 'wkt');
                                     wktString = "MULTIPOLYGON(((";
                                     for (it_w = 0; it_w < wkt.length; it_w++) {
-                                        wktString += wkt[it_w][0].toFixed(6) + " " + wkt[it_w][1].toFixed(6) + ",";
+                                        wktString += wkt[it_w][0].tofixed(5) + " " + wkt[it_w][1].tofixed(5) + ",";
                                     }
-                                    wktString += wkt[0][0].toFixed(6) + " " + wkt[0][1].toFixed(6) + ")))";
+                                    wktString += wkt[0][0].tofixed(5) + " " + wkt[0][1].tofixed(5) + ")))";
                                     console.log(wktString);
                                     str_contentAll = '';
                                     var tmp_AK_FNR = url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/' + response['features'][0]['properties']['AK_FNR'];
@@ -1217,9 +1217,9 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                 }, 'wkt');
                                 wktString = "MULTIPOLYGON(((";
                                 for (it_w = 0; it_w < wkt.length; it_w++) {
-                                    wktString += wkt[it_w][0].toFixed(6) + " " + wkt[it_w][1].toFixed(6) + ",";
+                                    wktString += wkt[it_w][0].tofixed(5) + " " + wkt[it_w][1].tofixed(5) + ",";
                                 }
-                                wktString += wkt[0][0].toFixed(6) + " " + wkt[0][1].toFixed(6) + ")))";
+                                wktString += wkt[0][0].tofixed(5) + " " + wkt[0][1].tofixed(5) + ")))";
                                 //console.log(response['features'][0]['properties']['AK_FNR']);
 
                                 var str_content = '';
