@@ -23,7 +23,7 @@ var infoPup = L.popup({
     closeButton: true,
     closeOnClick: true
 });
-var infoPup = new Array();
+var infoPupAll = new Array();
 var str_content = new Array();
 var speciesGroupsAll = new Array();
 var speciesList = new Array();
@@ -1007,7 +1007,7 @@ func_CQLCapMatr = function(p_id, p_color) {
 
                                         console.log(response['features'][0]['properties']);
 
-                                        infoPup = L.popup({
+                                        infoPupAll = L.popup({
                                             className: 'cl_popup3',
                                             closeButton: true,
                                             closeOnClick: true
@@ -1018,9 +1018,9 @@ func_CQLCapMatr = function(p_id, p_color) {
 
                                         str_content += "<div onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt)' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
                                         if (response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
-                                            infoPup.setLatLng(e.latlng);
-                                            infoPup.setContent(str_content);
-                                            infoPup.openOn(map);
+                                            infoPupAll.setLatLng(e.latlng);
+                                            infoPupAll.setContent(str_content);
+                                            infoPupAll.openOn(map);
                                         } else {
                                             if ($('.cl_capMatr').length !== 0) {
                                                 $('.cl_capMatr').remove();
@@ -1069,26 +1069,26 @@ func_CQLCapMatr = function(p_id, p_color) {
                                                 str_content += "<div><b>Total Value: " + response['features'][0]['properties']['TotalValue'] + "</b></div>";
                                             }
 
-                                            infoPup.setLatLng(e.latlng);
-                                            infoPup.setContent(str_content);
-                                            infoPup.openOn(map);
+                                            infoPupAll.setLatLng(e.latlng);
+                                            infoPupAll.setContent(str_content);
+                                            infoPupAll.openOn(map);
 
                                         }
                                         if (speciesGroups !== undefined && !speciesGroups.length) {
-                                            if (infoPup !== undefined) {
-                                                infoPup.setLatLng(e.latlng);
-                                                infoPup.setContent(str_content);
+                                            if (infoPupAll !== undefined) {
+                                                infoPupAll.setLatLng(e.latlng);
+                                                infoPupAll.setContent(str_content);
                                             } else {
-                                                infoPup = L.popup({
+                                                infoPupAll = L.popup({
                                                     className: 'cl_popup3',
                                                     closeButton: true,
                                                     closeOnClick: true
                                                 });
-                                                infoPup.setLatLng(e.latlng);
-                                                infoPup.setContent(str_content);
+                                                infoPupAll.setLatLng(e.latlng);
+                                                infoPupAll.setContent(str_content);
                                             }
                                             //map.addLayer(infoPup);
-                                            //infoPup[it_a].openOn(map);
+                                            //infoPupAll[it_a].openOn(map);
                                         }
                                     } else {
                                         console.log("keine AK_FNR");
