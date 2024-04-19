@@ -23,10 +23,10 @@ var infoPup = L.popup({
     closeButton: true,
     closeOnClick: true
 });
-var infoPupAll = new Array();
-var str_contentAll = new Array();
+var infoPup = new Array();
+var str_content = new Array();
 var speciesGroupsAll = new Array();
-var speciesListAll = new Array();
+var speciesList = new Array();
 var styleAll = new Array();
 var ly_filterAll = new Array();
 var chk = 0;
@@ -561,8 +561,9 @@ func_CQLFull = function () {
                             //console.log('BT_Code=' + '\'' + e.layer.feature.properties.BT_Code + '\'');
                             if (resp['filter'][it_h]['cqlQuery'] === 'BT_Code=' + '\'' + e.layer.feature.properties.BT_Code + '\'') {
                                 console.log($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_'));
-                                func_toggle(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
                                 func_CQLSubm(it_h, resp['filter'][it_h]['id']);
+                                //func_toggle(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
+                                
                             }
                         }
                         /*
@@ -950,7 +951,7 @@ func_CQLCapMatr = function(p_id, p_color) {
                                     }
                                     wktString += wkt[0][0].toFixed(5) + " " + wkt[0][1].toFixed(5) + ")))";
                                     console.log(wktString);
-                                    str_contentAll = '';
+                                    str_content = '';
                                     var tmp_AK_FNR = url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/' + response['features'][0]['properties']['AK_FNR'];
                                     if (tmp_AK_FNR !== undefined || tmp_AK_FNR !== '') {
                                         $.ajax({
@@ -964,22 +965,22 @@ func_CQLCapMatr = function(p_id, p_color) {
                                             },
                                             //data: JSON.stringify({"packageID":opt_layerID.val()}),
                                             success: function (resp2) {
-                                                speciesGroupsAll = new Array();
-                                                speciesListAll = new Array();
+                                                speciesGroups = new Array();
+                                                speciesList = new Array();
                                                 for (it_d = 1; it_d < parseInt(resp2['speciesGroup']['list'].length); it_d++) {
                                                     if(resp2['speciesGroup']['list'][it_d - 1]['taxonId'] !== resp2['speciesGroup']['list'][it_d]['taxonId']) {
-                                                        speciesListAll.push(resp2['speciesGroup']['list'][it_d - 1]);
+                                                        speciesList.push(resp2['speciesGroup']['list'][it_d - 1]);
                                                     }
                                                     if(it_d == parseInt(resp2['speciesGroup']['list'].length) - 1 &&  resp2['speciesGroup']['list'][it_d - 1]['taxonId'] !== resp2['speciesGroup']['list'][it_d]['taxonId']) {
-                                                        speciesListAll.push(resp2['speciesGroup']['list'][it_d]);
+                                                        speciesList.push(resp2['speciesGroup']['list'][it_d]);
                                                     }
                                                 }
-                                                for (it_d = 0; it_d < speciesListAll.length; it_d++) {
+                                                for (it_d = 0; it_d < speciesList.length; it_d++) {
                                                     $.ajax({
                                                         //url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
                                                         url: 'https://biocache.biodiversityatlas.at/ws/webportal/params?',
                                                         data: {
-                                                            q: encodeURIComponent(speciesListAll[it_d]['description']),
+                                                            q: encodeURIComponent(speciesList[it_d]['description']),
                                                             wkt: wktString
                                                         },
                                                         // POST tested string returns a number
@@ -990,7 +991,7 @@ func_CQLCapMatr = function(p_id, p_color) {
                                                                 type: 'GET',
                                                                 success: function (result) {
                                                                     if (result['totalRecords'] !== 0) {
-                                                                        speciesGroupsAll.push(result['occurrences']);
+                                                                        speciesGroups.push(result['occurrences']);
                                                                     }
                                                                 }
                                                             });
@@ -1002,24 +1003,24 @@ func_CQLCapMatr = function(p_id, p_color) {
                                                 console.error(error);
                                             }
                                         });
-                                        str_contentAll += '<div><b>' + decode_utf8(response['features'][0]['properties']['BT_Lang']) + '</b></div>';
+                                        str_content += '<div><b>' + decode_utf8(response['features'][0]['properties']['BT_Lang']) + '</b></div>';
 
                                         console.log(response['features'][0]['properties']);
 
-                                        infoPupAll = L.popup({
+                                        infoPup = L.popup({
                                             className: 'cl_popup3',
                                             closeButton: true,
                                             closeOnClick: true
                                         });
                                         if(response['features'][0]['properties']['AK_FNR'] !== '') {
-                                            str_contentAll += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroupsAll);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
+                                            str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
                                         }
 
-                                        str_contentAll += "<div onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt)' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
+                                        str_content += "<div onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt)' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
                                         if (response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
-                                            infoPupAll.setLatLng(e.latlng);
-                                            infoPupAll.setContent(str_contentAll);
-                                            infoPupAll.openOn(map);
+                                            infoPup.setLatLng(e.latlng);
+                                            infoPup.setContent(str_content);
+                                            infoPup.openOn(map);
                                         } else {
                                             if ($('.cl_capMatr').length !== 0) {
                                                 $('.cl_capMatr').remove();
@@ -1027,67 +1028,67 @@ func_CQLCapMatr = function(p_id, p_color) {
                                             if ($('.cl_services').length !== 0) {
                                                 $('.cl_services').remove();
                                             }
-                                            str_contentAll += "<div class='cl_capMatr'><div class='cl_cntCap'><b>Capacity Matrix values</b></div></div>";
+                                            str_content += "<div class='cl_capMatr'><div class='cl_cntCap'><b>Capacity Matrix values</b></div></div>";
                                             if ((response['features'][0]['properties']['Disturbanc'] !== undefined || response['features'][0]['properties']['Localclima'] !== undefined || response['features'][0]['properties']['Waterregul'] !== undefined || response['features'][0]['properties']['Watersuppl'] !== undefined || response['features'][0]['properties']['Pollinatio'] !== undefined)) {
-                                                str_contentAll += "<div class='cl_services cl_serv1'><b>Regulation services</b></div>";
+                                                str_content += "<div class='cl_services cl_serv1'><b>Regulation services</b></div>";
                                                 if (response['features'][0]['properties']['Disturbanc'] !== undefined) {
-                                                    str_contentAll += "<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>";
+                                                    str_content += "<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>";
                                                 }
                                                 if (response['features'][0]['properties']['Localclima'] !== undefined) {
-                                                    str_contentAll += "<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>";
+                                                    str_content += "<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>";
                                                 }
                                                 if (response['features'][0]['properties']['Waterregul'] !== undefined) {
-                                                    str_contentAll += "<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>";
+                                                    str_content += "<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>";
                                                 }
                                                 if (response['features'][0]['properties']['Watersuppl'] !== undefined) {
-                                                    str_contentAll += "<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>";
+                                                    str_content += "<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>";
                                                 }
                                                 if (response['features'][0]['properties']['Pollinatio'] !== undefined) {
-                                                    str_contentAll += "<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>";
+                                                    str_content += "<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>";
                                                 }
                                             }
                                             if (response['features'][0]['properties']['Refugium'] !== undefined) {
-                                                str_contentAll += "<div class='cl_services cl_serv2'><b>Habitat services</b></div>";
+                                                str_content += "<div class='cl_services cl_serv2'><b>Habitat services</b></div>";
                                                 if (response['features'][0]['properties']['Refugium'] !== undefined) {
-                                                    str_contentAll += "<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>";
+                                                    str_content += "<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>";
                                                 }
                                             }
                                             if ((response['features'][0]['properties']['Food'] !== undefined || response['features'][0]['properties']['Rawmateria'] !== undefined || response['features'][0]['properties']['Geneticres'] !== undefined)) {
-                                                str_contentAll += "<div class='cl_services cl_serv3'><b>Provision services</b></div>";
+                                                str_content += "<div class='cl_services cl_serv3'><b>Provision services</b></div>";
                                                 if (response['features'][0]['properties']['Food'] !== undefined) {
-                                                    str_contentAll += "<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>";
+                                                    str_content += "<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>";
                                                 }
                                                 if (response['features'][0]['properties']['Rawmateria'] !== undefined) {
-                                                    str_contentAll += "<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>";
+                                                    str_content += "<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>";
                                                 }
                                                 if (response['features'][0]['properties']['Geneticres'] !== undefined) {
-                                                    str_contentAll += "<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>";
+                                                    str_content += "<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>";
                                                 }
                                             }
                                             if (response['features'][0]['properties']['TotalValue'] !== undefined) {
-                                                str_contentAll += "<div><b>Total Value: " + response['features'][0]['properties']['TotalValue'] + "</b></div>";
+                                                str_content += "<div><b>Total Value: " + response['features'][0]['properties']['TotalValue'] + "</b></div>";
                                             }
 
-                                            infoPupAll.setLatLng(e.latlng);
-                                            infoPupAll.setContent(str_contentAll);
-                                            infoPupAll.openOn(map);
+                                            infoPup.setLatLng(e.latlng);
+                                            infoPup.setContent(str_content);
+                                            infoPup.openOn(map);
 
                                         }
-                                        if (speciesGroupsAll !== undefined && !speciesGroupsAll.length) {
-                                            if (infoPupAll !== undefined) {
-                                                infoPupAll.setLatLng(e.latlng);
-                                                infoPupAll.setContent(str_contentAll);
+                                        if (speciesGroups !== undefined && !speciesGroups.length) {
+                                            if (infoPup !== undefined) {
+                                                infoPup.setLatLng(e.latlng);
+                                                infoPup.setContent(str_content);
                                             } else {
-                                                infoPupAll = L.popup({
+                                                infoPup = L.popup({
                                                     className: 'cl_popup3',
                                                     closeButton: true,
                                                     closeOnClick: true
                                                 });
-                                                infoPupAll.setLatLng(e.latlng);
-                                                infoPupAll.setContent(str_contentAll);
+                                                infoPup.setLatLng(e.latlng);
+                                                infoPup.setContent(str_content);
                                             }
                                             //map.addLayer(infoPup);
-                                            //infoPupAll[it_a].openOn(map);
+                                            //infoPup[it_a].openOn(map);
                                         }
                                     } else {
                                         console.log("keine AK_FNR");
