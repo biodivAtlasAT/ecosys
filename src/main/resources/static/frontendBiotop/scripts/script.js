@@ -554,8 +554,6 @@ func_CQLFull = function () {
                         for (it_h = 0; it_h < resp['filter'].length; it_h++) {
                             if ($('#id_h_' + resp['filter'][it_h]['id']).attr('class') !== undefined) {
                                 func_hide(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
-                            } else {
-                                func_toggle(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
                             }
                         }
                         for (it_h = 0; it_h < resp['filter'].length; it_h++) {
