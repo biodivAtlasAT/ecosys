@@ -553,7 +553,8 @@ func_CQLFull = function () {
                         console.log(resp['filter']);
                         for (it_h = 0; it_h < resp['filter'].length; it_h++) {
                             if ($('#id_h_' + resp['filter'][it_h]['id']).attr('class') !== undefined) {
-                                func_hide(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
+                                //func_hide(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
+                                func_toggle(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
                             }
                         }
                         for (it_h = 0; it_h < resp['filter'].length; it_h++) {
@@ -705,6 +706,7 @@ func_CQLCapMatr = function(p_id, p_color) {
     $('.cl_hov').css('color', '#637073');
     $('#id_h_' + p_id).css('background-color', '#49754a');
     $('#id_h_' + p_id).css('color', '#ffffff');
+    map.on('popupclose', func_closedPopup);
     $.ajax({
         url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
         headers: {"Accept": "application/json"},
