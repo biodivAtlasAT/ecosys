@@ -655,7 +655,9 @@ func_CQLFull = function () {
                                                                     url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=qid:' + occurrence,
                                                                     type: 'GET',
                                                                     success: function (result) {
-                                                                        console.log(result);
+                                                                        if (result['totalRecords'] !== 0) {
+                                                                            speciesGroups.push(result['occurrences']);
+                                                                        }
                                                                     }
                                                                 });
                                                             }
