@@ -552,9 +552,7 @@ func_CQLFull = function () {
                     geoJsonLayer.on('click', function (e) {
                         console.log(resp['filter']);
                         for (it_h = 0; it_h < resp['filter'].length; it_h++) {
-                            if ($('#id_h_' + resp['filter'][it_h]['id']).attr('class') !== undefined) {
-                                func_hide(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
-                            }
+                                func_hide(parseInt(resp['filter'][it_h]['id']));
                         }
                         for (it_h = 0; it_h < resp['filter'].length; it_h++) {
                             //console.log(resp['filter'][it_h]['cqlQuery']);
