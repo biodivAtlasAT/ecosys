@@ -553,7 +553,8 @@ func_CQLFull = function () {
                         console.log(resp['filter']);
                         for (it_h = 0; it_h < resp['filter'].length; it_h++) {
                             if ($('#id_h_' + resp['filter'][it_h]['id']).attr('class') !== undefined) {
-                                //func_hide(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
+                                func_hide(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
+                            } else {
                                 func_toggle(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
                             }
                         }
@@ -562,7 +563,8 @@ func_CQLFull = function () {
                             //console.log('BT_Code=' + '\'' + e.layer.feature.properties.BT_Code + '\'');
                             if (resp['filter'][it_h]['cqlQuery'] === 'BT_Code=' + '\'' + e.layer.feature.properties.BT_Code + '\'') {
                                 console.log($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_'));
-                                func_CQLSubm(it_h, resp['filter'][it_h]['id']);
+                                $('#id_h_' + resp['filter'][it_h]['id']).click();
+                                //func_CQLSubm(it_h, resp['filter'][it_h]['id']);
                                 //func_toggle(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
                                 
                             }
