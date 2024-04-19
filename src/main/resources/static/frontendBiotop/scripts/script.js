@@ -543,9 +543,6 @@ func_CQLFull = function () {
                     if (ly_filter !== undefined) {
                         map.removeLayer(ly_filter);
                     }
-                    if (geoJsonLayer !== undefined) {
-                        map.removeLayer(geoJsonLayer);
-                    }
                     geoJsonLayer = L.geoJSON(response);
                     geoJsonLayer.eachLayer(function (layer) {
                         // Set the opacity of each feature using setStyle
@@ -619,6 +616,9 @@ func_CQLFull = function () {
                                         });
                                         ly_filter.on('click', function (e) {
                                             //console.log(e.layer.feature.geometry);
+                                            if (geoJsonLayer !== undefined) {
+                                                map.removeLayer(geoJsonLayer);
+                                            }
                                             var clickedFeature = e.layer.feature;
                                             var wkt = new Array();
                                             // Convert the clicked feature's geometry to a WKT string
@@ -1204,6 +1204,9 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                              */
                             ly_filter.on('click', function (e) {
                                 //console.log(e.layer.feature.geometry);
+                                if (geoJsonLayer !== undefined) {
+                                    map.removeLayer(geoJsonLayer);
+                                }
                                 var clickedFeature = e.layer.feature;
                                 var wkt = new Array();
                                 // Convert the clicked feature's geometry to a WKT string
