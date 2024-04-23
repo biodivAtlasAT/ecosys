@@ -560,8 +560,8 @@ func_CQLFull = function () {
                             //console.log('BT_Code=' + '\'' + e.layer.feature.properties.BT_Code + '\'');
                             if (resp['filter'][it_h]['cqlQuery'] === 'BT_Code=' + '\'' + e.layer.feature.properties.BT_Code + '\'') {
                                 console.log($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_'));
-                                $('#id_h_' + resp['filter'][it_h]['id']).click();
-                                //func_CQLSubm(it_h, resp['filter'][it_h]['id']);
+                                //$('#id_h_' + resp['filter'][it_h]['id']).click();
+                                func_CQLSubm(it_h, resp['filter'][it_h]['id']);
                                 //func_toggle(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
                                 
                             }
