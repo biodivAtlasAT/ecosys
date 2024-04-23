@@ -234,11 +234,10 @@ opt_layerID.on('click change', function () {
         if (ly_biotop !== undefined) {
             map.removeLayer(ly_biotop);
         }
-        /*
         if (geoJsonLayer !== undefined) {
             map.removeLayer(geoJsonLayer);
         }
-        */
+        func_CQLFull();
         $.ajax({
             url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
             headers: {"Accept": "application/json"},
@@ -1492,7 +1491,6 @@ func_CQLSubm = function (p_id, r_id, p_color) {
      */
 }
 func_initMap = function () {
-    func_CQLFull();
     if (LayerMap !== undefined) {
         map.removeLayer(LayerMap);
     }
