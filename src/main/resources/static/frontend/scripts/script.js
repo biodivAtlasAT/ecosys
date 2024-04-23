@@ -2149,9 +2149,9 @@ map.on('popupopen', function (e) {
     } else {
         chk_pcSet = 0;
         func_reqEcosys(new Array(marker[$(e.popup._content).attr('id').split('_')[2]]), $(e.popup._content).attr('id').split('_')[2]);
-        if(chk_lyClick === 1) {
+        //if(chk_lyClick === 1) {
             func_reqSpecies();
-        }
+        //}
     }
 });
 map.on('popupclose', function (e) {
