@@ -8,10 +8,10 @@ var cnt_nav = $('#cnt_nav');
 var ly_biotop;
 var layer_name = '';
 var chk_map = 0;
-var speciesGroups = new Array();
+var speciesGroups = [];
 var ly_filter = undefined;
-var wkt = new Array();
-var wktString = new Array();
+var wkt = [];
+var wktString = [];
 var map = L.map('map', {
     center: [48.3805228, 15.3758588],
     zoom: 10
@@ -23,12 +23,12 @@ var infoPup = L.popup({
     closeButton: true,
     closeOnClick: true
 });
-var infoPupAll = new Array();
-var str_content = new Array();
-var speciesGroupsAll = new Array();
-var speciesList = new Array();
-var styleAll = new Array();
-var ly_filterAll = new Array();
+var infoPupAll = [];
+var str_content = [];
+var speciesGroupsAll = [];
+var speciesList = [];
+var styleAll = [];
+var ly_filterAll = [];
 var chk = 0;
 map.locate({
     setView: false
@@ -265,8 +265,8 @@ opt_layerID.on('click change', function () {
                     success: function (resp2) {
                         var flag = 0;
                         var it_a = 0;
-                        var arrAlph = new Array();
-                        var tmpArr = new Array();
+                        var arrAlph = [];
+                        var tmpArr = [];
                         p_color = '#66ffff';
                         $('.cl_habitatTypes').children().remove();
                         for (it_h = 0; it_h < resp2['filter'].length; it_h++) {
@@ -281,8 +281,8 @@ opt_layerID.on('click change', function () {
                         var it_t = 0;
                         var it_f = 0;
                         var it_cnt = 0;
-                        var tmpCh = new Array();
-                        var tmpFiltAlph = new Array();
+                        var tmpCh = [];
+                        var tmpFiltAlph = [];
                         arrAlph = arrAlph.filter(function (itm, i, a) {
                             return i == a.indexOf(itm);
                         });
@@ -453,7 +453,7 @@ opt_layerID.on('click change', function () {
 
 
             var it_0 = 0;
-            var arrCol1 = new Array();
+            var arrCol1 = [];
             arrCol1[0] = "rgb(255, 0, 0)";
             arrCol1[1] = "rgb(255,165,0)";
             arrCol1[2] = "rgb(255, 255, 0)";
@@ -472,7 +472,7 @@ opt_layerID.on('click change', function () {
                     .style('background-color', arrCol1[it_0])
             }
             it_0 = 0;
-            var arrCol2 = new Array();
+            var arrCol2 = [];
             arrCol2[0] = "rgb(250, 25, 0)";
             arrCol2[1] = "rgb(250,50,0)";
             arrCol2[2] = "rgb(225, 75, 0)";
@@ -620,7 +620,7 @@ func_CQLFull = function () {
                                                 map.removeLayer(geoJsonLayer);
                                             }
                                             var clickedFeature = e.layer.feature;
-                                            var wkt = new Array();
+                                            var wkt = [];
                                             // Convert the clicked feature's geometry to a WKT string
                                             turf.coordEach(clickedFeature, function (coord) {
                                                 wkt.push(coord);
@@ -934,7 +934,7 @@ func_CQLCapMatr = function(p_id, p_color) {
                                 });
                                 ly_filterAll[it_a].on('click', function (e) {
                                     var clickedFeature = e.layer.feature;
-                                    wkt = new Array();
+                                    wkt = [];
                                     // Convert the clicked feature's geometry to a WKT string
                                     turf.coordEach(clickedFeature, function (coord) {
                                         wkt.push(coord);
@@ -959,8 +959,8 @@ func_CQLCapMatr = function(p_id, p_color) {
                                             },
                                             //data: JSON.stringify({"packageID":opt_layerID.val()}),
                                             success: function (resp2) {
-                                                speciesGroups = new Array();
-                                                speciesList = new Array();
+                                                speciesGroups = [];
+                                                speciesList = [];
                                                 for (it_d = 1; it_d < parseInt(resp2['speciesGroup']['list'].length); it_d++) {
                                                     if(resp2['speciesGroup']['list'][it_d - 1]['taxonId'] !== resp2['speciesGroup']['list'][it_d]['taxonId']) {
                                                         speciesList.push(resp2['speciesGroup']['list'][it_d - 1]);
@@ -1114,11 +1114,11 @@ func_spData = function (item) {
     var listContainer = document.getElementById("id_spList");
     listContainer.innerHTML = "";
     var list = document.createElement("ul");
-    var listItem = new Array();
-    var tmpItem = new Array();
-    tmpItem = new Array();
+    var listItem = [];
+    var tmpItem = [];
+    tmpItem = [];
     for (it_i = 0; it_i < item.length; it_i++) {
-        listItem[it_i] = new Array();
+        listItem[it_i] = [];
         item[it_i].filter(function (itm) {
             var i = tmpItem.findIndex(x => x.scientificName == itm.scientificName);
             if (i <= -1) {
@@ -1209,7 +1209,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                     map.removeLayer(geoJsonLayer);
                                 }
                                 var clickedFeature = e.layer.feature;
-                                var wkt = new Array();
+                                var wkt = [];
                                 // Convert the clicked feature's geometry to a WKT string
                                 turf.coordEach(clickedFeature, function (coord) {
                                     wkt.push(coord);
@@ -1236,7 +1236,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                         success: function (resp2) {
                                             $('#id_spList').children().remove();
                                             console.log(wktString);
-                                            speciesGroups = new Array();
+                                            speciesGroups = [];
                                             //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
                                             for (it_d = 0; it_d < resp2['speciesGroup']['list'].length; it_d++) {
                                                 $.ajax({
@@ -1364,7 +1364,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                         success: function (resp2) {
                                             $('#id_spList').children().remove();
                                             console.log(wktString);
-                                            speciesGroups = new Array();
+                                            speciesGroups = [];
                                             //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
                                             for (it_d = 0; it_d < resp2['speciesGroup']['list'].length; it_d++) {
                                                 $.ajax({
