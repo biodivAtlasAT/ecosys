@@ -40,19 +40,19 @@ let bt_ecosysCB = $('#id_btnecosys');
 let bt_Layermode = $('#id_btnLayer');
 bt_Layermode.html('Layermodus auswählen');
 let opt_packageID = $('#id_packageID').val(0);
-let point = new Array();
-let p_point = new Array();
+let point = [];
+let p_point = [];
 let polygons = [];
 let pLineGroup = L.layerGroup();
-let poly = new Array();
-let minimapArr = new Array();
-let minimapBox = new Array();
-let llBounds = new Array();
-let p_point = new Array();
-let popupArr = new Array();
-let iterArr = new Array();
+let poly = [];
+let minimapArr = [];
+let minimapBox = [];
+let llBounds = [];
+let p_point = [];
+let popupArr = [];
+let iterArr = [];
 let tmp_marker_id = new Object();
-let marker = new Array();
+let marker = [];
 let info = $('#info');
 let id_newMark = $('#id_btnNewMark');
 let id_MarkerConn = $('#id_btnMarkConn');
@@ -68,13 +68,13 @@ let iter_eSys = 0;
 let iter_lMode = 0;
 let prevZoom = 0;
 let ly_ecosys;
-let popupMap = new Array();
-let polygonLayer = new Array();
-let categories = new Array();
-let catID = new Array();
+let popupMap = [];
+let polygonLayer = [];
+let categories = [];
+let catID = [];
 let chk_lyClick = 0;
 let id_fName = '';
-let topLayer = new Array();
+let topLayer = [];
 
 /*
 let info_icon = $('#info_icon').append('<svg id="ic_info" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">\n' +
@@ -251,8 +251,8 @@ func_cbClick = function (p_id) {
         }
     }
     if ($('.cl_cbEsys:checkbox:checked').length !== 0) {
-        reqEcosys = new Array();
-        ecosysName = new Array();
+        reqEcosys = [];
+        ecosysName = [];
         ecosysName.push($('#id_divName_' + p_id).html());
         reqEcosys.push(p_id);
         packageID = opt_packageID.val();
@@ -355,7 +355,7 @@ commonAjaxCall(url_rdataTop, JSON.stringify({"packageID":opt_packageID.val()}));
 });
 func_connectTheDots = function (p_marker) {
 let c = [];
-let pt = new Array();
+let pt = [];
 for (i in p_marker) {
 if (p_marker[i] != undefined) {
     pt[i] = p_marker[i].getLatLng();
@@ -401,13 +401,13 @@ return x;
 
 func_reqEcosys = function (m_th, m_id) {
 $('.cl_esysInf').children().remove();
-let reqMarker = new Array();
-let reqEcosys = new Array();
-let reqHashID = new Array();
-let reqRefID = new Array();
-let tmpLatLng = new Array();
-let jsonReq = new Array();
-let tmpMarker = new Array();
+let reqMarker = [];
+let reqEcosys = [];
+let reqHashID = [];
+let reqRefID = [];
+let tmpLatLng = [];
+let jsonReq = [];
+let tmpMarker = [];
 filteredmarker = m_th.filter(x => x !== undefined);
 if (filteredmarker.length) {
 for (it_e = 0; it_e < m_th.length; it_e++) {
@@ -428,8 +428,8 @@ if (filteredmarker.length === 1) {
 if (reqMarker.length) {
     if (chk_pcSet === 0) {
         let it_r = 0;
-        reqEcosys = new Array();
-        ecosysName = new Array();
+        reqEcosys = [];
+        ecosysName = [];
         $('input.cl_cbEsys:checked').each(function (iter, item) {
             ecosysName.push($('#id_divName_' + item.id.split('_')[2]).html());
             reqEcosys.push(item.id.split('_')[2]);
@@ -454,16 +454,16 @@ if (reqMarker.length) {
                 success: function (resp) {
                     // into request and use response formated
                     let it_d = 0;
-                    let qtArr = new Array();
-                    let absData = new Array();
+                    let qtArr = [];
+                    let absData = [];
                     //$('#id_esysInf_' + it_e).append("<div id='id_reqInf_" + it_e + "'>" + marker[it_e].getLatLng() + "</div>");
                     d3.select('#id_esysInf_' + m_id)
                         .append('div')
                         .attr('id', 'id_chr_' + m_id)
                         .attr('class', 'cl_chr cl_row');
 
-                    let svgLArr = new Array();
-                    catID = new Array();
+                    let svgLArr = [];
+                    catID = [];
                     let it_n = 0;
                     for (it_d = 0; it_d < reqEcosys.length; it_d++) {
                         catID[it_n] = new Object();
@@ -477,7 +477,7 @@ if (reqMarker.length) {
                         catID[it_n].catID = parseInt($('#id_esys_' + parseInt(reqEcosys[it_d])).parent().parent().attr('class').split('cl_catL_')[1].split(' ')[0]);
                         it_n++;
                     }
-                    let quantArr = new Array();
+                    let quantArr = [];
                     let elemAObj = new Object();
                     for (it_d = 0; it_d < absData.length; it_d++) {
                         d3.select('#id_chr_' + m_id)
@@ -569,7 +569,7 @@ if (reqMarker.length) {
     }
 
     if (chk_pcSet === 1) {
-        reqEcosys = new Array();
+        reqEcosys = [];
         $('input.cl_cbEsys:checked').each(function (iter, item) {
 
             reqEcosys.push(item.id.split('_')[2]);
@@ -663,11 +663,11 @@ if (reqMarker.length) {
                 type: 'POST',
                 success: function (resp) {
                     // into request and use response formated
-                    let absData = new Array();
+                    let absData = [];
                     for (it_e = 0; it_e < marker.length; it_e++) {
                         $('#id_esysInf_' + it_e).append("<div id='id_reqInf_" + it_e + "'>" + marker[it_e].getLatLng() + "</div>");
                     }
-                    catID = new Array();
+                    catID = [];
                     let it_n = 0;
                     for (it_d = 0; it_d < reqEcosys.length; it_d++) {
                         catID[it_n] = new Object();
@@ -792,7 +792,7 @@ $.ajax({
         $("#id_addLayer option").remove(); // Remove all <option> child tags.
         $("#id_addLayer").append("<option class='cl_option' id='id_defLy' selected='true' value='noL'>Kein Layer</option>");
         $("#id_defLy").attr('data-i18n', 'Kein Layer');
-        let layerName = new Array();
+        let layerName = [];
         $.each(resp.layers, function (index, item) { // Iterates through a collection
             if(item.name === 'gewaessernetz_owk_4326_iso_gesammelt') {
                 layerName.push({'id': item.id, 'name': 'Gewässernetz Niederösterreich', 'nRef': item.name});
@@ -1017,16 +1017,16 @@ id_newMark.on('click', function (e) {
                 .openOn(map);
 
 
-            let qtArr = new Array();
-            let absData = new Array();
+            let qtArr = [];
+            let absData = [];
 
             //$('#id_esysInf_' + it_e).append("<div id='id_reqInf_" + it_e + "'>" + marker[it_e].getLatLng() + "</div>");
             d3.select('#id_esysInf_' + t_id)
                 .append('div')
                 .attr('id', 'id_chr_' + t_id)
                 .attr('class', 'cl_chr cl_row');
-            let svgLArr = new Array();
-            catID = new Array();
+            let svgLArr = [];
+            catID = [];
             let it_n = 0;
             for (it_d = 0; it_d < reqEcosys.length; it_d++) {
                 catID[it_n] = new Object();
@@ -1040,7 +1040,7 @@ id_newMark.on('click', function (e) {
                 catID[it_n].catID = parseInt($('#id_esys_' + parseInt(reqEcosys[it_d])).parent().parent().attr('class').split('cl_catL_')[1].split(' ')[0]);
                 it_n++;
             }
-            let quantArr = new Array();
+            let quantArr = [];
             let elemAObj = new Object();
 
             for (it_d = 0; it_d < absData.length; it_d++) {
