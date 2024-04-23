@@ -562,7 +562,7 @@ func_CQLFull = function () {
                                 console.log($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_'));
                                 //$('#id_h_' + resp['filter'][it_h]['id']).click();
                                 func_CQLSubm(it_h, resp['filter'][it_h]['id']);
-                                //func_toggle(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
+                                func_toggle(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
                                 
                             }
                         }
@@ -1489,6 +1489,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
      */
 }
 func_initMap = function () {
+    func_CQLFull();
     if (LayerMap !== undefined) {
         map.removeLayer(LayerMap);
     }
