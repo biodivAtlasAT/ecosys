@@ -250,7 +250,6 @@ opt_layerID.on('click change', function () {
             success: function (resp1) {
                 layer_name = resp1['project']['geoserverLayer'];
                 func_initMap();
-                func_CQLFull();
                 $('.cl_habitats').children().remove();
                 $.ajax({
                     url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
@@ -367,7 +366,6 @@ opt_layerID.on('click change', function () {
             success: function (resp1) {
                 layer_name = resp1['project']['geoserverLayer'];
                 func_initMap();
-                func_CQLFull();
                 p_color = '#66ffff';
                 $('.cl_habitatTypes').children().remove();
                 var it_CMx_1 = 0;
@@ -682,7 +680,7 @@ func_CQLFull = function () {
                             }
                         });
                     });
-                    geoJsonLayer.addTo(map);
+                    //geoJsonLayer.addTo(map);
                 },
                 error: function (xhr, status, error) {
                     console.error(error);
