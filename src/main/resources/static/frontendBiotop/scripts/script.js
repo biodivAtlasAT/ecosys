@@ -1152,6 +1152,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
         $('.cl_hov').css('color', '#637073');
         $('#id_h_' + r_id).css('background-color', '#49754a');
         $('#id_h_' + r_id).css('color', '#ffffff');
+        map.on('popupclose', func_closedPopup);
         $.ajax({
             url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
             headers: {"Accept": "application/json"},
