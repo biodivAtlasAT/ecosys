@@ -1,38 +1,35 @@
-/**
- * This script manages the interactive map layers and features for a biodiversity project.
- */
-let url_apiProjects = "api/bt/projects";
+var url_apiProjects = "api/bt/projects";
 // number + filter + number
-let url_habitat = "";
-let opt_layerID = $('#id_addLayer').val(0);
-let LayerMap;
-let ly_bioHabitat;
-let cnt_nav = $('#cnt_nav');
-let ly_biotop;
-let layer_name = '';
-let chk_map = 0;
-let speciesGroups = [];
-let ly_filter = undefined;
-let wkt = [];
-let wktString = [];
-let map = L.map('map', {
+var url_habitat = "";
+var opt_layerID = $('#id_addLayer').val(0);
+var LayerMap;
+var ly_bioHabitat;
+var cnt_nav = $('#cnt_nav');
+var ly_biotop;
+var layer_name = '';
+var chk_map = 0;
+var speciesGroups = [];
+var ly_filter = undefined;
+var wkt = [];
+var wktString = [];
+var map = L.map('map', {
     center: [48.3805228, 15.3758588],
     zoom: 10
 });
-let popup;
-let geoJsonLayer;
-let infoPup = L.popup({
+var popup;
+var geoJsonLayer;
+var infoPup = L.popup({
     className: 'cl_popup3',
     closeButton: true,
     closeOnClick: true
 });
-let infoPupAll = [];
-let str_content = [];
-let speciesGroupsAll = [];
-let speciesList = [];
-let styleAll = [];
-let ly_filterAll = [];
-let chk = 0;
+var infoPupAll = [];
+var str_content = [];
+var speciesGroupsAll = [];
+var speciesList = [];
+var styleAll = [];
+var ly_filterAll = [];
+var chk = 0;
 map.locate({
     setView: false
 });
@@ -48,7 +45,7 @@ $(function () {
         handles: "e, w", // Allow resizing from left and right edges only
         resize: function () {
             // Adjust the width of the adjacent div when resizing
-            //let currentDiv = $(this);
+            //var currentDiv = $(this);
             $('#map').css('width', $('#cnt_map').width() - $('#eSys').width());
         }
     });
@@ -129,9 +126,9 @@ func_info = function(p_id) {
             break;
     }
 }
-let do_translate = function () {
+var do_translate = function () {
     $("[data-i18n]").each(function () {
-        //let prop = $(this).attr('data-i18n');
+        //var prop = $(this).attr('data-i18n');
         $(this).i18n();
     });
 }
@@ -179,7 +176,7 @@ $('button').attrchange({
 (function() {
     orig = $.fn.css;
     $.fn.css = function() {
-        let result = orig.apply(this, arguments);
+        var result = orig.apply(this, arguments);
         $(this).trigger('stylechanged');
         return result;
     }
@@ -224,7 +221,7 @@ func_hide = function (p_it_t) {
     $('.cl_hov_' + (p_it_t)).hide();
 }
 opt_layerID.on('click change', function () {
-    let id_title = $('#id_title');
+    var id_title = $('#id_title');
     id_title.children().remove();
     if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') !== 'Capacity Matrix') {
         id_title.append('<b style="visibility: hidden" id="id_dataI" data-i18n="Lebensraumtypen auswählen">Lebensraumtypen auswählen</b>');
@@ -267,10 +264,10 @@ opt_layerID.on('click change', function () {
                     },
                     //data: JSON.stringify({"packageID":opt_layerID.val()}),
                     success: function (resp2) {
-                        let flag = 0;
-                        let it_a = 0;
-                        let arrAlph = [];
-                        let tmpArr = [];
+                        var flag = 0;
+                        var it_a = 0;
+                        var arrAlph = [];
+                        var tmpArr = [];
                         p_color = '#66ffff';
                         $('.cl_habitatTypes').children().remove();
                         for (it_h = 0; it_h < resp2['filter'].length; it_h++) {
@@ -280,31 +277,31 @@ opt_layerID.on('click change', function () {
                                 }
                             }
                         }
-                        it_a = 0;
-                        let it_b = 0;
-                        let it_t = 0;
-                        let it_f = 0;
-                        let it_cnt = 0;
-                        let tmpCh = [];
-                        let tmpFiltAlph = [];
+                        var it_a = 0;
+                        var it_b = 0;
+                        var it_t = 0;
+                        var it_f = 0;
+                        var it_cnt = 0;
+                        var tmpCh = [];
+                        var tmpFiltAlph = [];
                         arrAlph = arrAlph.filter(function (itm, i, a) {
-                            return i === a.indexOf(itm);
+                            return i == a.indexOf(itm);
                         });
                         for (it_h = 0; it_h < resp2['filter'].length; it_h++) {
-                            let id = resp2['filter'][it_h]['id'];
+                            var id = resp2['filter'][it_h]['id'];
                             if (resp2['filter'][it_h] !== undefined && (resp2['filter'][it_h]['cqlQuery'] !== null)) {
                                 if (resp2['filter'][it_h]['cqlQuery'].split('in').length > 1) {
                                     if (resp2['filter'][it_h]['levelNumber'] >= 0) {
-                                        if (resp2['filter'][it_h]['levelNumber'] === 1) {
+                                        if (resp2['filter'][it_h]['levelNumber'] == 1) {
                                             $('.cl_habitatTypes').append("<ul style='padding-left:1em' id='idSb_"+ resp2['filter'][it_h]['description'] +"' class='cl_toggle cl_idSb cl_l1_" + (it_f - 1) + " cl_tDescr_" + it_t + "'><b id='id_stb_" + it_h +"' onclick='func_toggle(" + it_t + ")'>" + resp2['filter'][it_h]['description'] + "</b><span class='cl_infoIcon' onclick='func_info(" + JSON.stringify(resp2['filter'][it_h]['description']) + ");'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='1.3em' style='margin-right:0.8em' class='cl_ptinfo'><circle cy='24' cx='24' r='24' fill='#36c'></circle><g fill='#fff'><circle cx='24' cy='11.6' r='4.7'></circle><path d='m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6'></path></g></svg></span></ul>");
                                             $('.cl_l1_' + (it_f - 1)).hide();
                                             it_t++;
                                         }
-                                        if (resp2['filter'][it_h]['levelNumber'] === 2) {
+                                        if (resp2['filter'][it_h]['levelNumber'] == 2) {
                                             $('.cl_tDescr_' + (it_t - 1)).append("<li style='padding-left:2em' class='cl_hov cl_toggle cl_l2_" + (it_t - 1) + " cl_tDescr_" + (it_t - 1) + "'><b onclick='func_toggle_2(" + (it_t) + ")'>" + resp2['filter'][it_h]['description'] + "</b></li>");
                                             $('.cl_l2_' + (it_t - 1)).hide();
                                         }
-                                        if (resp2['filter'][it_h]['levelNumber'] === 0) {
+                                        if (resp2['filter'][it_h]['levelNumber'] == 0) {
                                             $('.cl_habitatTypes').append("<ul style='padding-left:0em' class='cl_toggle cl_tDescr_0_" + it_f + "'><h4 onclick='func_toggle_t(" + it_f + ");'>" + resp2['filter'][it_h]['description'] + "</h4></ul>");
                                             it_f++;
                                             it_t++;
@@ -312,22 +309,22 @@ opt_layerID.on('click change', function () {
                                     }
 
                                 }
-                                if (resp2['filter'][it_h]['levelNumber'] === 0) {
+                                if (resp2['filter'][it_h]['levelNumber'] == 0) {
                                     $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:1em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['description'] + '</i></li>');
                                     $('.cl_hov_' + (it_t - 1)).hide();
                                 }
                                 if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
-                                    if (resp2['filter'][it_h]['levelNumber'] === 1) {
+                                    if (resp2['filter'][it_h]['levelNumber'] == 1) {
                                         $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:2em" class="cl_hov_' + (it_f - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['description'] + '</i></li>');
                                         $('.cl_hov_' + (it_t - 1)).hide();
                                     }
                                 }
                                 if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
-                                    if (resp2['filter'][it_h]['levelNumber'] === 2) {
+                                    if (resp2['filter'][it_h]['levelNumber'] == 2) {
                                         $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:3em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '   ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
                                         $('.cl_hov_' + (it_t - 1)).hide();
                                     }
-                                    if (resp2['filter'][it_h]['levelNumber'] === 3) {
+                                    if (resp2['filter'][it_h]['levelNumber'] == 3) {
                                         $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:3em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '   ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
                                         $('.cl_hov_' + (it_t - 1)).hide();
                                     }
@@ -373,10 +370,10 @@ opt_layerID.on('click change', function () {
                 func_initMap();
                 p_color = '#66ffff';
                 $('.cl_habitatTypes').children().remove();
-                let it_CMx_1 = 0;
-                let it_CMx_2 = 1;
-                let it_CMx_3 = 2;
-                let it_CMx_4 = 3;
+                var it_CMx_1 = 0;
+                var it_CMx_2 = 1;
+                var it_CMx_3 = 2;
+                var it_CMx_4 = 3;
 
                 $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_1 + "'><b onclick='func_toggle(" + it_CMx_1 + ")'>Regulation services</b></ul>");
                 $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_2 + "'><b onclick='func_toggle(" + it_CMx_2 + ")'>Habitat services</b></ul>");
@@ -456,8 +453,8 @@ opt_layerID.on('click change', function () {
                 .style('float', 'left')
 
 
-            let it_0 = 0;
-            let arrCol1 = [];
+            var it_0 = 0;
+            var arrCol1 = [];
             arrCol1[0] = "rgb(255, 0, 0)";
             arrCol1[1] = "rgb(255,165,0)";
             arrCol1[2] = "rgb(255, 255, 0)";
@@ -476,7 +473,7 @@ opt_layerID.on('click change', function () {
                     .style('background-color', arrCol1[it_0])
             }
             it_0 = 0;
-            let arrCol2 = [];
+            var arrCol2 = [];
             arrCol2[0] = "rgb(250, 25, 0)";
             arrCol2[1] = "rgb(250,50,0)";
             arrCol2[2] = "rgb(225, 75, 0)";
@@ -623,8 +620,8 @@ func_CQLFull = function () {
                                             if (geoJsonLayer !== undefined) {
                                                 map.removeLayer(geoJsonLayer);
                                             }
-                                            let clickedFeature = e.layer.feature;
-                                            let wkt = [];
+                                            var clickedFeature = e.layer.feature;
+                                            var wkt = [];
                                             // Convert the clicked feature's geometry to a WKT string
                                             turf.coordEach(clickedFeature, function (coord) {
                                                 wkt.push(coord);
@@ -727,7 +724,7 @@ func_CQLCapMatr = function(p_id, p_color) {
                         },
                         success: function (response) {
                             //map.removeLayer(ly_biotop);
-                            let tmp_CMx_name = undefined;
+                            var tmp_CMx_name = undefined;
                             if (p_id === 0) {
                                 tmp_CMx_name = 'Disturbanc';
                             }
@@ -937,7 +934,7 @@ func_CQLCapMatr = function(p_id, p_color) {
                                     }
                                 });
                                 ly_filterAll[it_a].on('click', function (e) {
-                                    let clickedFeature = e.layer.feature;
+                                    var clickedFeature = e.layer.feature;
                                     wkt = [];
                                     // Convert the clicked feature's geometry to a WKT string
                                     turf.coordEach(clickedFeature, function (coord) {
@@ -950,7 +947,7 @@ func_CQLCapMatr = function(p_id, p_color) {
                                     wktString += wkt[0][0].toFixed(5) + " " + wkt[0][1].toFixed(5) + ")))";
                                     console.log(wktString);
                                     str_content = '';
-                                    let tmp_AK_FNR = url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/' + response['features'][0]['properties']['AK_FNR'];
+                                    var tmp_AK_FNR = url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/' + response['features'][0]['properties']['AK_FNR'];
                                     if (tmp_AK_FNR !== undefined || tmp_AK_FNR !== '') {
                                         $.ajax({
                                             url: tmp_AK_FNR,
@@ -969,7 +966,7 @@ func_CQLCapMatr = function(p_id, p_color) {
                                                     if(resp2['speciesGroup']['list'][it_d - 1]['taxonId'] !== resp2['speciesGroup']['list'][it_d]['taxonId']) {
                                                         speciesList.push(resp2['speciesGroup']['list'][it_d - 1]);
                                                     }
-                                                    if(it_d === parseInt(resp2['speciesGroup']['list'].length) - 1 &&  resp2['speciesGroup']['list'][it_d - 1]['taxonId'] !== resp2['speciesGroup']['list'][it_d]['taxonId']) {
+                                                    if(it_d == parseInt(resp2['speciesGroup']['list'].length) - 1 &&  resp2['speciesGroup']['list'][it_d - 1]['taxonId'] !== resp2['speciesGroup']['list'][it_d]['taxonId']) {
                                                         speciesList.push(resp2['speciesGroup']['list'][it_d]);
                                                     }
                                                 }
@@ -1115,16 +1112,16 @@ func_spData = function (item) {
         }, 100);
 
     }
-    let listContainer = document.getElementById("id_spList");
+    var listContainer = document.getElementById("id_spList");
     listContainer.innerHTML = "";
-    let list = document.createElement("ul");
-    let listItem = [];
-    let tmpItem = [];
+    var list = document.createElement("ul");
+    var listItem = [];
+    var tmpItem = [];
     tmpItem = [];
     for (it_i = 0; it_i < item.length; it_i++) {
         listItem[it_i] = [];
         item[it_i].filter(function (itm) {
-            let i = tmpItem.findIndex(x => x.scientificName === itm.scientificName);
+            var i = tmpItem.findIndex(x => x.scientificName == itm.scientificName);
             if (i <= -1) {
                 tmpItem.push({scientificName: itm.scientificName, raw_vernacularName: itm.raw_vernacularName});
             }
@@ -1143,7 +1140,7 @@ func_spData = function (item) {
     }
     listContainer.appendChild(list);
 }
-let chk_id = 0;
+var chk_id = 0;
 func_CQLSubm = function (p_id, r_id, p_color) {
     if(infoPup !== undefined) {
         map.closePopup(infoPup);
@@ -1212,8 +1209,8 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                 if (geoJsonLayer !== undefined) {
                                     map.removeLayer(geoJsonLayer);
                                 }
-                                let clickedFeature = e.layer.feature;
-                                let wkt = [];
+                                var clickedFeature = e.layer.feature;
+                                var wkt = [];
                                 // Convert the clicked feature's geometry to a WKT string
                                 turf.coordEach(clickedFeature, function (coord) {
                                     wkt.push(coord);
@@ -1225,7 +1222,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
                                 wktString += wkt[0][0].toFixed(5) + " " + wkt[0][1].toFixed(5) + ")))";
                                 //console.log(response['features'][0]['properties']['AK_FNR']);
 
-                                let str_content = '';
+                                var str_content = '';
                                 if (response['features'][0] !== undefined) {
                                     $.ajax({
                                         url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/' + response['features'][0]['properties']['AK_FNR'],
@@ -1499,18 +1496,18 @@ func_initMap = function () {
         map.removeLayer(LayerMap);
     }
     $('#ic_info').attr('visibility', 'hidden');
-    if (chk_map === 0) {
+    if (chk_map == 0) {
         LayerMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(map);
     }
-    if (chk_map === 1) {
+    if (chk_map == 1) {
         LayerMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
             // page 14 Map.locate <watch, enableHighAccuracy, maxZoom>
         }).addTo(map);
     }
-    if (chk_map === 2) {
+    if (chk_map == 2) {
         mapLink =
             '<a href="http://www.esri.com/">Esri</a>';
         wholink =
@@ -1521,7 +1518,7 @@ func_initMap = function () {
             }).addTo(map);
     }
     if (ly_biotop !== undefined) {
-        //let layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
+        //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
         if ($('#id_addLayer option:selected').val() === 'noL') {
             map.removeLayer(ly_biotop);
             map.removeLayer(geoJsonLayer);
@@ -1542,7 +1539,7 @@ func_initMap = function () {
             map.removeLayer(ly_biotop);
             map.removeLayer(geoJsonLayer);
         }
-        //let layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
+        //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
         ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
             format: 'image/svg',
             opacity: 1,
@@ -1560,7 +1557,7 @@ $(document).ready(function () {
     // Add click event handler to expand/collapse items
     $("#depthList li").click(function (e) {
         e.stopPropagation();
-        let $sublist = $(this).children("ul");
+        var $sublist = $(this).children("ul");
         if ($sublist.length > 0) {
             $sublist.slideToggle();
         }
