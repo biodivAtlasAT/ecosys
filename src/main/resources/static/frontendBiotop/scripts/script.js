@@ -30,8 +30,6 @@ var speciesList = new Array();
 var styleAll = new Array();
 var ly_filterAll = new Array();
 var chk = 0;
-var selectedLayer = null;
-
 map.locate({
     setView: false
 });
@@ -553,12 +551,7 @@ func_CQLFull = function () {
                     //map.fitBounds(geoJsonLayer.getBounds());
                     geoJsonLayer.on('click', function (e) {
                         console.log(resp['filter']);
-                        if (selectedLayer !== null) {
-                            // Deselect the previously selected layer
-                            selectedLayer = null;
-                            // Implement the logic to deselect the layer (for example, removing styles or resetting its state)
-                            // You can use selectedLayer.setStyle(...) or any other method to remove the selection style
-                        }
+                        L.DomEvent.stopPropagation(e);
                         for (it_h = 0; it_h < resp['filter'].length; it_h++) {
                             if ($('#id_h_' + resp['filter'][it_h]['id']).attr('class') !== undefined) {
                                 func_hide(parseInt($('#id_h_' + resp['filter'][it_h]['id']).attr('class').split('_')[2].split(' ')[0]));
@@ -1556,15 +1549,6 @@ func_initMap = function () {
     });
 
 }
-// Add a click event listener to the map to deselect the layer when clicking outside it
-map.on('click', function(e) {
-    // Check if a layer is selected and the click is not on the selected layer
-    if (selectedLayer !== null && e.layer !== selectedLayer) {
-        // Deselect the selected layer
-        selectedLayer = null;
-        // Implement the logic to deselect the layer (for example, removing styles or resetting its state)
-    }
-});
 $(document).ready(function () {
     // Hide all second and third level items initially
     $("#depthList ul ul").hide();
