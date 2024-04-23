@@ -927,7 +927,7 @@ id_newMark.on('click', function (e) {
         }
     }).on('mouseup', function () {
 
-        if(('.cl_clop') != undefined) {
+        if(('.cl_clop') !== undefined) {
             $('.cl_clop').remove();
         }
         chk_lyClick = 0;
