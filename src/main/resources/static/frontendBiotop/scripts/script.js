@@ -234,9 +234,11 @@ opt_layerID.on('click change', function () {
         if (ly_biotop !== undefined) {
             map.removeLayer(ly_biotop);
         }
+        /*
         if (geoJsonLayer !== undefined) {
             map.removeLayer(geoJsonLayer);
         }
+        */
         $.ajax({
             url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
             headers: {"Accept": "application/json"},
@@ -1536,7 +1538,7 @@ func_initMap = function () {
     $('#id_addLayer').change(function () {
         if (ly_biotop !== undefined) {
             map.removeLayer(ly_biotop);
-            //map.removeLayer(geoJsonLayer);
+            map.removeLayer(geoJsonLayer);
         }
         //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
         ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
