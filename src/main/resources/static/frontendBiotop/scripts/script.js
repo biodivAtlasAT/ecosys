@@ -198,6 +198,7 @@ $.ajax({
     success: function (resp) {
         console.log(resp);
         $("#id_addLayer option").remove(); // Remove all <option> child tags.
+        $("#id_packageID").append("<option data-i18n='Projekt auswählen' disabled selected='true'>Projekt auswählen</option>");
         $.each(resp.projects, function (index, item) { // Iterates through a collection
             $("#id_addLayer").append( // Append an object to the inside of the select box
                 $("<option></option>") // Yes you can do this.
