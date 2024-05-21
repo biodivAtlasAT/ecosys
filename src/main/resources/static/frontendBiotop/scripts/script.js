@@ -198,7 +198,7 @@ $.ajax({
     success: function (resp) {
         console.log(resp);
         $("#id_addLayer option").remove(); // Remove all <option> child tags.
-        $("#id_addLayer").append("<option data-i18n='Projekt auswählen' disabled selected='true'>Projekt auswählen</option>");
+        $("#id_packageID").append("<option data-i18n='Projekt auswählen' disabled selected='true'>Projekt auswählen</option>");
         $.each(resp.projects, function (index, item) { // Iterates through a collection
             $("#id_addLayer").append( // Append an object to the inside of the select box
                 $("<option></option>") // Yes you can do this.
@@ -234,287 +234,284 @@ opt_layerID.on('click change', function () {
             map.removeLayer(ly_filter);
         }
         if (ly_biotop !== undefined) {
-            if (ly_biotop !== undefined) {
-                map.removeLayer(ly_biotop);
-            }
-            if (geoJsonLayer !== undefined) {
-                map.removeLayer(geoJsonLayer);
-            }
-            func_CQLFull();
-            $.ajax({
-                url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
-                headers: {"Accept": "application/json"},
-                type: 'GET',
-                dataType: "json",
-                crossDomain: true,
-                beforeSend: function (xhr) {
-                    xhr.withCredentials = true;
-                },
-                //data: JSON.stringify({"packageID":opt_layerID.val()}),
-                success: function (resp1) {
-                    layer_name = resp1['project']['geoserverLayer'];
-                    func_initMap();
-                    $('.cl_habitats').children().remove();
-                    $.ajax({
-                        url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
-                        headers: {"Accept": "application/json"},
-                        type: 'GET',
-                        dataType: "json",
-                        crossDomain: true,
-                        beforeSend: function (xhr) {
-                            xhr.withCredentials = true;
-                        },
-                        //data: JSON.stringify({"packageID":opt_layerID.val()}),
-                        success: function (resp2) {
-                            var flag = 0;
-                            var it_a = 0;
-                            var arrAlph = [];
-                            var tmpArr = [];
-                            p_color = '#66ffff';
-                            $('.cl_habitatTypes').children().remove();
-                            for (it_h = 0; it_h < resp2['filter'].length; it_h++) {
-                                if (resp2['filter'][it_h] !== undefined && (resp2['filter'][it_h]['cqlQuery'] !== null)) {
-                                    if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
-                                        arrAlph.push(resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1].split('\.')[0]);
-                                    }
+            map.removeLayer(ly_biotop);
+        }
+        if (geoJsonLayer !== undefined) {
+            map.removeLayer(geoJsonLayer);
+        }
+        func_CQLFull();
+        $.ajax({
+            url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
+            headers: {"Accept": "application/json"},
+            type: 'GET',
+            dataType: "json",
+            crossDomain: true,
+            beforeSend: function (xhr) {
+                xhr.withCredentials = true;
+            },
+            //data: JSON.stringify({"packageID":opt_layerID.val()}),
+            success: function (resp1) {
+                layer_name = resp1['project']['geoserverLayer'];
+                func_initMap();
+                $('.cl_habitats').children().remove();
+                $.ajax({
+                    url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
+                    headers: {"Accept": "application/json"},
+                    type: 'GET',
+                    dataType: "json",
+                    crossDomain: true,
+                    beforeSend: function (xhr) {
+                        xhr.withCredentials = true;
+                    },
+                    //data: JSON.stringify({"packageID":opt_layerID.val()}),
+                    success: function (resp2) {
+                        var flag = 0;
+                        var it_a = 0;
+                        var arrAlph = [];
+                        var tmpArr = [];
+                        p_color = '#66ffff';
+                        $('.cl_habitatTypes').children().remove();
+                        for (it_h = 0; it_h < resp2['filter'].length; it_h++) {
+                            if (resp2['filter'][it_h] !== undefined && (resp2['filter'][it_h]['cqlQuery'] !== null)) {
+                                if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
+                                    arrAlph.push(resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1].split('\.')[0]);
                                 }
                             }
-                            var it_a = 0;
-                            var it_b = 0;
-                            var it_t = 0;
-                            var it_f = 0;
-                            var it_cnt = 0;
-                            var tmpCh = [];
-                            var tmpFiltAlph = [];
-                            arrAlph = arrAlph.filter(function (itm, i, a) {
-                                return i == a.indexOf(itm);
-                            });
-                            for (it_h = 0; it_h < resp2['filter'].length; it_h++) {
-                                var id = resp2['filter'][it_h]['id'];
-                                if (resp2['filter'][it_h] !== undefined && (resp2['filter'][it_h]['cqlQuery'] !== null)) {
-                                    if (resp2['filter'][it_h]['cqlQuery'].split('in').length > 1) {
-                                        if (resp2['filter'][it_h]['levelNumber'] >= 0) {
-                                            if (resp2['filter'][it_h]['levelNumber'] == 1) {
-                                                $('.cl_habitatTypes').append("<ul style='padding-left:1em' id='idSb_" + resp2['filter'][it_h]['description'] + "' class='cl_toggle cl_idSb cl_l1_" + (it_f - 1) + " cl_tDescr_" + it_t + "'><b id='id_stb_" + it_h + "' onclick='func_toggle(" + it_t + ")'>" + resp2['filter'][it_h]['description'] + "</b><span class='cl_infoIcon' onclick='func_info(" + JSON.stringify(resp2['filter'][it_h]['description']) + ");'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='1.3em' style='margin-right:0.8em' class='cl_ptinfo'><circle cy='24' cx='24' r='24' fill='#36c'></circle><g fill='#fff'><circle cx='24' cy='11.6' r='4.7'></circle><path d='m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6'></path></g></svg></span></ul>");
-                                                $('.cl_l1_' + (it_f - 1)).hide();
-                                                it_t++;
-                                            }
-                                            if (resp2['filter'][it_h]['levelNumber'] == 2) {
-                                                $('.cl_tDescr_' + (it_t - 1)).append("<li style='padding-left:2em' class='cl_hov cl_toggle cl_l2_" + (it_t - 1) + " cl_tDescr_" + (it_t - 1) + "'><b onclick='func_toggle_2(" + (it_t) + ")'>" + resp2['filter'][it_h]['description'] + "</b></li>");
-                                                $('.cl_l2_' + (it_t - 1)).hide();
-                                            }
-                                            if (resp2['filter'][it_h]['levelNumber'] == 0) {
-                                                $('.cl_habitatTypes').append("<ul style='padding-left:0em' class='cl_toggle cl_tDescr_0_" + it_f + "'><h4 onclick='func_toggle_t(" + it_f + ");'>" + resp2['filter'][it_h]['description'] + "</h4></ul>");
-                                                it_f++;
-                                                it_t++;
-                                            }
+                        }
+                        var it_a = 0;
+                        var it_b = 0;
+                        var it_t = 0;
+                        var it_f = 0;
+                        var it_cnt = 0;
+                        var tmpCh = [];
+                        var tmpFiltAlph = [];
+                        arrAlph = arrAlph.filter(function (itm, i, a) {
+                            return i == a.indexOf(itm);
+                        });
+                        for (it_h = 0; it_h < resp2['filter'].length; it_h++) {
+                            var id = resp2['filter'][it_h]['id'];
+                            if (resp2['filter'][it_h] !== undefined && (resp2['filter'][it_h]['cqlQuery'] !== null)) {
+                                if (resp2['filter'][it_h]['cqlQuery'].split('in').length > 1) {
+                                    if (resp2['filter'][it_h]['levelNumber'] >= 0) {
+                                        if (resp2['filter'][it_h]['levelNumber'] == 1) {
+                                            $('.cl_habitatTypes').append("<ul style='padding-left:1em' id='idSb_"+ resp2['filter'][it_h]['description'] +"' class='cl_toggle cl_idSb cl_l1_" + (it_f - 1) + " cl_tDescr_" + it_t + "'><b id='id_stb_" + it_h +"' onclick='func_toggle(" + it_t + ")'>" + resp2['filter'][it_h]['description'] + "</b><span class='cl_infoIcon' onclick='func_info(" + JSON.stringify(resp2['filter'][it_h]['description']) + ");'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='1.3em' style='margin-right:0.8em' class='cl_ptinfo'><circle cy='24' cx='24' r='24' fill='#36c'></circle><g fill='#fff'><circle cx='24' cy='11.6' r='4.7'></circle><path d='m17.4 18.8v2.15h1.13c2.26 0 2.26 1.38 2.26 1.38v15.1s0 1.38-2.26 1.38h-1.13v2.08h14.2v-2.08h-1.13c-2.26 0-2.26-1.38-2.26-1.38v-18.6'></path></g></svg></span></ul>");
+                                            $('.cl_l1_' + (it_f - 1)).hide();
+                                            it_t++;
                                         }
-
+                                        if (resp2['filter'][it_h]['levelNumber'] == 2) {
+                                            $('.cl_tDescr_' + (it_t - 1)).append("<li style='padding-left:2em' class='cl_hov cl_toggle cl_l2_" + (it_t - 1) + " cl_tDescr_" + (it_t - 1) + "'><b onclick='func_toggle_2(" + (it_t) + ")'>" + resp2['filter'][it_h]['description'] + "</b></li>");
+                                            $('.cl_l2_' + (it_t - 1)).hide();
+                                        }
+                                        if (resp2['filter'][it_h]['levelNumber'] == 0) {
+                                            $('.cl_habitatTypes').append("<ul style='padding-left:0em' class='cl_toggle cl_tDescr_0_" + it_f + "'><h4 onclick='func_toggle_t(" + it_f + ");'>" + resp2['filter'][it_h]['description'] + "</h4></ul>");
+                                            it_f++;
+                                            it_t++;
+                                        }
                                     }
-                                    if (resp2['filter'][it_h]['levelNumber'] == 0) {
-                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:1em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['description'] + '</i></li>');
+
+                                }
+                                if (resp2['filter'][it_h]['levelNumber'] == 0) {
+                                    $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:1em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['description'] + '</i></li>');
+                                    $('.cl_hov_' + (it_t - 1)).hide();
+                                }
+                                if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
+                                    if (resp2['filter'][it_h]['levelNumber'] == 1) {
+                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:2em" class="cl_hov_' + (it_f - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['description'] + '</i></li>');
                                         $('.cl_hov_' + (it_t - 1)).hide();
                                     }
-                                    if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
-                                        if (resp2['filter'][it_h]['levelNumber'] == 1) {
-                                            $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:2em" class="cl_hov_' + (it_f - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + resp2['filter'][it_h]['description'] + '</i></li>');
-                                            $('.cl_hov_' + (it_t - 1)).hide();
-                                        }
+                                }
+                                if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
+                                    if (resp2['filter'][it_h]['levelNumber'] == 2) {
+                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:3em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '   ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
+                                        $('.cl_hov_' + (it_t - 1)).hide();
                                     }
-                                    if (resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] !== undefined) {
-                                        if (resp2['filter'][it_h]['levelNumber'] == 2) {
-                                            $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:3em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '   ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
-                                            $('.cl_hov_' + (it_t - 1)).hide();
-                                        }
-                                        if (resp2['filter'][it_h]['levelNumber'] == 3) {
-                                            $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:3em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '   ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
-                                            $('.cl_hov_' + (it_t - 1)).hide();
-                                        }
+                                    if (resp2['filter'][it_h]['levelNumber'] == 3) {
+                                        $('.cl_tDescr_' + (it_t - 1)).append('<li style="padding-left:3em" class="cl_hov_' + (it_t - 1) + ' cl_hov" id="id_h_' + id + '" onclick="func_CQLSubm(' + it_h + ', ' + id + ', p_color)"><i>' + '   ' + resp2['filter'][it_h]['cqlQuery'].replaceAll('\'', '').split('=')[1] + ' ' + resp2['filter'][it_h]['description'] + '</i></li>');
+                                        $('.cl_hov_' + (it_t - 1)).hide();
                                     }
                                 }
                             }
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
+        });
+    }
+    if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') === 'Capacity Matrix') {
+        $('#id_title').append('<b style="visibility: hidden" id="id_dataI" data-i18n="Capacity Matrix auswählen">Capacity Matrix auswählen</b>');
+        $('#id_dataI').on('stylechanged', function () {
+            do_translate();
+        });
+        $('#id_dataI').css('visibility', 'visible');
+        if (ly_filter !== undefined) {
+            map.removeLayer(ly_filter);
         }
+        if (ly_biotop !== undefined) {
+            map.removeLayer(ly_biotop);
+        }
+        if (geoJsonLayer !== undefined) {
+            map.removeLayer(geoJsonLayer);
+        }
+        map.eachLayer(function (layer) {
+            console.log(layer);
+            map.removeLayer(layer);
+        });
+        $.ajax({
+            url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
+            headers: {"Accept": "application/json"},
+            type: 'GET',
+            dataType: "json",
+            crossDomain: true,
+            beforeSend: function (xhr) {
+                xhr.withCredentials = true;
+            },
+            //data: JSON.stringify({"packageID":opt_layerID.val()}),
+            success: function (resp1) {
+                layer_name = resp1['project']['geoserverLayer'];
+                func_initMap();
+                p_color = '#66ffff';
+                $('.cl_habitatTypes').children().remove();
+                var it_CMx_1 = 0;
+                var it_CMx_2 = 1;
+                var it_CMx_3 = 2;
+                var it_CMx_4 = 3;
+
+                $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_1 + "'><b onclick='func_toggle(" + it_CMx_1 + ")'>Regulation services</b></ul>");
+                $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_2 + "'><b onclick='func_toggle(" + it_CMx_2 + ")'>Habitat services</b></ul>");
+                $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_3 + "'><b onclick='func_toggle(" + it_CMx_3 + ")'>Provision services</b></ul>");
+                $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_4 + "'><b onclick='func_toggle(" + it_CMx_4 + ")'>Total Value</b></ul>");
+
+                $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 0 + '" onclick="func_CQLCapMatr(' + 0 + ', p_color)"><i>Disturbance prevention</i></li>');
+                $('.cl_hov_' + (it_CMx_1)).hide();
+                $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 1 + '" onclick="func_CQLCapMatr(' + 1 + ', p_color)"><i>Local climate regulation</i></li>');
+                $('.cl_hov_' + (it_CMx_1)).hide();
+                $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 2 + '" onclick="func_CQLCapMatr(' + 2 + ', p_color)"><i>Waterregulation</i></li>');
+                $('.cl_hov_' + (it_CMx_1)).hide();
+                $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 3 + '" onclick="func_CQLCapMatr(' + 3 + ', p_color)"><i>Watersupply</i></li>');
+                $('.cl_hov_' + (it_CMx_1)).hide();
+                $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 4 + '" onclick="func_CQLCapMatr(' + 4 + ', p_color)"><i>Pollination</i></li>');
+                $('.cl_hov_' + (it_CMx_1)).hide();
+
+                $('.cl_tDescr_' + it_CMx_2).append('<li class="cl_hov_' + (it_CMx_2) + ' cl_hov" id="id_h_' + 5 + '" onclick="func_CQLCapMatr(' + 5 + ', p_color)"><i>Refugium</i></li>');
+                $('.cl_hov_' + (it_CMx_2)).hide();
+
+                $('.cl_tDescr_' + it_CMx_3).append('<li class="cl_hov_' + (it_CMx_3) + ' cl_hov" id="id_h_' + 6 + '" onclick="func_CQLCapMatr(' + 6 + ', p_color)"><i>Food</i></li>');
+                $('.cl_hov_' + (it_CMx_3)).hide();
+                $('.cl_tDescr_' + it_CMx_3).append('<li class="cl_hov_' + (it_CMx_3) + ' cl_hov" id="id_h_' + 7 + '" onclick="func_CQLCapMatr(' + 7 + ', p_color)"><i>Raw materials</i></li>');
+                $('.cl_hov_' + (it_CMx_3)).hide();
+                $('.cl_tDescr_' + it_CMx_3).append('<li class="cl_hov_' + (it_CMx_3) + ' cl_hov" id="id_h_' + 8 + '" onclick="func_CQLCapMatr(' + 8 + ', p_color)"><i>Genetic resources</i></li>');
+                $('.cl_hov_' + (it_CMx_3)).hide();
+                $('.cl_tDescr_' + it_CMx_4).append('<li class="cl_hov_' + (it_CMx_4) + ' cl_hov" id="id_h_' + 9 + '" onclick="func_CQLCapMatr(' + 9 + ', p_color)"><i>Total Value</i></li>');
+                $('.cl_hov_' + (it_CMx_4)).hide();
+            }
+        });
         if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') === 'Capacity Matrix') {
-            $('#id_title').append('<b style="visibility: hidden" id="id_dataI" data-i18n="Capacity Matrix auswählen">Capacity Matrix auswählen</b>');
-            $('#id_dataI').on('stylechanged', function () {
-                do_translate();
-            });
-            $('#id_dataI').css('visibility', 'visible');
-            if (ly_filter !== undefined) {
-                map.removeLayer(ly_filter);
-            }
-            if (ly_biotop !== undefined) {
-                map.removeLayer(ly_biotop);
-            }
-            if (geoJsonLayer !== undefined) {
-                map.removeLayer(geoJsonLayer);
-            }
-            map.eachLayer(function (layer) {
-                console.log(layer);
-                map.removeLayer(layer);
-            });
-            func_CQLFull();
-            $.ajax({
-                url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
-                headers: {"Accept": "application/json"},
-                type: 'GET',
-                dataType: "json",
-                crossDomain: true,
-                beforeSend: function (xhr) {
-                    xhr.withCredentials = true;
-                },
-                //data: JSON.stringify({"packageID":opt_layerID.val()}),
-                success: function (resp1) {
-                    layer_name = resp1['project']['geoserverLayer'];
-                    func_initMap();
-                    p_color = '#66ffff';
-                    $('.cl_habitatTypes').children().remove();
-                    var it_CMx_1 = 0;
-                    var it_CMx_2 = 1;
-                    var it_CMx_3 = 2;
-                    var it_CMx_4 = 3;
+            $('.cl_habitatTypes').css('height', '26em');
+            $('.cl_legend').children().remove();
 
-                    $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_1 + "'><b onclick='func_toggle(" + it_CMx_1 + ")'>Regulation services</b></ul>");
-                    $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_2 + "'><b onclick='func_toggle(" + it_CMx_2 + ")'>Habitat services</b></ul>");
-                    $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_3 + "'><b onclick='func_toggle(" + it_CMx_3 + ")'>Provision services</b></ul>");
-                    $('.cl_habitatTypes').append("<ul class='cl_toggle cl_tDescr_" + it_CMx_4 + "'><b onclick='func_toggle(" + it_CMx_4 + ")'>Total Value</b></ul>");
+            d3.selectAll('.cl_legend').append('div')
+                .style('padding-left', '0.5em')
+                .style('width', '200px')
+                .style('height', '25em')
+                .attr('class', 'cl_leg_1')
+                .style('float', 'left')
 
-                    $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 0 + '" onclick="func_CQLCapMatr(' + 0 + ', p_color)"><i>Disturbance prevention</i></li>');
-                    $('.cl_hov_' + (it_CMx_1)).hide();
-                    $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 1 + '" onclick="func_CQLCapMatr(' + 1 + ', p_color)"><i>Local climate regulation</i></li>');
-                    $('.cl_hov_' + (it_CMx_1)).hide();
-                    $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 2 + '" onclick="func_CQLCapMatr(' + 2 + ', p_color)"><i>Waterregulation</i></li>');
-                    $('.cl_hov_' + (it_CMx_1)).hide();
-                    $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 3 + '" onclick="func_CQLCapMatr(' + 3 + ', p_color)"><i>Watersupply</i></li>');
-                    $('.cl_hov_' + (it_CMx_1)).hide();
-                    $('.cl_tDescr_' + it_CMx_1).append('<li class="cl_hov_' + (it_CMx_1) + ' cl_hov" id="id_h_' + 4 + '" onclick="func_CQLCapMatr(' + 4 + ', p_color)"><i>Pollination</i></li>');
-                    $('.cl_hov_' + (it_CMx_1)).hide();
+            d3.selectAll('.cl_legend').append('div')
+                .style('padding-left', '0.5em')
+                .style('width', '200px')
+                .style('height', '25em')
+                .attr('class', 'cl_leg_2')
+                .style('float', 'left')
 
-                    $('.cl_tDescr_' + it_CMx_2).append('<li class="cl_hov_' + (it_CMx_2) + ' cl_hov" id="id_h_' + 5 + '" onclick="func_CQLCapMatr(' + 5 + ', p_color)"><i>Refugium</i></li>');
-                    $('.cl_hov_' + (it_CMx_2)).hide();
+            d3.selectAll('.cl_leg_1').append('div')
+                .attr('class', 'cl_tLeg_1')
 
-                    $('.cl_tDescr_' + it_CMx_3).append('<li class="cl_hov_' + (it_CMx_3) + ' cl_hov" id="id_h_' + 6 + '" onclick="func_CQLCapMatr(' + 6 + ', p_color)"><i>Food</i></li>');
-                    $('.cl_hov_' + (it_CMx_3)).hide();
-                    $('.cl_tDescr_' + it_CMx_3).append('<li class="cl_hov_' + (it_CMx_3) + ' cl_hov" id="id_h_' + 7 + '" onclick="func_CQLCapMatr(' + 7 + ', p_color)"><i>Raw materials</i></li>');
-                    $('.cl_hov_' + (it_CMx_3)).hide();
-                    $('.cl_tDescr_' + it_CMx_3).append('<li class="cl_hov_' + (it_CMx_3) + ' cl_hov" id="id_h_' + 8 + '" onclick="func_CQLCapMatr(' + 8 + ', p_color)"><i>Genetic resources</i></li>');
-                    $('.cl_hov_' + (it_CMx_3)).hide();
-                    $('.cl_tDescr_' + it_CMx_4).append('<li class="cl_hov_' + (it_CMx_4) + ' cl_hov" id="id_h_' + 9 + '" onclick="func_CQLCapMatr(' + 9 + ', p_color)"><i>Total Value</i></li>');
-                    $('.cl_hov_' + (it_CMx_4)).hide();
-                }
-            });
-        }
-            if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') === 'Capacity Matrix') {
-                $('.cl_habitatTypes').css('height', '26em');
-                $('.cl_legend').children().remove();
+            d3.selectAll('.cl_tLeg_1').append('h4')
+                .style('margin-left', '2em')
+                .style('width', '12em')
+                .attr('data-i18n', 'Legende der Services')
+                .html('Legende der Services')
 
-                d3.selectAll('.cl_legend').append('div')
-                    .style('padding-left', '0.5em')
-                    .style('width', '200px')
-                    .style('height', '25em')
-                    .attr('class', 'cl_leg_1')
-                    .style('float', 'left')
+            d3.selectAll('.cl_leg_2').append('div')
+                .attr('class', 'cl_tLeg_2')
 
-                d3.selectAll('.cl_legend').append('div')
-                    .style('padding-left', '0.5em')
-                    .style('width', '200px')
-                    .style('height', '25em')
-                    .attr('class', 'cl_leg_2')
-                    .style('float', 'left')
+            d3.selectAll('.cl_leg_2').append('div')
+                .attr('class', 'cl_leg_2_a')
+                .style('float', 'left')
+            d3.selectAll('.cl_leg_2').append('div')
+                .attr('class', 'cl_leg_2_b')
+                .style('margin-left', '1em')
+                .style('float', 'left')
+
+            d3.selectAll('.cl_tLeg_2').append('h4')
+                .style('margin-left', '2em')
+                .style('width', '12em')
+                .attr('data-i18n', 'Legende Total Value')
+                .html('Legende Total Value')
+
+            d3.selectAll('.cl_leg_2').append('div')
+                .attr('class', 'cl_tLeg_2')
+                .style('float', 'left')
+
+
+            var it_0 = 0;
+            var arrCol1 = [];
+            arrCol1[0] = "rgb(255, 0, 0)";
+            arrCol1[1] = "rgb(255,165,0)";
+            arrCol1[2] = "rgb(255, 255, 0)";
+            arrCol1[3] = "rgb(0, 188, 0)";
+            arrCol1[4] = "rgb(0, 255, 0)";
+
+            for (it_0 = 0; it_0 < 5; it_0++) {
 
                 d3.selectAll('.cl_leg_1').append('div')
-                    .attr('class', 'cl_tLeg_1')
-
-                d3.selectAll('.cl_tLeg_1').append('h4')
-                    .style('margin-left', '2em')
-                    .style('width', '12em')
-                    .attr('data-i18n', 'Legende der Services')
-                    .html('Legende der Services')
-
-                d3.selectAll('.cl_leg_2').append('div')
-                    .attr('class', 'cl_tLeg_2')
-
-                d3.selectAll('.cl_leg_2').append('div')
-                    .attr('class', 'cl_leg_2_a')
-                    .style('float', 'left')
-                d3.selectAll('.cl_leg_2').append('div')
-                    .attr('class', 'cl_leg_2_b')
-                    .style('margin-left', '1em')
-                    .style('float', 'left')
-
-                d3.selectAll('.cl_tLeg_2').append('h4')
-                    .style('margin-left', '2em')
-                    .style('width', '12em')
-                    .attr('data-i18n', 'Legende Total Value')
-                    .html('Legende Total Value')
-
-                d3.selectAll('.cl_leg_2').append('div')
-                    .attr('class', 'cl_tLeg_2')
-                    .style('float', 'left')
-
-
-                var it_0 = 0;
-                var arrCol1 = [];
-                arrCol1[0] = "rgb(255, 0, 0)";
-                arrCol1[1] = "rgb(255,165,0)";
-                arrCol1[2] = "rgb(255, 255, 0)";
-                arrCol1[3] = "rgb(0, 188, 0)";
-                arrCol1[4] = "rgb(0, 255, 0)";
-
-                for (it_0 = 0; it_0 < 5; it_0++) {
-
-                    d3.selectAll('.cl_leg_1').append('div')
-                        .attr('class', 'cl_' + it_0)
-                        .style('margin-left', '4.5em')
-                        .style('margin-bottom', '1em')
-                        .style('width', '2em')
-                        .style('height', '1em')
-                        .html('<b style="background-color: white;  margin-left: -2em">' + (it_0 + 1) + '</b>')
-                        .style('background-color', arrCol1[it_0])
-                }
-                it_0 = 0;
-                var arrCol2 = [];
-                arrCol2[0] = "rgb(250, 25, 0)";
-                arrCol2[1] = "rgb(250,50,0)";
-                arrCol2[2] = "rgb(225, 75, 0)";
-                arrCol2[3] = "rgb(225, 100, 0)";
-                arrCol2[4] = "rgb(200, 125, 0)";
-                arrCol2[5] = "rgb(200, 150, 0)";
-                arrCol2[6] = "rgb(175, 175,0)";
-                arrCol2[7] = "rgb(175, 200, 0)";
-                arrCol2[8] = "rgb(150, 225, 0)";
-                arrCol2[9] = "rgb(150, 250, 0)";
-
-                for (it_0 = 0; it_0 < 5; it_0++) {
-
-                    d3.selectAll('.cl_leg_2_a').append('div')
-                        .attr('class', 'cl_2' + it_0)
-                        .style('margin-left', '4.5em')
-                        .style('margin-bottom', '1em')
-                        .style('width', '2em')
-                        .style('height', '1em')
-                        .html('<b style="background-color: white; margin-left: -2em">' + (it_0 + 1) + '</b>')
-                        .style('background-color', arrCol2[it_0])
-                }
-                for (it_0 = 5; it_0 < 10; it_0++) {
-
-                    d3.selectAll('.cl_leg_2_b').append('div')
-                        .attr('class', 'cl_2' + it_0)
-                        .style('margin-left', '2.5em')
-                        .style('margin-bottom', '1em')
-                        .style('width', '2em')
-                        .style('height', '1em')
-                        .html('<b style="background-color: white; margin-left: -2em">' + (it_0 + 1) + '</b>')
-                        .style('background-color', arrCol2[it_0])
-                }
+                    .attr('class', 'cl_' + it_0)
+                    .style('margin-left', '4.5em')
+                    .style('margin-bottom', '1em')
+                    .style('width', '2em')
+                    .style('height', '1em')
+                    .html('<b style="background-color: white;  margin-left: -2em">' + (it_0 + 1) + '</b>')
+                    .style('background-color', arrCol1[it_0])
             }
-        } else {
-            $('.cl_legend').children().remove();
+            it_0 = 0;
+            var arrCol2 = [];
+            arrCol2[0] = "rgb(250, 25, 0)";
+            arrCol2[1] = "rgb(250,50,0)";
+            arrCol2[2] = "rgb(225, 75, 0)";
+            arrCol2[3] = "rgb(225, 100, 0)";
+            arrCol2[4] = "rgb(200, 125, 0)";
+            arrCol2[5] = "rgb(200, 150, 0)";
+            arrCol2[6] = "rgb(175, 175,0)";
+            arrCol2[7] = "rgb(175, 200, 0)";
+            arrCol2[8] = "rgb(150, 225, 0)";
+            arrCol2[9] = "rgb(150, 250, 0)";
+
+            for (it_0 = 0; it_0 < 5; it_0++) {
+
+                d3.selectAll('.cl_leg_2_a').append('div')
+                    .attr('class', 'cl_2' + it_0)
+                    .style('margin-left', '4.5em')
+                    .style('margin-bottom', '1em')
+                    .style('width', '2em')
+                    .style('height', '1em')
+                    .html('<b style="background-color: white; margin-left: -2em">' + (it_0 + 1) + '</b>')
+                    .style('background-color', arrCol2[it_0])
+            }
+            for (it_0 = 5; it_0 < 10; it_0++) {
+
+                d3.selectAll('.cl_leg_2_b').append('div')
+                    .attr('class', 'cl_2' + it_0)
+                    .style('margin-left', '2.5em')
+                    .style('margin-bottom', '1em')
+                    .style('width', '2em')
+                    .style('height', '1em')
+                    .html('<b style="background-color: white; margin-left: -2em">' + (it_0 + 1) + '</b>')
+                    .style('background-color', arrCol2[it_0])
+            }
         }
+    } else {
+        $('.cl_legend').children().remove();
+    }
 });
 func_closedPopup = function () {
     cnt_nav.animate({
