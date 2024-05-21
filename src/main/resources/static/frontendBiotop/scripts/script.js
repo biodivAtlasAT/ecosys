@@ -198,7 +198,7 @@ $.ajax({
     success: function (resp) {
         console.log(resp);
         $("#id_addLayer option").remove(); // Remove all <option> child tags.
-        $("#id_packageID").append("<option data-i18n='Projekt auswählen' disabled selected='true'>Projekt auswählen</option>");
+        $("#id_addLayer").append("<option data-i18n='Projekt auswählen' disabled selected='true'>Projekt auswählen</option>");
         $.each(resp.projects, function (index, item) { // Iterates through a collection
             $("#id_addLayer").append( // Append an object to the inside of the select box
                 $("<option></option>") // Yes you can do this.
@@ -234,12 +234,12 @@ opt_layerID.on('click change', function () {
             map.removeLayer(ly_filter);
         }
         if (ly_biotop !== undefined) {
+        if (ly_biotop !== undefined) {
             map.removeLayer(ly_biotop);
         }
         if (geoJsonLayer !== undefined) {
             map.removeLayer(geoJsonLayer);
         }
-        func_CQLFull();
         $.ajax({
             url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
             headers: {"Accept": "application/json"},
@@ -253,6 +253,7 @@ opt_layerID.on('click change', function () {
             success: function (resp1) {
                 layer_name = resp1['project']['geoserverLayer'];
                 func_initMap();
+                func_CQLFull();
                 $('.cl_habitats').children().remove();
                 $.ajax({
                     url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
