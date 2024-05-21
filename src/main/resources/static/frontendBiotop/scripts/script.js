@@ -312,7 +312,7 @@ opt_layerID.on('click', function () {
                     layer_name = resp1['project']['geoserverLayer'];
                     $('.cl_habitats').children().remove();
                     func_CQLFull();
-                    func_initMap();
+                    //func_initMap();
                     $.ajax({
                         url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
                         headers: {"Accept": "application/json"},
