@@ -298,7 +298,6 @@ opt_layerID.on('click', function () {
             if (geoJsonLayer !== undefined) {
                 map.removeLayer(geoJsonLayer);
             }
-            func_CQLFull();
             $.ajax({
                 url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
                 headers: {"Accept": "application/json"},
@@ -311,8 +310,9 @@ opt_layerID.on('click', function () {
                 //data: JSON.stringify({"packageID":opt_layerID.val()}),
                 success: function (resp1) {
                     layer_name = resp1['project']['geoserverLayer'];
-                    func_initMap();
                     $('.cl_habitats').children().remove();
+                    func_CQLFull();
+                    func_initMap();
                     $.ajax({
                         url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
                         headers: {"Accept": "application/json"},
