@@ -221,10 +221,9 @@ func_toggle_2 = function (p_it_t) {
 func_hide = function (p_it_t) {
     $('.cl_hov_' + (p_it_t)).hide();
 }
-opt_layerID.on('mouseleave', function () {
+opt_layerID.on('click change', function () {
     var id_title = $('#id_title');
     id_title.children().remove();
-    func_CQLFull();
     if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') !== 'Capacity Matrix') {
         id_title.append('<b style="visibility: hidden" id="id_dataI" data-i18n="Lebensraumtypen auswählen">Lebensraumtypen auswählen</b>');
         $('#id_dataI').on('stylechanged', function () {
@@ -241,6 +240,7 @@ opt_layerID.on('mouseleave', function () {
             if (geoJsonLayer !== undefined) {
                 map.removeLayer(geoJsonLayer);
             }
+            func_CQLFull();
             $.ajax({
                 url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
                 headers: {"Accept": "application/json"},
@@ -253,6 +253,7 @@ opt_layerID.on('mouseleave', function () {
                 //data: JSON.stringify({"packageID":opt_layerID.val()}),
                 success: function (resp1) {
                     layer_name = resp1['project']['geoserverLayer'];
+                    func_initMap();
                     $('.cl_habitats').children().remove();
                     $.ajax({
                         url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
@@ -356,6 +357,7 @@ opt_layerID.on('mouseleave', function () {
                 console.log(layer);
                 map.removeLayer(layer);
             });
+            func_CQLFull();
             $.ajax({
                 url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
                 headers: {"Accept": "application/json"},
@@ -368,6 +370,7 @@ opt_layerID.on('mouseleave', function () {
                 //data: JSON.stringify({"packageID":opt_layerID.val()}),
                 success: function (resp1) {
                     layer_name = resp1['project']['geoserverLayer'];
+                    func_initMap();
                     p_color = '#66ffff';
                     $('.cl_habitatTypes').children().remove();
                     var it_CMx_1 = 0;
@@ -404,6 +407,7 @@ opt_layerID.on('mouseleave', function () {
                     $('.cl_hov_' + (it_CMx_4)).hide();
                 }
             });
+        }
             if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') === 'Capacity Matrix') {
                 $('.cl_habitatTypes').css('height', '26em');
                 $('.cl_legend').children().remove();
@@ -511,7 +515,6 @@ opt_layerID.on('mouseleave', function () {
         } else {
             $('.cl_legend').children().remove();
         }
-    }
 });
 func_closedPopup = function () {
     cnt_nav.animate({
