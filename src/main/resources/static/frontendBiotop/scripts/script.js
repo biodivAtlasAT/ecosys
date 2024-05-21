@@ -221,7 +221,7 @@ func_toggle_2 = function (p_it_t) {
 func_hide = function (p_it_t) {
     $('.cl_hov_' + (p_it_t)).hide();
 }
-opt_layerID.on('click change', function () {
+opt_layerID.on('click', function () {
     var id_title = $('#id_title');
     id_title.children().remove();
     if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') !== 'Capacity Matrix') {
@@ -240,6 +240,7 @@ opt_layerID.on('click change', function () {
         if (geoJsonLayer !== undefined) {
             map.removeLayer(geoJsonLayer);
         }
+        func_CQLFull();
         $.ajax({
             url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
             headers: {"Accept": "application/json"},
@@ -252,7 +253,6 @@ opt_layerID.on('click change', function () {
             //data: JSON.stringify({"packageID":opt_layerID.val()}),
             success: function (resp1) {
                 layer_name = resp1['project']['geoserverLayer'];
-                func_CQLFull();
                 func_initMap();
                 $('.cl_habitats').children().remove();
                 $.ajax({
