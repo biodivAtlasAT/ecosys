@@ -514,6 +514,65 @@ opt_layerID.on('click', function () {
         $('.cl_legend').children().remove();
     }
 });
+    func_initMap = function () {
+        if (LayerMap !== undefined) {
+            map.removeLayer(LayerMap);
+        }
+        $('#ic_info').attr('visibility', 'hidden');
+        if (chk_map == 0) {
+            LayerMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }).addTo(map);
+        }
+        if (chk_map == 1) {
+            LayerMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+                // page 14 Map.locate <watch, enableHighAccuracy, maxZoom>
+            }).addTo(map);
+        }
+        if (chk_map == 2) {
+            mapLink =
+                '<a href="http://www.esri.com/">Esri</a>';
+            wholink =
+                'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+            LayerMap = L.tileLayer(
+                'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    attribution: '&copy; ' + mapLink + ', ' + wholink,
+                }).addTo(map);
+        }
+        if (ly_biotop !== undefined) {
+            //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
+            if ($('#id_addLayer option:selected').val() === 'noL') {
+                map.removeLayer(ly_biotop);
+                map.removeLayer(geoJsonLayer);
+                for (it_l = 0; it_l < popupMap.length; it_l++) {
+                    popupMap[it_l].removeLayer(popupArr[it_l]);
+                }
+            }
+            ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
+                format: 'image/svg',
+                opacity: 1,
+                layers: "ECO:" + layer_name
+            });
+            ly_biotop.addTo(map);
+        }
+
+        $('#id_addLayer').change(function () {
+            if (ly_biotop !== undefined) {
+                map.removeLayer(ly_biotop);
+                map.removeLayer(geoJsonLayer);
+            }
+            //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
+            ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
+                format: 'image/svg',
+                opacity: 1,
+                layers: "ECO:" + layer_name
+            });
+            ly_biotop.addTo(map);
+
+        });
+
+    }
 func_closedPopup = function () {
     cnt_nav.animate({
         'width': '0em', 'display': 'none'
@@ -1493,65 +1552,65 @@ func_CQLSubm = function (p_id, r_id, p_color) {
         });
      */
 }
-func_initMap = function () {
-    if (LayerMap !== undefined) {
-        map.removeLayer(LayerMap);
-    }
-    $('#ic_info').attr('visibility', 'hidden');
-    if (chk_map == 0) {
-        LayerMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map);
-    }
-    if (chk_map == 1) {
-        LayerMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-            // page 14 Map.locate <watch, enableHighAccuracy, maxZoom>
-        }).addTo(map);
-    }
-    if (chk_map == 2) {
-        mapLink =
-            '<a href="http://www.esri.com/">Esri</a>';
-        wholink =
-            'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
-        LayerMap = L.tileLayer(
-            'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '&copy; ' + mapLink + ', ' + wholink,
+    func_initMap = function () {
+        if (LayerMap !== undefined) {
+            map.removeLayer(LayerMap);
+        }
+        $('#ic_info').attr('visibility', 'hidden');
+        if (chk_map == 0) {
+            LayerMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             }).addTo(map);
-    }
-    if (ly_biotop !== undefined) {
-        //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
-        if ($('#id_addLayer option:selected').val() === 'noL') {
-            map.removeLayer(ly_biotop);
-            map.removeLayer(geoJsonLayer);
-            for (it_l = 0; it_l < popupMap.length; it_l++) {
-                popupMap[it_l].removeLayer(popupArr[it_l]);
-            }
         }
-        ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
-            format: 'image/svg',
-            opacity: 1,
-            layers: "ECO:" + layer_name
-        });
-        ly_biotop.addTo(map);
-    }
-
-    $('#id_addLayer').change(function () {
+        if (chk_map == 1) {
+            LayerMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+                // page 14 Map.locate <watch, enableHighAccuracy, maxZoom>
+            }).addTo(map);
+        }
+        if (chk_map == 2) {
+            mapLink =
+                '<a href="http://www.esri.com/">Esri</a>';
+            wholink =
+                'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+            LayerMap = L.tileLayer(
+                'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    attribution: '&copy; ' + mapLink + ', ' + wholink,
+                }).addTo(map);
+        }
         if (ly_biotop !== undefined) {
-            map.removeLayer(ly_biotop);
-            map.removeLayer(geoJsonLayer);
+            //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
+            if ($('#id_addLayer option:selected').val() === 'noL') {
+                map.removeLayer(ly_biotop);
+                map.removeLayer(geoJsonLayer);
+                for (it_l = 0; it_l < popupMap.length; it_l++) {
+                    popupMap[it_l].removeLayer(popupArr[it_l]);
+                }
+            }
+            ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
+                format: 'image/svg',
+                opacity: 1,
+                layers: "ECO:" + layer_name
+            });
+            ly_biotop.addTo(map);
         }
-        //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
-        ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
-            format: 'image/svg',
-            opacity: 1,
-            layers: "ECO:" + layer_name
+
+        $('#id_addLayer').change(function () {
+            if (ly_biotop !== undefined) {
+                map.removeLayer(ly_biotop);
+                map.removeLayer(geoJsonLayer);
+            }
+            //var layer_name = 'OEKOLEITA_Biotopkartierung_03_2023';
+            ly_biotop = L.tileLayer.wms('https://spatial.biodiversityatlas.at/geoserver/ECO/wms', {
+                format: 'image/svg',
+                opacity: 1,
+                layers: "ECO:" + layer_name
+            });
+            ly_biotop.addTo(map);
+
         });
-        ly_biotop.addTo(map);
 
-    });
-
-}
+    }
 $(document).ready(function () {
     // Hide all second and third level items initially
     $("#depthList ul ul").hide();
