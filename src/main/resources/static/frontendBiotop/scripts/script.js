@@ -252,8 +252,8 @@ opt_layerID.on('click change', function () {
             //data: JSON.stringify({"packageID":opt_layerID.val()}),
             success: function (resp1) {
                 layer_name = resp1['project']['geoserverLayer'];
-                func_initMap();
                 func_CQLFull();
+                func_initMap();
                 $('.cl_habitats').children().remove();
                 $.ajax({
                     url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
