@@ -279,7 +279,7 @@ func_initMap = function () {
 
     });
 }
-opt_layerID.on('mousepress', function () {
+opt_layerID.on('change', function () {
     var id_title = $('#id_title');
     id_title.children().remove();
     if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') !== 'Capacity Matrix') {
