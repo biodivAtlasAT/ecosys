@@ -240,7 +240,6 @@ opt_layerID.on('mouseup', function () {
             if (geoJsonLayer !== undefined) {
                 map.removeLayer(geoJsonLayer);
             }
-            func_CQLFull();
             $.ajax({
                 url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
                 headers: {"Accept": "application/json"},
@@ -253,7 +252,6 @@ opt_layerID.on('mouseup', function () {
                 //data: JSON.stringify({"packageID":opt_layerID.val()}),
                 success: function (resp1) {
                     layer_name = resp1['project']['geoserverLayer'];
-                    func_initMap();
                     $('.cl_habitats').children().remove();
                     $.ajax({
                         url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
@@ -369,7 +367,6 @@ opt_layerID.on('mouseup', function () {
                 //data: JSON.stringify({"packageID":opt_layerID.val()}),
                 success: function (resp1) {
                     layer_name = resp1['project']['geoserverLayer'];
-                    func_initMap();
                     p_color = '#66ffff';
                     $('.cl_habitatTypes').children().remove();
                     var it_CMx_1 = 0;
@@ -1495,6 +1492,7 @@ func_CQLSubm = function (p_id, r_id, p_color) {
      */
 }
 func_initMap = function () {
+    func_CQLFull();
     if (LayerMap !== undefined) {
         map.removeLayer(LayerMap);
     }
