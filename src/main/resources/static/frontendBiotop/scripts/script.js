@@ -207,7 +207,7 @@ $.ajax({
             );
         });
         opt_layerID = $('#id_addLayer').val(1);
-        opt_layerID.on('change', function () {
+        opt_layerID.on('click change', function () {
             var id_title = $('#id_title');
             id_title.children().remove();
             if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') !== 'Capacity Matrix') {
