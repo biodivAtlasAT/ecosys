@@ -206,6 +206,7 @@ $.ajax({
                     .val(item.id)
             );
         });
+        opt_layerID = $('#id_addLayer').val(9).click();
     }
 });
 func_toggle_t = function (p_it_t) {
@@ -223,7 +224,6 @@ func_hide = function (p_it_t) {
 opt_layerID.on('click change', function () {
     var id_title = $('#id_title');
     id_title.children().remove();
-    func_CQLFull();
     if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') !== 'Capacity Matrix') {
         id_title.append('<b style="visibility: hidden" id="id_dataI" data-i18n="Lebensraumtypen auswählen">Lebensraumtypen auswählen</b>');
         $('#id_dataI').on('stylechanged', function () {
