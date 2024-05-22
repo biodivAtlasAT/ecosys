@@ -206,7 +206,7 @@ $.ajax({
                     .val(item.id)
             );
         });
-        opt_layerID = $('#id_addLayer').val(9).click();
+        opt_layerID = $('#id_addLayer').val(1);
     }
 });
 func_toggle_t = function (p_it_t) {
@@ -221,7 +221,7 @@ func_toggle_2 = function (p_it_t) {
 func_hide = function (p_it_t) {
     $('.cl_hov_' + (p_it_t)).hide();
 }
-opt_layerID.on('click change', function () {
+opt_layerID.on('click', function () {
     var id_title = $('#id_title');
     id_title.children().remove();
     if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') !== 'Capacity Matrix') {
@@ -1146,7 +1146,323 @@ func_CQLSubm = function (p_id, r_id, p_color) {
         map.closePopup(infoPup);
     }
     if (chk_id === r_id) {
-        opt_layerID.click();
+        $('.cl_hov').css('list-style-type', 'none');
+        $('.cl_hov').css('background-color', '#ffffff');
+        $('.cl_hov').css('color', '#637073');
+        $('#id_h_' + r_id).css('background-color', '#49754a');
+        $('#id_h_' + r_id).css('color', '#ffffff');
+        map.on('popupclose', func_closedPopup);
+        $.ajax({
+            url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/filter',
+            headers: {"Accept": "application/json"},
+            type: 'GET',
+            dataType: "json",
+            crossDomain: true,
+            beforeSend: function (xhr) {
+                xhr.withCredentials = true;
+            },
+            //data: JSON.stringify({"packageID":opt_layerID.val()}),
+            success: function (resp) {
+                console.log(resp['filter'][p_id]['cqlQuery']);
+                if (resp['filter'][p_id]['cqlQuery'] !== undefined) {
+                    console.log("check1");
+                    $.ajax({
+                        url: 'https://spatial.biodiversityatlas.at/geoserver/ECO/wfs',
+                        type: 'GET',
+                        data: {
+                            service: 'WFS',
+                            version: '1.0.0',
+                            request: 'GetFeature',
+                            typeName: 'ECO:' + layer_name,
+                            outputFormat: 'application/json',
+                            cql_filter: resp['filter'][p_id]['cqlQuery']
+                        },
+                        success: function (response) {
+                            //map.removeLayer(ly_biotop);
+                            map.removeLayer(geoJsonLayer);
+                            if (ly_filter !== undefined) {
+                                map.removeLayer(ly_filter);
+                            }
+
+                            function polystyle() {
+                                return {
+                                    fillColor: 'yellow',
+                                    weight: 2,
+                                    opacity: 1,
+                                    color: 'yellow',  //Outline color
+                                    fillOpacity: 0.8
+                                };
+                            }
+
+                            ly_filter = L.geoJSON(response, {style: polystyle});
+                            //map.fitBounds(ly_filter.getBounds());
+                            /*
+                            ly_filter.on('mouseover', function(event) {
+                                popup.remove();
+                            });
+                             */
+                            ly_filter.on('click', function (e) {
+                                //console.log(e.layer.feature.geometry);
+                                if (geoJsonLayer !== undefined) {
+                                    map.removeLayer(geoJsonLayer);
+                                }
+                                var clickedFeature = e.layer.feature;
+                                var wkt = [];
+                                // Convert the clicked feature's geometry to a WKT string
+                                turf.coordEach(clickedFeature, function (coord) {
+                                    wkt.push(coord);
+                                }, 'wkt');
+                                wktString = "MULTIPOLYGON(((";
+                                for (it_w = 0; it_w < wkt.length; it_w++) {
+                                    wktString += wkt[it_w][0].toFixed(5) + " " + wkt[it_w][1].toFixed(5) + ",";
+                                }
+                                wktString += wkt[0][0].toFixed(5) + " " + wkt[0][1].toFixed(5) + ")))";
+                                //console.log(response['features'][0]['properties']['AK_FNR']);
+
+                                var str_content = '';
+                                if (response['features'][0] !== undefined) {
+                                    $.ajax({
+                                        url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/' + response['features'][0]['properties']['AK_FNR'],
+                                        headers: {"Accept": "application/json"},
+                                        type: 'GET',
+                                        dataType: "json",
+                                        crossDomain: true,
+                                        beforeSend: function (xhr) {
+                                            xhr.withCredentials = true;
+                                        },
+                                        //data: JSON.stringify({"packageID":opt_layerID.val()}),
+                                        success: function (resp2) {
+                                            $('#id_spList').children().remove();
+                                            console.log(wktString);
+                                            speciesGroups = [];
+                                            //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
+                                            for (it_d = 0; it_d < resp2['speciesGroup']['list'].length; it_d++) {
+                                                $.ajax({
+                                                    //url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
+                                                    url: 'https://biocache.biodiversityatlas.at/ws/webportal/params?',
+                                                    data: {
+                                                        q: resp2['speciesGroup']['list'][it_d]['description'],
+                                                        wkt: wktString
+                                                    },
+                                                    // POST tested string returns a number
+                                                    type: 'POST',
+                                                    success: function (occurrence) {
+                                                        $.ajax({
+                                                            url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=qid:' + occurrence,
+                                                            type: 'GET',
+                                                            success: function (result) {
+                                                                if (result['totalRecords'] !== 0) {
+                                                                    speciesGroups.push(result['occurrences']);
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error(error);
+                                        }
+                                    });
+                                    str_content += '<div><b>' + decode_utf8(response['features'][0]['properties']['BT_Lang']) + '</b></div>';
+
+                                    console.log(response['features'][0]['properties']);
+                                    infoPup = L.popup({
+                                        className: 'cl_popup3',
+                                        closeButton: true,
+                                        closeOnClick: true
+                                    });
+                                    if(response['features'][0]['properties']['AK_FNR'] !== '') {
+                                        str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i title='Alle Arten, die in diesem Biotop (ausgewähltes Polygon) vorkommen.' data-i18n='Biotop-Artenliste anzeigen'>Biotop-Artenliste anzeigen</i></div></div>";
+                                    }
+                                    str_content += "<div  onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
+                                    if (response['features'][0]['properties']['Disturbanc'] === undefined && response['features'][0]['properties']['Localclima'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Waterregul'] === undefined && response['features'][0]['properties']['Watersuppl'] === undefined && response['features'][0]['properties']['Pollinatio'] === undefined && response['features'][0]['properties']['Refugium'] === undefined && response['features'][0]['properties']['Food'] === undefined && response['features'][0]['properties']['Rawmateria'] === undefined && response['features'][0]['properties']['Geneticres'] === undefined) {
+                                        infoPup.setLatLng(e.latlng);
+                                        infoPup.setContent(str_content);
+                                        infoPup.openOn(map);
+                                    } else {
+                                        if ($('.cl_capMatr').length !== 0) {
+                                            $('.cl_capMatr').remove();
+                                        }
+                                        if ($('.cl_services').length !== 0) {
+                                            $('.cl_services').remove();
+                                        }
+                                        str_content += "<div class='cl_capMatr'><div class='cl_cntCap'><b>Capacity Matrix values</b></div></div>";
+                                        if ((response['features'][0]['properties']['Disturbanc'] !== undefined || response['features'][0]['properties']['Localclima'] !== undefined || response['features'][0]['properties']['Waterregul'] !== undefined || response['features'][0]['properties']['Watersuppl'] !== undefined || response['features'][0]['properties']['Pollinatio'] !== undefined)) {
+                                            str_content += "<div class='cl_services cl_serv1'><b>Regulation services</b></div>";
+                                            if (response['features'][0]['properties']['Disturbanc'] !== undefined) {
+                                                str_content += "<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>";
+                                            }
+                                            if (response['features'][0]['properties']['Localclima'] !== undefined) {
+                                                str_content += "<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>";
+                                            }
+                                            if (response['features'][0]['properties']['Waterregul'] !== undefined) {
+                                                str_content += "<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>";
+                                            }
+                                            if (response['features'][0]['properties']['Watersuppl'] !== undefined) {
+                                                str_content += "<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>";
+                                            }
+                                            if (response['features'][0]['properties']['Pollinatio'] !== undefined) {
+                                                str_content += "<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>";
+                                            }
+                                        }
+                                        if (response['features'][0]['properties']['Refugium'] !== undefined) {
+                                            str_content += "<div class='cl_services cl_serv2'><b>Habitat services</b></div>";
+                                            if (response['features'][0]['properties']['Refugium'] !== undefined) {
+                                                str_content += "<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>";
+                                            }
+                                        }
+                                        if ((response['features'][0]['properties']['Food'] !== undefined || response['features'][0]['properties']['Rawmateria'] !== undefined || response['features'][0]['properties']['Geneticres'] !== undefined)) {
+                                            str_content += "<div class='cl_services cl_serv3'><b>Provision services</b></div>";
+                                            if (response['features'][0]['properties']['Food'] !== undefined) {
+                                                str_content += "<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>";
+                                            }
+                                            if (response['features'][0]['properties']['Rawmateria'] !== undefined) {
+                                                str_content += "<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>";
+                                            }
+                                            if (response['features'][0]['properties']['Geneticres'] !== undefined) {
+                                                str_content += "<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>";
+                                            }
+                                        }
+                                        if (response['features'][0]['properties']['TotalValue'] !== undefined) {
+                                            str_content += "<div class='cl_services cl_servT'><b>Total Value: " + response['features'][0]['properties']['TotalValue'] + "</b></div>";
+                                        }
+                                        infoPup.setLatLng(e.latlng);
+                                        infoPup.setContent(str_content);
+                                        infoPup.openOn(map);
+
+                                    }
+                                    if (!speciesGroups.length) {
+                                        if (infoPup !== undefined) {
+                                            infoPup.setLatLng(e.latlng);
+                                            infoPup.setContent(str_content);
+                                        } else {
+                                            infoPup = L.popup({
+                                                className: 'cl_popup3',
+                                                closeButton: true,
+                                                closeOnClick: true
+                                            });
+                                            infoPup.setLatLng(e.latlng);
+                                            infoPup.setContent(str_content);
+                                        }
+                                        map.addLayer(infoPup);
+                                        //infoPup.openOn(map);
+                                    }
+                                } else {
+                                    $.ajax({
+                                        url: url_ecosys + url_apiProjects + '/' + opt_layerID.val() + '/species/*',
+                                        headers: {"Accept": "application/json"},
+                                        type: 'GET',
+                                        dataType: "json",
+                                        crossDomain: true,
+                                        beforeSend: function (xhr) {
+                                            xhr.withCredentials = true;
+                                        },
+                                        //data: JSON.stringify({"packageID":opt_layerID.val()}),
+                                        success: function (resp2) {
+                                            $('#id_spList').children().remove();
+                                            console.log(wktString);
+                                            speciesGroups = [];
+                                            //str_content += "<div><input type='button' onclick=func_SpeciesInfo(resp2['speciesGroup']['list'])'></input></div>";
+                                            for (it_d = 0; it_d < resp2['speciesGroup']['list'].length; it_d++) {
+                                                $.ajax({
+                                                    //url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=' + resp['speciesGroup']['list'][it_d]['description'] +'&qc=&wkt=' + wktString,
+                                                    url: 'https://biocache.biodiversityatlas.at/ws/webportal/params?',
+                                                    data: {
+                                                        q: resp2['speciesGroup']['list'][it_d]['description'],
+                                                        wkt: wktString
+                                                    },
+                                                    // POST tested string returns a number
+                                                    type: 'POST',
+                                                    success: function (occurrence) {
+                                                        $.ajax({
+                                                            url: 'https://biocache.biodiversityatlas.at/ws/occurrences/search?q=qid:' + occurrence,
+                                                            type: 'GET',
+                                                            success: function (result) {
+                                                                if (result['totalRecords'] !== 0) {
+                                                                    speciesGroups.push(result['occurrences']);
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error(error);
+                                        }
+                                    });
+                                    str_content += '<div><b>' + decode_utf8(response['features'][0]['properties']['BT_Lang']) + '</b></div>';
+
+                                    if (infoPup === undefined) {
+                                        infoPup = L.popup({
+                                            className: 'cl_popup3',
+                                            closeButton: true,
+                                            closeOnClick: true
+                                        });
+                                    }
+
+                                    //str_content += "<div class='cl_spGroups'><div onclick='func_spData(speciesGroups);'><i data-i18n='Artenliste für Biotoptyp anzeigen'>Artenliste für Biotoptyp anzeigen</i></div></div>";
+                                    str_content += "<div onclick='func_wktData(wktString);'><i title='Alle Funddaten, die im BDA für dieses Polygon verortet sind werden angezeigt' data-i18n='Alle Funddaten anzeigen'>Alle Funddaten anzeigen</i></div></div>";
+                                    if ($('.cl_capMatr').length !== 0) {
+                                        $('.cl_capMatr').remove();
+                                    }
+                                    if ($('.cl_services').length !== 0) {
+                                        $('.cl_services').remove();
+                                    }
+                                    str_content += "<div class='cl_capMatr'><div class='cl_cntCap'><b>Capacity Matrix values</b></div></div>";
+                                    if ((response['features'][0]['properties']['Disturbanc'] !== undefined || response['features'][0]['properties']['Localclima'] !== undefined || response['features'][0]['properties']['Waterregul'] !== undefined || response['features'][0]['properties']['Watersuppl'] !== undefined || response['features'][0]['properties']['Pollinatio'] !== undefined)) {
+                                        str_content += "<div class='cl_services cl_serv1'><b>Regulation services</b></div>";
+                                        if (response['features'][0]['properties']['Disturbanc'] !== undefined) {
+                                            str_content += "<div><i>Disturbance prevention: " + response['features'][0]['properties']['Disturbanc'] + "</i></div>";
+                                        }
+                                        if (response['features'][0]['properties']['Localclima'] !== undefined) {
+                                            str_content += "<div><i>Local climate regulation: " + response['features'][0]['properties']['Localclima'] + "</i></div>";
+                                        }
+                                        if (response['features'][0]['properties']['Waterregul'] !== undefined) {
+                                            str_content += "<div><i>Waterregulation: " + response['features'][0]['properties']['Waterregul'] + "</i></div>";
+                                        }
+                                        if (response['features'][0]['properties']['Watersuppl'] !== undefined) {
+                                            str_content += "<div><i>Watersupply: " + response['features'][0]['properties']['Watersuppl'] + "</i></div>";
+                                        }
+                                        if (response['features'][0]['properties']['Pollinatio'] !== undefined) {
+                                            str_content += "<div><i>Pollination: " + response['features'][0]['properties']['Pollinatio'] + "</i></div>";
+                                        }
+                                    }
+                                    if (response['features'][0]['properties']['Refugium'] !== undefined) {
+                                        str_content += "<div class='cl_services cl_serv2'><b>Habitat services</b></div>";
+                                        if (response['features'][0]['properties']['Refugium'] !== undefined) {
+                                            str_content += "<div><i>Refugium: " + response['features'][0]['properties']['Refugium'] + "</i></div>";
+                                        }
+                                    }
+                                    if ((response['features'][0]['properties']['Food'] !== undefined || response['features'][0]['properties']['Rawmateria'] !== undefined || response['features'][0]['properties']['Geneticres'] !== undefined)) {
+                                        str_content += "<div class='cl_services cl_serv3'><b>Provision services</b></div>";
+                                        if (response['features'][0]['properties']['Food'] !== undefined) {
+                                            str_content += "<div><i>Food: " + response['features'][0]['properties']['Food'] + "</i></div>";
+                                        }
+                                        if (response['features'][0]['properties']['Rawmateria'] !== undefined) {
+                                            str_content += "<div><i>Raw materials: " + response['features'][0]['properties']['Rawmateria'] + "</i></div>";
+                                        }
+                                        if (response['features'][0]['properties']['Geneticres'] !== undefined) {
+                                            str_content += "<div><i>Genetic resources: " + response['features'][0]['properties']['Geneticres'] + "</i></div>";
+                                        }
+                                    }
+                                    if (response['features'][0]['properties']['TotalValue'] !== undefined) {
+                                        str_content += "<div class='cl_services cl_servT'><b>Total Value: " + response['features'][0]['properties']['TotalValue'] + "</b></div>";
+                                    }
+                                    if (infoPup !== undefined) {
+                                        infoPup.setLatLng(e.latlng);
+                                        infoPup.setContent(str_content);
+                                    }
+                                    infoPup.openOn(map);
+                                }
+                            });
+                            ly_filter.addTo(map);
+                        }
+                    });
+                }
+            }
+        });
     } else {
         chk_id = r_id;
         $('.cl_hov').css('list-style-type', 'none');
