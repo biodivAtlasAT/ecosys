@@ -221,7 +221,7 @@ func_toggle_2 = function (p_it_t) {
 func_hide = function (p_it_t) {
     $('.cl_hov_' + (p_it_t)).hide();
 }
-$('.cl_opt_proj').on('click', function () {
+$('.cl_optProj').on('click', function () {
     var id_title = $('#id_title');
     id_title.children().remove();
     if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') !== 'Capacity Matrix') {
