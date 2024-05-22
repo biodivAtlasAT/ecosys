@@ -356,6 +356,7 @@ opt_layerID.on('click change', function () {
             console.log(layer);
             map.removeLayer(layer);
         });
+        func_CQLFull();
         $.ajax({
             url: url_ecosys + url_apiProjects + '/' + opt_layerID.val(),
             headers: {"Accept": "application/json"},
