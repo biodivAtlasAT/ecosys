@@ -201,7 +201,7 @@ $.ajax({
         $("#id_packageID").append("<option data-i18n='Projekt auswählen' disabled selected='true'>Projekt auswählen</option>");
         $.each(resp.projects, function (index, item) { // Iterates through a collection
             $("#id_addLayer").append( // Append an object to the inside of the select box
-                $("<option></option>") // Yes you can do this.
+                $("<option class='cl_optProj'></option>") // Yes you can do this.
                     .text(item.name)
                     .val(item.id)
             );
@@ -221,7 +221,7 @@ func_toggle_2 = function (p_it_t) {
 func_hide = function (p_it_t) {
     $('.cl_hov_' + (p_it_t)).hide();
 }
-opt_layerID.on('click', function () {
+$('.cl_opt_proj').on('click', function () {
     var id_title = $('#id_title');
     id_title.children().remove();
     if ($('#id_addLayer').find(":selected").text().split('(')[1] !== undefined && $('#id_addLayer').find(":selected").text().split('(')[1].replaceAll(')', '') !== 'Capacity Matrix') {
