@@ -1548,7 +1548,7 @@ func_initMap = function () {
         ly_biotop.addTo(map);
 
     });
-
+    func_CQLFull();
 }
 $(document).ready(function () {
     // Hide all second and third level items initially
