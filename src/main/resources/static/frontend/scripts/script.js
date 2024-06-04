@@ -206,7 +206,7 @@ func_info = function(p_id) {
             break;
         case "Bestäubungspotenzial": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S05_Bestaeubung-durch-Insekten_online-Version_final.pdf");
             break;
-        case "Hochwasserschutz Wasserrückhalt": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S04_Schutz_vor_HW-Hochwasserrueckhaltevermoegen_online-Version_Vorlage-final.pdf");
+        case "Hochwasserschutz Wasserrückhalt": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S04_Schutz_vor_HW-Wasserrueckhaltevermoegen_online-Version_Vorlage-final.pdf");
             break;
         case "Hochwasserschutz Retention": window.open( "https://biodiversityatlas.at/wp-content/uploads/2023/10/S04_Schutz_vor_HW-Hochwasserretention_online-Version_Vorlage-final.pdf");
             break;
